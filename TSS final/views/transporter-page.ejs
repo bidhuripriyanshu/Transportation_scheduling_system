@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporter Dashboard</title>
+    <link rel="stylesheet" href="/stylesheets/transporter-page.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Transporter Dashboard</h1>
+
+        <!-- Dashboard Navigation -->
+        <nav>
+            <ul>
+                <li><a href="#" id="dashboard-link">Home</a></li>
+                <li><a href="#" id="manage-shipments-link">Manage Shipments</a></li>
+                <li><a href="#" id="manage-profile-link">Manage Profile</a></li>
+                <li><a href="#" id="contact-link">Contact</a></li>
+                <li><a href="#" id="help-link">Help</a></li>
+            </ul>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+            <h2>Welcome to your Dashboard</h2>
+            <p>If you haven't submitted your delivery requests yet, now is the perfect time! Use the form in the 'Manage Shipments' section to get started.</p>
+            <img src="/public/image/project.1.JPG" alt="Project Image" class="img-fluid full-image">
+        </div>
+
+        <!-- Manage Shipments Section -->
+        <div id="manage-shipments-section" style="display: none;">
+            <h2>Manage Shipments</h2>
+            <div id="requests-container">
+                <h3>Your Shipments</h3>
+                <ul id="shipment-list">
+                    <!-- Shipment requests will be dynamically added here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Manage Profile Section -->
+        <div id="manage-profile-section" style="display: none;">
+            <h2>Manage Profile</h2>
+            <p><strong>Username:</strong> <span id="username"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+        </div>
+
+        <!-- Contact Section -->
+        <div id="contact-section" style="display: none;">
+            <h2>Contact Us</h2>
+            <p>If you have any questions, please reach out to us via the following channels:</p>
+            <p>Email: support@transporter.com</p>
+            <p>Phone: +1-234-567-890</p>
+        </div>
+
+        <!-- Help Section -->
+        <div id="help-section" style="display: none;">
+            <h2>Help Center</h2>
+            <p>Here are some frequently asked questions:</p>
+            <ul>
+                <li><strong>How can I manage my shipments?</strong> You can manage your shipments from the 'Manage Shipments' section.</li>
+                <li><strong>How do I update my profile?</strong> Use the 'Manage Profile' section to update your username and email.</li>
+                <li><strong>Who can I contact for support?</strong> You can reach us through the 'Contact Us' section for any support queries.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve logged-in user details from localStorage
+        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+        if (!loggedInUser) {
+            alert("No user is logged in. Redirecting to login page.");
+            window.location.href = "login.html";
+        } else {
+            // Populate user profile
+            document.getElementById("username").textContent = loggedInUser.name;
+            document.getElementById("email").textContent = loggedInUser.email;
+        }
+
+        // Function to hide all sections
+        function hideAllSections() {
+            document.getElementById("dashboard-section").style.display = "none";
+            document.getElementById("manage-shipments-section").style.display = "none";
+            document.getElementById("manage-profile-section").style.display = "none";
+            document.getElementById("contact-section").style.display = "none";
+            document.getElementById("help-section").style.display = "none";
+        }
+
+        // Event listeners for navigation links
+        document.getElementById("dashboard-link").addEventListener("click", function() {
+            hideAllSections();
+            document.getElementById("dashboard-section").style.display = "block";
+        });
+
+        document.getElementById("manage-shipments-link").addEventListener("click", function() {
+            hideAllSections();
+            document.getElementById("manage-shipments-section").style.display = "block";
+            loadShipmentRequests(); // Load and display shipment requests when this section is shown
+        });
+
+        document.getElementById("manage-profile-link").addEventListener("click", function() {
+            hideAllSections();
+            document.getElementById("manage-profile-section").style.display = "block";
+        });
+
+        document.getElementById("contact-link").addEventListener("click", function() {
+            hideAllSections();
+            document.getElementById("contact-section").style.display = "block";
+        });
+
+        document.getElementById("help-link").addEventListener("click", function() {
+            hideAllSections();
+            document.getElementById("help-section").style.display = "block";
+        });
+
+        // Function to load and display shipment requests
+        function loadShipmentRequests() {
+            const shipmentRequests = JSON.parse(localStorage.getItem("shipmentRequests")) || [];
+            const shipmentList = document.getElementById("shipment-list");
+            shipmentList.innerHTML = ""; // Clear the existing list
+
+            shipmentRequests.forEach((request, index) => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    <strong>Location:</strong> ${request.location}, 
+                    <strong>Date/Time:</strong> ${request.dateTime}, 
+                    <strong>Description:</strong> ${request.goodsDescription}, 
+                    <strong>Vehicle Type:</strong> ${request.vehicleType}, 
+                    <strong>User:</strong> ${request.user} 
+                    <button class="approve-btn" data-index="${index}">Approve</button>
+                    <button class="reject-btn" data-index="${index}">Reject</button>
+                `;
+                shipmentList.appendChild(listItem);
+            });
+
+            // Add event listeners for the approve and reject buttons
+            document.querySelectorAll(".approve-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    const index = this.getAttribute("data-index");
+                    approveShipment(index);
+                });
+            });
+
+            document.querySelectorAll(".reject-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    const index = this.getAttribute("data-index");
+                    rejectShipment(index);
+                });
+            });
+        }
+
+        // Function to approve a shipment
+        function approveShipment(index) {
+            const shipmentRequests = JSON.parse(localStorage.getItem("shipmentRequests")) || [];
+            const approvedRequest = shipmentRequests.splice(index, 1)[0]; // Remove the approved request
+            localStorage.setItem("shipmentRequests", JSON.stringify(shipmentRequests));
+            alert(`Shipment approved: ${approvedRequest.location}`);
+            loadShipmentRequests(); // Refresh the list
+        }
+
+        // Function to reject a shipment
+        function rejectShipment(index) {
+            const shipmentRequests = JSON.parse(localStorage.getItem("shipmentRequests")) || [];
+            const rejectedRequest = shipmentRequests.splice(index, 1)[0]; // Remove the rejected request
+            localStorage.setItem("shipmentRequests", JSON.stringify(shipmentRequests));
+            alert(`Shipment rejected: ${rejectedRequest.location}`);
+            loadShipmentRequests(); // Refresh the list
+        }
+
+        // Initially show the dashboard section
+        document.getElementById("dashboard-section").style.display = "block";
+    </script>
+</body>
+</html>
