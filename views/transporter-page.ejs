@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporter Dashboard</title>
+    <link rel="stylesheet" href="/stylesheets/transporter-page.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Transporter Dashboard</h1>
+
+        <!-- Dashboard Navigation -->
+        <nav>
+            <ul>
+                <li><a href="#" id="dashboard-link">Home</a></li>
+                <li><a href="#" id="manage-shipments-link">Manage Shipments</a></li>
+                <li><a href="#" id="manage-profile-link">Manage Profile</a></li>
+                <li><a href="#" id="contact-link">Contact</a></li>
+                <li><a href="#" id="help-link">Help</a></li>
+            </ul>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+            <h2>Welcome to Your Dashboard</h2>
+            <p>If you haven't submitted your delivery requests yet, now is the perfect time! Use the form in the 'Manage Shipments' section to get started.</p>
+            
+            <!-- Image with Overlay Text -->
+            <div class="image-container">
+                <img src="/images/project.1.JPG" alt="Project Image">
+                <div class="overlay-text">Manage Your Shipments Seamlessly</div>
+            </div>
+        </div>
+
+        <!-- Manage Shipments Section -->
+        <div id="manage-shipments-section" style="display: none;">
+            <h2>Manage Shipments</h2>
+            <div id="requests-container">
+                <h3>Your Shipments</h3>
+                <ul id="shipment-list">
+                    <% shipmentRequests.forEach((request, index) => { %>
+                        <li>
+                            <strong>Location:</strong> <%= request.location %>, 
+                            <strong>Date/Time:</strong> <%= request.dateTime %>, 
+                            <strong>Description:</strong> <%= request.goodsDescription %>, 
+                            <strong>Vehicle Type:</strong> <%= request.vehicleType %>, 
+                            <strong>User:</strong> <%= request.user %> 
+                            <button class="approve-btn" data-index="<%= index %>">Approve</button>
+                            <button class="reject-btn" data-index="<%= index %>">Reject</button>
+                        </li>
+                    <% }); %>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Manage Profile Section -->
+        <div id="manage-profile-section" style="display: none;">
+            <h2>Manage Profile</h2>
+            <p><strong>Username:</strong> <span id="username"><%= loggedInUser.name %></span></p>
+            <p><strong>Email:</strong> <span id="email"><%= loggedInUser.email %></span></p>
+        </div>
+
+        <!-- Contact Section -->
+        <div id="contact-section" style="display: none;">
+            <h2>Contact Us</h2>
+            <p>If you have any questions, please reach out to us via the following channels:</p>
+            <p>Email: support@transporter.com</p>
+            <p>Phone: +1-234-567-890</p>
+        </div>
+
+        <!-- Help Section -->
+        <div id="help-section" style="display: none;">
+            <h2>Help Center</h2>
+            <p>Here are some frequently asked questions:</p>
+            <ul>
+                <li><strong>How can I manage my shipments?</strong> You can manage your shipments from the 'Manage Shipments' section.</li>
+                <li><strong>How do I update my profile?</strong> Use the 'Manage Profile' section to update your username and email.</li>
+                <li><strong>Who can I contact for support?</strong> You can reach us through the 'Contact Us' section for any support queries.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="/scripts/transporter-page.js"></script>
+</body>
+</html>
