@@ -3,6 +3,7 @@ const app = express();
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const path = require('path');
+const session = require('express-session');  // Import express-session
 
 // Import models
 const User = require('./models/user.js');
@@ -18,6 +19,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Set up session
+
+app.use(session({
+    secret: 'your_secret_key',   // Use a secure secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }    // Set secure: true when using https
+}));
+
+
 // MongoDB connection
 mongoose
     .connect('mongodb://localhost:27017/transportationDB_final', {
@@ -27,34 +38,39 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Failed to connect to MongoDB:', err));
 
-// Middleware for authentication (placeholder, implement actual logic)
+
+
+// Middleware for authentication (ensuring session is available)
 function ensureAuthenticated(req, res, next) {
-    if (req.user) { // Simulate user authentication; replace with Passport.js or session
+    if (req.session.user) {  // Check if user session exists
         return next();
     }
-    res.redirect('/login');
+    res.redirect('/');  // Redirect to login page if not authenticated
 }
+
 
 // Routes
 app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
+
 app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
     try {
-        const loggedInUser = req.user;
-        const userShipments = await Shipment.find({ userId: loggedInUser._id });
-        res.render('user-dashboard.ejs', { userShipments, loggedInUser });
+        const loggedInUser = req.session.user;
+        // const userShipments = await Shipment.find({ userId: loggedInUser._id });
+        res.render('user-page.ejs', {  loggedInUser });
     } catch (err) {
         console.error('Error fetching user data:', err);
         res.status(500).send('Error fetching user data');
     }
 });
 
+
 app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
     try {
         const shipmentRequests = await Shipment.find();
-        const loggedInUser = req.user;
+        const loggedInUser = req.session.user;
         res.render('transporter-page.ejs', { shipmentRequests, loggedInUser });
     } catch (err) {
         console.error('Error fetching shipment requests:', err);
@@ -62,6 +78,8 @@ app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
     }
 });
 
+
+// Handle login (POST)
 app.post('/login', async (req, res) => {
     const { email, password, role } = req.body;
 
@@ -85,12 +103,8 @@ app.post('/login', async (req, res) => {
             return res.status(400).send('Invalid email or password.');
         }
 
-        if (user.role !== role) {
-            return res.status(403).send('Role mismatch. Access denied.');
-        }
-
-        // Simulating login by setting req.user (replace with proper session or token)
-        req.user = user;
+        // Set the user data in the session
+        req.session.user = user;  // Store user info in session
 
         // Redirect to the appropriate dashboard
         if (role === 'user') {
@@ -105,7 +119,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-
+// Handle signup (POST)
 app.post('/signup', async (req, res) => {
     const { name, email, password, role } = req.body;
 
@@ -120,14 +134,12 @@ app.post('/signup', async (req, res) => {
         const newUser = new User({ name, email, password: hashedPassword, role });
         await newUser.save();
 
-        res.redirect('/login');
+        res.redirect('/'); // Redirect to the login page after signup
     } catch (error) {
         console.error('Error during signup:', error);
         res.status(500).send('An error occurred during signup. Please try again.');
     }
 });
-
-
 
 app.post('/shipment', ensureAuthenticated, async (req, res) => {
     const { location, dateTime, goodsDescription, vehicleType } = req.body;
@@ -148,8 +160,6 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error creating shipment');
     }
 });
-
-
 
 // Server setup
 app.listen(3000, () => {
