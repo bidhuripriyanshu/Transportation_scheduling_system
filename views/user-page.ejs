@@ -52,7 +52,7 @@
                     <div class="carousel-item active">
                         <img src="/image/project.1.JPG" class="d-block w-100" alt="Project Image 1">
                         <div class="carousel-caption">
-                            <h5>Project Image 1</h5>
+                            <h5>FAST DEliveries</h5>
                             <p>This is the first image of the project, showcasing the initial design.</p>
                         </div>
                     </div>
@@ -205,6 +205,26 @@
 
 
 
+<!-- notification -->
+ <!-- In userDashboard.ejs -->
+<h2>Your Notifications:</h2>
+<div id="notifications-container">
+    <% if (loggedInUser.notifications && loggedInUser.notifications.length > 0) { %>
+        <ul>
+            <% loggedInUser.notifications.forEach(notification => { %>
+                <li>
+                    <strong><%= notification.date.toLocaleString() %></strong><br>
+                    <%= notification.message %>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>You have no new notifications.</p>
+    <% } %>
+</div>
+
+
+
         
 
         <!-- Footer -->
@@ -222,7 +242,7 @@
         // Redirect to login if no user is logged in
         if (!loggedInUser) {
             alert("No user is logged in. Redirecting to login page.");
-            window.location.href = "";
+            window.location.href = "login.html"; // Update the redirect URL
         } else {
             // Populate user profile
             document.getElementById("username").textContent = loggedInUser.name;
@@ -230,8 +250,7 @@
         }
     
         // Dashboard Navigation
-        const navLinks = document.querySelectorAll(".nav-link");
-        navLinks.forEach(link => {
+        document.querySelectorAll(".nav-link").forEach(link => {
             link.addEventListener("click", (e) => {
                 const targetSection = e.target.getAttribute("data-section");
                 showSection(targetSection);
@@ -239,42 +258,9 @@
         });
     
         function showSection(sectionId) {
-            const sections = document.querySelectorAll(".section");
-            sections.forEach(section => section.classList.remove("active"));
+            document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
             document.getElementById(sectionId).classList.add("active");
         }
-    
-        // Handle shipment form submission
-        document.getElementById("shipmentForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-    
-            const location = document.getElementById("location").value.trim();
-            const dateTime = document.getElementById("dateTime").value;
-            const goodsDescription = document.getElementById("goodsDescription").value.trim();
-            const vehicleType = document.getElementById("vehicleType").value;
-    
-            // Validation check
-            if (!location || !dateTime || !goodsDescription || !vehicleType) {
-                alert("All fields are required. Please fill out the shipment form.");
-                return;
-            }
-    
-            const shipmentDetails = {
-                location,
-                dateTime,
-                goodsDescription,
-                vehicleType,
-                user: loggedInUser.email,
-            };
-    
-            // Save shipment request to localStorage
-            const shipmentRequests = JSON.parse(localStorage.getItem("shipmentRequests")) || [];
-            shipmentRequests.push(shipmentDetails);
-            localStorage.setItem("shipmentRequests", JSON.stringify(shipmentRequests));
-    
-            alert("Your shipment request has been submitted successfully!");
-            document.getElementById("shipmentForm").reset();
-        });
     
         // Handle feedback form submission
         document.getElementById("feedbackForm").addEventListener("submit", function (e) {
@@ -296,34 +282,64 @@
     
             alert("Thank you for your feedback!");
             document.getElementById("feedbackForm").reset();
-            
+    
             // Hide feedback modal using Bootstrap Modal API
             const feedbackModal = document.getElementById("feedbackModal");
             const modalInstance = bootstrap.Modal.getInstance(feedbackModal);
             modalInstance.hide();
         });
     
-        // Additional Event: Logout functionality
+        // Logout functionality
         document.getElementById("logout-btn").addEventListener("click", function () {
             localStorage.removeItem("loggedInUser");
             alert("You have been logged out successfully.");
-            window.location.href = "login.html";
+            window.location.href = "/";
         });
     
-        // Add dynamic date to footer
+        // Dynamic date in footer
         document.getElementById("current-year").textContent = new Date().getFullYear();
     
-        // Example: Additional interactivity
-        document.addEventListener('DOMContentLoaded', function () {
+        // Page load event
+        document.addEventListener("DOMContentLoaded", function () {
             console.log("Page fully loaded!");
         });
     
-        // Example: Tooltip initialization using Bootstrap
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Tooltip initialization using Bootstrap
+        [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+
+
+        // ---
+// Fetch and display notifications dynamically on page load
+window.onload = async function() {
+    try {
+        const response = await fetch('/user/notifications');
+        const data = await response.json();
+        
+        if (data.success) {
+            const notificationsContainer = document.getElementById('notifications-container');
+            notificationsContainer.innerHTML = ''; // Clear any existing notifications
+            
+            if (data.notifications.length > 0) {
+                data.notifications.forEach(notification => {
+                    const notificationElement = document.createElement('li');
+                    notificationElement.innerHTML = `<strong>${new Date(notification.date).toLocaleString()}</strong><br>${notification.message}`;
+                    notificationsContainer.appendChild(notificationElement);
+                });
+            } else {
+                notificationsContainer.innerHTML = '<p>You have no new notifications.</p>';
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+    }
+};
+
+
     </script>
+    
     
 </body>
 </html>

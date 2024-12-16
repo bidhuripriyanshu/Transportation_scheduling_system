@@ -57,7 +57,7 @@ p {
     color: #555;
 }
 
-#manage-shipments-section, #manage-profile-section, #contact-section, #help-section {
+#manage-shipments-section, #manage-profile-section {
     margin-top: 20px;
     padding: 15px;
     background-color: #f9f9f9;
@@ -65,10 +65,125 @@ p {
     border-radius: 5px;
 }
 
-/* Help Section List Styles */
-#help-section ul {
-    list-style-type: disc;
-    margin-left: 20px;
+/* Filters Section */
+.filters {
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#search-bar {
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#filter-status {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filters button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.filters button:hover {
+    background-color: #0056b3;
+}
+
+/* Shipment Requests Section */
+#requests-container h3 {
+    margin-bottom: 15px;
+    color: #444;
+}
+
+#shipment-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#shipment-list li {
+    background-color: #fff;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+#shipment-list li strong {
+    color: #333;
+}
+
+.approve-btn, .reject-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.approve-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.approve-btn:hover {
+    background-color: #218838;
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #c82333;
+}
+
+/* Profile Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+form label {
+    font-weight: bold;
+    color: #333;
+}
+
+form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+form button:hover {
+    background-color: #0056b3;
 }
 
 /* Responsive Styles */
@@ -80,5 +195,13 @@ p {
 
     .container {
         width: 95%;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    #search-bar, #filter-status {
+        width: 100%;
     }
 }

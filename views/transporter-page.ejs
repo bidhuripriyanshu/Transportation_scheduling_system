@@ -23,31 +23,40 @@
 
         <!-- Dashboard Section -->
         <div id="dashboard-section">
-            <h2>Welcome to Your Dashboard</h2>
-            <p>If you haven't submitted your delivery requests yet, now is the perfect time! Use the form in the 'Manage Shipments' section to get started.</p>
-            
-            <!-- Image with Overlay Text -->
-            <div class="image-container">
-                <img src="/images/project.1.JPG" alt="Project Image">
-                <div class="overlay-text">Manage Your Shipments Seamlessly</div>
-            </div>
+            <h2>Welcome to Your Dashboard, <%= loggedInUser.name %>!</h2>
+            <p>Track and manage all your shipment requests efficiently from here.</p>
         </div>
 
         <!-- Manage Shipments Section -->
         <div id="manage-shipments-section" style="display: none;">
             <h2>Manage Shipments</h2>
+
+            <!-- Search and Filter Options -->
+            <div class="filters">
+                <input type="text" id="search-bar" placeholder="Search by location or description...">
+                <button onclick="filterShipments()">Search</button>
+
+                <select id="filter-status">
+                    <option value="">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <button onclick="filterShipments()">Filter</button>
+            </div>
+
             <div id="requests-container">
-                <h3>Your Shipments</h3>
+                <h3>Shipment Requests</h3>
                 <ul id="shipment-list">
                     <% shipmentRequests.forEach((request, index) => { %>
-                        <li>
-                            <strong>Location:</strong> <%= request.location %>, 
-                            <strong>Date/Time:</strong> <%= request.dateTime %>, 
-                            <strong>Description:</strong> <%= request.goodsDescription %>, 
-                            <strong>Vehicle Type:</strong> <%= request.vehicleType %>, 
-                            <strong>User:</strong> <%= request.user %> 
-                            <button class="approve-btn" data-index="<%= index %>">Approve</button>
-                            <button class="reject-btn" data-index="<%= index %>">Reject</button>
+                        <li data-status="<%= request.status %>">
+                            <strong>Location:</strong> <%= request.location %><br>
+                            <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %><br>
+                            <strong>Description:</strong> <%= request.goodsDescription %><br>
+                            <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
+                            <strong>Status:</strong> <%= request.status %><br>
+                            <button class="approve-btn" data-id="<%= request._id %>">Approve</button>
+                            <button class="reject-btn" data-id="<%= request._id %>">Reject</button>
                         </li>
                     <% }); %>
                 </ul>
@@ -57,8 +66,13 @@
         <!-- Manage Profile Section -->
         <div id="manage-profile-section" style="display: none;">
             <h2>Manage Profile</h2>
-            <p><strong>Username:</strong> <span id="username"><%= loggedInUser.name %></span></p>
-            <p><strong>Email:</strong> <span id="email"><%= loggedInUser.email %></span></p>
+            <form action="/update-profile" method="POST">
+                <label for="username">Username:</label>
+                <input type="text" name="name" id="username" value="<%= loggedInUser.name %>" required><br>
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" value="<%= loggedInUser.email %>" required><br>
+                <button type="submit">Update Profile</button>
+            </form>
         </div>
 
         <!-- Contact Section -->
@@ -80,7 +94,96 @@
             </ul>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('.approve-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+        const id = button.getAttribute('data-id');
+        const response = await fetch('/approve-shipment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const result = await response.json();
+        if (result.success) location.reload();
+    });
+});
 
-    <script src="/scripts/transporter-page.js"></script>
+document.querySelectorAll('.reject-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+        const id = button.getAttribute('data-id');
+        const response = await fetch('/reject-shipment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const result = await response.json();
+        if (result.success) location.reload();
+    });
+});
+
+function filterShipments() {
+    const searchKeyword = document.getElementById('search-bar').value.toLowerCase();
+    const filterStatus = document.getElementById('filter-status').value;
+
+    document.querySelectorAll('#shipment-list li').forEach(item => {
+        const matchesSearch = item.innerText.toLowerCase().includes(searchKeyword);
+        const matchesStatus = !filterStatus || item.getAttribute('data-status') === filterStatus;
+
+        if (matchesSearch && matchesStatus) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+//click section working
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = {
+        dashboard: document.getElementById('dashboard-section'),
+        manageShipments: document.getElementById('manage-shipments-section'),
+        manageProfile: document.getElementById('manage-profile-section'),
+        contact: document.getElementById('contact-section'),
+        help: document.getElementById('help-section'),
+    };
+
+    const navLinks = {
+        dashboard: document.getElementById('dashboard-link'),
+        manageShipments: document.getElementById('manage-shipments-link'),
+        manageProfile: document.getElementById('manage-profile-link'),
+        contact: document.getElementById('contact-link'),
+        help: document.getElementById('help-link'),
+    };
+
+    // Function to show the selected section and hide others
+    function showSection(sectionName) {
+        for (let section in sections) {
+            sections[section].style.display = section === sectionName ? 'block' : 'none';
+        }
+    }
+
+    // Add event listeners to navigation links
+    navLinks.dashboard.addEventListener('click', () => showSection('dashboard'));
+    navLinks.manageShipments.addEventListener('click', () => showSection('manageShipments'));
+    navLinks.manageProfile.addEventListener('click', () => showSection('manageProfile'));
+    navLinks.contact.addEventListener('click', () => showSection('contact'));
+    navLinks.help.addEventListener('click', () => showSection('help'));
+
+    // Show dashboard section by default
+    showSection('dashboard');
+});
+
+
+document.getElementById('shipment-list').addEventListener('click', (e) => {
+    if (e.target.classList.contains('approve-btn')) {
+        alert(`Shipment approved: ${e.target.dataset.index}`);
+        // Handle approval logic here
+    } else if (e.target.classList.contains('reject-btn')) {
+        alert(`Shipment rejected: ${e.target.dataset.index}`);
+        // Handle rejection logic here
+    }
+});
+
+    </script>
 </body>
 </html>

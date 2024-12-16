@@ -9,6 +9,8 @@ const session = require('express-session');  // Import express-session
 const User = require('./models/user.js');
 const Transporter = require('./models/transporter.js');
 const Shipment = require('./models/shipment.js');
+const Notification = require('./models/notification');
+
 
 // Middleware to parse incoming requests
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +31,7 @@ app.use(session({
 }));
 
 
+
 // MongoDB connection
 mongoose
     .connect('mongodb://localhost:27017/transportationDB_final', {
@@ -37,6 +40,7 @@ mongoose
     })
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Failed to connect to MongoDB:', err));
+
 
 
 
@@ -49,10 +53,14 @@ function ensureAuthenticated(req, res, next) {
 }
 
 
+
+
 // Routes
 app.get('/', (req, res) => {
     res.render('index.ejs');
 });
+
+
 
 
 app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
@@ -67,6 +75,8 @@ app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
 });
 
 
+
+
 app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
     try {
         const shipmentRequests = await Shipment.find();
@@ -79,60 +89,35 @@ app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
 });
 
 
-// Handle login (POST)
-app.post('/login', async (req, res) => {
-    const { email, password, role } = req.body;
-
-    try {
-        let user;
-
-        if (role === 'user') {
-            user = await User.findOne({ email });
-        } else if (role === 'transporter') {
-            user = await Transporter.findOne({ email });
-        } else {
-            return res.status(400).send('Invalid role.');
-        }
-
-        if (!user) {
-            return res.status(400).send('Invalid email or password.');
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).send('Invalid email or password.');
-        }
-
-        // Set the user data in the session
-        req.session.user = user;  // Store user info in session
-
-        // Redirect to the appropriate dashboard
-        if (role === 'user') {
-            res.redirect('/user-dashboard');
-        } else {
-            res.redirect('/transporter-dashboard');
-        }
-    } catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).send('An error occurred during login. Please try again.');
-    }
-});
-
 
 // Handle signup (POST)
 app.post('/signup', async (req, res) => {
     const { name, email, password, role } = req.body;
 
     try {
-        const existingUser = await User.findOne({ email });
+        // Check if the user already exists in the appropriate collection
+        const existingUser =
+            role === 'user'
+                ? await User.findOne({ email })
+                : await Transporter.findOne({ email });
+
         if (existingUser) {
             return res.status(400).send('User already exists. Please login.');
         }
 
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ name, email, password: hashedPassword, role });
-        await newUser.save();
+        // Save the user in the appropriate collection based on their role
+        if (role === 'user') {
+            const newUser = new User({ name, email, password: hashedPassword, role });
+            await newUser.save();
+        } else if (role === 'transporter') {
+            const newTransporter = new Transporter({ name, email, password: hashedPassword, role });
+            await newTransporter.save();
+        } else {
+            return res.status(400).send('Invalid role. Please select a valid role.');
+        }
 
         res.redirect('/'); // Redirect to the login page after signup
     } catch (error) {
@@ -140,6 +125,63 @@ app.post('/signup', async (req, res) => {
         res.status(500).send('An error occurred during signup. Please try again.');
     }
 });
+
+
+
+
+// Handle login (POST)
+app.post('/login', async (req, res) => {
+    const { email, password, role } = req.body;
+
+    try {
+        let user;
+
+        // Fetch the user from the corresponding collection
+        if (role === 'user') {
+            user = await User.findOne({ email });
+        } else if (role === 'transporter') {
+            user = await Transporter.findOne({ email });
+        } else {
+            return res.status(400).send('Invalid role. Please select a valid role.');
+        }
+
+        // Check if user exists
+        if (!user) {
+            return res.status(400).send('Invalid email or password.');
+        }
+
+        // Verify the password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(400).send('Invalid email or password.');
+        }
+
+        // Store the user info in the session
+        req.session.user = {
+            id: user._id,
+            email: user.email,
+            role: role
+        };
+
+        // Redirect to the appropriate dashboard based on the role
+        if (role === 'user') {
+            return res.redirect('/user-dashboard');
+        } else if (role === 'transporter') {
+            return res.redirect('/transporter-dashboard');
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).send('An error occurred during login. Please try again later.');
+    }
+});
+
+
+
+
+
+
+//shipment
 
 app.post('/shipment', ensureAuthenticated, async (req, res) => {
     const { location, dateTime, goodsDescription, vehicleType } = req.body;
@@ -150,7 +192,7 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
             dateTime: new Date(dateTime),
             goodsDescription,
             vehicleType,
-            userId: req.user._id, // Assuming user ID is needed for the shipment
+            // userId: req.user._id, // Assuming user ID is needed for the shipment
         });
 
         await shipment.save();
@@ -160,6 +202,116 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error creating shipment');
     }
 });
+
+
+
+
+
+
+// Approve Shipment
+app.post('/approve-shipment', ensureAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.body;
+        
+        // Update shipment status to 'approved'
+        const shipment = await Shipment.findByIdAndUpdate(id, { status: 'approved' }, { new: true });
+        
+        if (!shipment) {
+            return res.status(404).json({ success: false, message: 'Shipment not found' });
+        }
+
+        // Find the user associated with the shipment
+        const user = await User.findById(shipment.userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Create notification for the user
+        const notificationMessage = `Your shipment request for ${shipment.location} has been approved.`;
+        const newNotification = new Notification({
+            message: notificationMessage,
+        });
+        await newNotification.save();
+
+        // Add the notification to the user's list of notifications
+        user.notifications.push(newNotification);
+        await user.save();
+
+        res.json({ success: true, message: 'Shipment approved and user notified successfully', notificationMessage });
+    } catch (err) {
+        console.error('Error approving shipment:', err);
+        res.status(500).json({ success: false, message: 'Error approving shipment' });
+    }
+});
+
+// Reject Shipment
+app.post('/reject-shipment', ensureAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.body;
+        
+        // Update shipment status to 'rejected'
+        const shipment = await Shipment.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
+        
+        if (!shipment) {
+            return res.status(404).json({ success: false, message: 'Shipment not found' });
+        }
+
+        // Find the user associated with the shipment
+        const user = await User.findById(shipment.userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Create notification for the user
+        const notificationMessage = `Your shipment request for ${shipment.location} has been rejected.`;
+        const newNotification = new Notification({
+            message: notificationMessage,
+        });
+        await newNotification.save();
+
+        // Add the notification to the user's list of notifications
+        user.notifications.push(newNotification);
+        await user.save();
+
+        res.json({ success: true, message: 'Shipment rejected and user notified successfully', notificationMessage });
+    } catch (err) {
+        console.error('Error rejecting shipment:', err);
+        res.status(500).json({ success: false, message: 'Error rejecting shipment' });
+    }
+});
+
+app.post('/update-profile', ensureAuthenticated, async (req, res) => {
+    try {
+        const { name, email } = req.body;
+        const userId = req.session.user.id;
+        await Transporter.findByIdAndUpdate(userId, { name, email });
+        req.session.user.name = name; // Update session data
+        req.session.user.email = email;
+        res.redirect('/transporter-dashboard');
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        res.status(500).send('Error updating profile');
+    }
+});
+
+
+// Route to get notifications for the logged-in user
+app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate('notifications');
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.json({ success: true, notifications: user.notifications });
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.status(500).json({ success: false, message: 'Error fetching notifications' });
+    }
+});
+
+
 
 // Server setup
 app.listen(3000, () => {

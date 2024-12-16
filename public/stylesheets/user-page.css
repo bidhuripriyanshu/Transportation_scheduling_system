@@ -67,7 +67,7 @@ label {
 input[type="text"], input[type="datetime-local"], textarea, select {
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid #cccccc;
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
@@ -79,7 +79,7 @@ textarea {
 }
 
 button[type="submit"] {
-    background-color: #4CAF50;
+    background-color: #af4c68;
     color: white;
     padding: 10px 20px;
     font-size: 18px;
