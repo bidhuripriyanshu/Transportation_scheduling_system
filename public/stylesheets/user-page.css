@@ -1,8 +1,12 @@
+/* General styles */
 body {
     font-family: Arial, sans-serif;
+    background-color: burlywood;
     margin: 0;
+    padding: 0;
 }
 
+/* Navbar styles */
 .navbar-nav .nav-item .nav-link {
     color: white;
     font-weight: bold;
@@ -12,10 +16,12 @@ body {
     color: orange;
 }
 
+/* Container styling */
 .container {
     padding: 20px;
 }
 
+/* Section visibility toggling */
 .section {
     display: none;
 }
@@ -24,74 +30,22 @@ body {
     display: block;
 }
 
+/* Image styling */
 .full-image {
     width: 100%;
     height: auto;
 }
 
-#initiate-shipment-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-footer {
-    font-size: 14px;
-    background-color: black;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-}
-
-#head2{
-    color: orange;
-}
-
-#para1{
-    color:#87CEEB ;
-
-}
-
-#head5{
-    color: orange;
-}
-
-#head6{
-    color: green;
-}
-
-#head55{
-    color: orange;
-}
-
-#head66{
-    color: green;
-}
-
-/* Basic page styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-}
-
-/* Container for the section */
+/* Initiate shipment section */
 #initiate-shipment-section {
     width: 80%;
     margin: 50px auto;
-    background-color: #fff;
+    background-color:#333;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Header styling */
 #initiate-shipment-section h1 {
     text-align: center;
     color: #333;
@@ -105,13 +59,11 @@ form {
     gap: 15px;
 }
 
-/* Label and input field styling */
 label {
     font-size: 16px;
     color: #333;
 }
 
-/* Styling for input fields */
 input[type="text"], input[type="datetime-local"], textarea, select {
     padding: 10px;
     font-size: 16px;
@@ -121,13 +73,11 @@ input[type="text"], input[type="datetime-local"], textarea, select {
     box-sizing: border-box;
 }
 
-/* Textarea specific styling */
 textarea {
     resize: vertical;
     min-height: 100px;
 }
 
-/* Button styling */
 button[type="submit"] {
     background-color: #4CAF50;
     color: white;
@@ -143,7 +93,7 @@ button[type="submit"]:hover {
     background-color: #45a049;
 }
 
-/* Responsive Design */
+/* Responsive design */
 @media (max-width: 768px) {
     #initiate-shipment-section {
         width: 90%;
@@ -156,32 +106,47 @@ button[type="submit"]:hover {
     }
 }
 
-
-/* Ensure the image container is positioned relative to place text overlay */
+/* Carousel image container */
 .carousel-image-container {
     position: relative;
 }
 
-/* Make the image take full width and height */
 .carousel-image-container img {
     width: 100%;
     height: auto;
 }
 
-/* Style the overlay text */
 .text-overlay {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white; /* White color text */
+    color: white;
     text-align: center;
-    font-size: 3rem; /* Large text size */
-    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5); /* Optional: adds shadow for better readability */
+    font-size: 3rem;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Style for the paragraph text inside the overlay */
 .text-overlay p {
-    font-size: 1.5rem; /* Adjust paragraph size */
+    font-size: 1.5rem;
     font-weight: bold;
+}
+
+/* Footer styles */
+footer {
+    font-size: 14px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.section {
+    display: none;
+}
+.section.active {
+    display: block;
 }
