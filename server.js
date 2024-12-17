@@ -184,24 +184,36 @@ app.post('/login', async (req, res) => {
 //shipment
 
 app.post('/shipment', ensureAuthenticated, async (req, res) => {
+    console.log('Route hit: /shipment');
+    console.log('Request body:', req.body);
+
     const { location, dateTime, goodsDescription, vehicleType } = req.body;
 
     try {
+        const parsedDate = new Date(dateTime);
+        if (isNaN(parsedDate.getTime())) {
+            return res.status(400).send('Invalid date format');
+        }
+
         const shipment = new Shipment({
             location,
-            dateTime: new Date(dateTime),
+            dateTime: parsedDate,
             goodsDescription,
             vehicleType,
-            // userId: req.user._id, // Assuming user ID is needed for the shipment
+            // userId: req.user._id, // Uncomment if needed
         });
 
         await shipment.save();
-        res.redirect('/transporter-dashboard');
+        console.log('Shipment created successfully:', shipment);
+       res.redirect('/user-dashboard')
+        res.status(200).send('Shipment created successfully');
     } catch (err) {
-        console.error('Error creating shipment:', err);
+        console.error('Error creating shipment:', err.message, err.stack);
         res.status(500).send('Error creating shipment');
     }
 });
+
+
 
 
 

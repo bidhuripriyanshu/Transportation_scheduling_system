@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const shipmentSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
+    // userId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User',
+    //     required: true,
+    // },
     location: String,
     dateTime: Date,
-    goodsDescription: String,
+    goodsDescription: String,   
     vehicleType: String,
 });
 
