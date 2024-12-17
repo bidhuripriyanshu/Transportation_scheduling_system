@@ -184,6 +184,43 @@ document.getElementById('shipment-list').addEventListener('click', (e) => {
     }
 });
 
+
+document.querySelectorAll('.approve-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const id = button.getAttribute('data-id');
+                const response = await fetch('/approve-shipment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Shipment approved successfully!');
+                    location.reload();
+                } else {
+                    alert('Error approving shipment: ' + result.message);
+                }
+            });
+        });
+
+        document.querySelectorAll('.reject-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const id = button.getAttribute('data-id');
+                const response = await fetch('/reject-shipment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Shipment rejected successfully!');
+                    location.reload();
+                } else {
+                    alert('Error rejecting shipment: ' + result.message);
+                }
+            });
+        });
+
     </script>
 </body>
 </html>

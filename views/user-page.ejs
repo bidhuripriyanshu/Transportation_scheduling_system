@@ -99,32 +99,32 @@
         </section>
 
         <!-- Initiate Shipment Section -->
-        <section id="initiate-shipment-section" class="section">
-            <h1>Initiate Shipment</h1>
-            <form id="shipmentForm" action="/shipment" method="post">
-                <div class="mb-3">
-                    <label for="location" class="form-label">Drop-off Location:</label>
-                    <input type="text" id="location" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="dateTime" class="form-label">Select Date and Time:</label>
-                    <input type="datetime-local" id="dateTime" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="goodsDescription" class="form-label">Describe Goods:</label>
-                    <textarea id="goodsDescription" class="form-control" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="vehicleType" class="form-label">Choose Vehicle Type:</label>
-                    <select id="vehicleType" class="form-select" required>
-                        <option value="Truck">Truck</option>
-                        <option value="Van">Van</option>
-                        <option value="Bike">Bike</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Delivery Request</button>
-            </form>
-        </section>
+<section id="initiate-shipment-section" class="section">
+    <h1>Initiate Shipment</h1>
+    <form id="shipmentForm" action="/shipment" method="post">
+        <div class="mb-3">
+            <label for="location" class="form-label">Drop-off Location:</label>
+            <input type="text" id="location" name="location" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="dateTime" class="form-label">Select Date and Time:</label>
+            <input type="datetime-local" id="dateTime" name="dateTime" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="goodsDescription" class="form-label">Describe Goods:</label>
+            <textarea id="goodsDescription" name="goodsDescription" class="form-control" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="vehicleType" class="form-label">Choose Vehicle Type:</label>
+            <select id="vehicleType" name="vehicleType" class="form-select" required>
+                <option value="Truck">Truck</option>
+                <option value="Van">Van</option>
+                <option value="Bike">Bike</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Delivery Request</button>
+    </form>
+</section>
 
 
 
@@ -337,6 +337,29 @@ window.onload = async function() {
     }
 };
 
+
+
+document.getElementById('shipmentForm').addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent default form submission
+    fetch('/shipment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            location: document.getElementById('location').value,
+            dateTime: document.getElementById('dateTime').value,
+            goodsDescription: document.getElementById('goodsDescription').value,
+            vehicleType: document.getElementById('vehicleType').value,
+        }),
+    }).then((response) => {
+        if (response.ok) {
+            window.location.href = '/user-dashboard';
+        } else {
+            alert('Error submitting shipment.');
+        }
+    });
+});
 
     </script>
     

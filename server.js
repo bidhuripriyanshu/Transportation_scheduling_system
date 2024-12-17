@@ -190,23 +190,23 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
     const { location, dateTime, goodsDescription, vehicleType } = req.body;
 
     try {
+        // Parse the dateTime into a Date object
         const parsedDate = new Date(dateTime);
         if (isNaN(parsedDate.getTime())) {
             return res.status(400).send('Invalid date format');
         }
 
+        // Create the Shipment instance
         const shipment = new Shipment({
             location,
-            dateTime: parsedDate,
+            dateTime: parsedDate, // Use parsedDate here
             goodsDescription,
             vehicleType,
-            // userId: req.user._id, // Uncomment if needed
         });
 
         await shipment.save();
         console.log('Shipment created successfully:', shipment);
-       res.redirect('/user-dashboard')
-        res.status(200).send('Shipment created successfully');
+        res.redirect('/user-dashboard');
     } catch (err) {
         console.error('Error creating shipment:', err.message, err.stack);
         res.status(500).send('Error creating shipment');
@@ -215,44 +215,34 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
 
 
 
-
-
-
-
-
 // Approve Shipment
 app.post('/approve-shipment', ensureAuthenticated, async (req, res) => {
     try {
         const { id } = req.body;
-        
-        // Update shipment status to 'approved'
+
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'Invalid shipment ID' });
+        }
+
         const shipment = await Shipment.findByIdAndUpdate(id, { status: 'approved' }, { new: true });
-        
         if (!shipment) {
             return res.status(404).json({ success: false, message: 'Shipment not found' });
         }
 
-        // Find the user associated with the shipment
         const user = await User.findById(shipment.userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+        if (user) {
+            const notificationMessage = `Your shipment for ${shipment.location} is approved.`;
+            const notification = new Notification({ message: notificationMessage });
+            await notification.save();
+
+            user.notifications.push(notification);
+            await user.save();
         }
 
-        // Create notification for the user
-        const notificationMessage = `Your shipment request for ${shipment.location} has been approved.`;
-        const newNotification = new Notification({
-            message: notificationMessage,
-        });
-        await newNotification.save();
-
-        // Add the notification to the user's list of notifications
-        user.notifications.push(newNotification);
-        await user.save();
-
-        res.json({ success: true, message: 'Shipment approved and user notified successfully', notificationMessage });
+        res.json({ success: true, message: 'Shipment approved successfully.' });
     } catch (err) {
-        console.error('Error approving shipment:', err);
-        res.status(500).json({ success: false, message: 'Error approving shipment' });
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
@@ -260,35 +250,30 @@ app.post('/approve-shipment', ensureAuthenticated, async (req, res) => {
 app.post('/reject-shipment', ensureAuthenticated, async (req, res) => {
     try {
         const { id } = req.body;
-        
-        // Update shipment status to 'rejected'
+
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'Invalid shipment ID' });
+        }
+
         const shipment = await Shipment.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
-        
         if (!shipment) {
             return res.status(404).json({ success: false, message: 'Shipment not found' });
         }
 
-        // Find the user associated with the shipment
         const user = await User.findById(shipment.userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+        if (user) {
+            const notificationMessage = `Your shipment for ${shipment.location} is rejected.`;
+            const notification = new Notification({ message: notificationMessage });
+            await notification.save();
+
+            user.notifications.push(notification);
+            await user.save();
         }
 
-        // Create notification for the user
-        const notificationMessage = `Your shipment request for ${shipment.location} has been rejected.`;
-        const newNotification = new Notification({
-            message: notificationMessage,
-        });
-        await newNotification.save();
-
-        // Add the notification to the user's list of notifications
-        user.notifications.push(newNotification);
-        await user.save();
-
-        res.json({ success: true, message: 'Shipment rejected and user notified successfully', notificationMessage });
+        res.json({ success: true, message: 'Shipment rejected successfully.' });
     } catch (err) {
-        console.error('Error rejecting shipment:', err);
-        res.status(500).json({ success: false, message: 'Error rejecting shipment' });
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
