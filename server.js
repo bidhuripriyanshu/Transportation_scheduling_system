@@ -296,18 +296,15 @@ app.post('/update-profile', ensureAuthenticated, async (req, res) => {
 app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).populate('notifications');
-        
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-
-        res.json({ success: true, notifications: user.notifications });
+        res.render('user-notifications', { notifications: user.notifications }); // Render user notifications page
     } catch (err) {
         console.error('Error fetching notifications:', err);
         res.status(500).json({ success: false, message: 'Error fetching notifications' });
     }
 });
-
 
 
 // Server setup

@@ -1,18 +1,22 @@
 /* styles.css */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: lightblue;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-image: url('/image/photo9.jpg'); /* Replace with the path to your image */
+    background-size: cover;  /* Makes the background image cover the entire page */
+    background-position: center center; /* Centers the image on the page */
+    background-attachment: fixed; /* Keeps the background image fixed while scrolling */
 }
 
 .container {
     width: 400px;
-    background: white;
+    background: rgb(68, 94, 102);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     overflow: hidden;
@@ -20,7 +24,7 @@ body {
 
 h1 {
     text-align: center;
-    background: #4CAF50;
+    background: #0f0f0f;
     color: white;
     padding: 1rem;
     margin: 0;
@@ -47,7 +51,7 @@ h1 {
 }
 
 .tablink.active, .tablink:hover {
-    background: #4CAF50;
+    background: grey;
     color: white;
 }
 
@@ -76,7 +80,7 @@ input, select, button {
 }
 
 button {
-    background: #4CAF50;
+    background:lightpink;
     color: white;
     border: none;
     cursor: pointer;
@@ -84,5 +88,5 @@ button {
 }
 
 button:hover {
-    background: #45a049;
+    background: #ef2a2a;
 }

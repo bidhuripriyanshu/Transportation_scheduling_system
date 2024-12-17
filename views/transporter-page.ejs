@@ -6,12 +6,12 @@
     <title>Transporter Dashboard</title>
     <link rel="stylesheet" href="/stylesheets/transporter-page.css">
 </head>
-<body>
-    <div class="container">
+<body style="background-color: lightblue;">
+    <div style="background-color: lightblue;"  class="container">
         <h1>Transporter Dashboard</h1>
 
         <!-- Dashboard Navigation -->
-        <nav>
+        <nav style="background-color: grey;">
             <ul>
                 <li><a href="#" id="dashboard-link">Home</a></li>
                 <li><a href="#" id="manage-shipments-link">Manage Shipments</a></li>
@@ -25,10 +25,11 @@
         <div id="dashboard-section">
             <h2>Welcome to Your Dashboard, <%= loggedInUser.name %>!</h2>
             <p>Track and manage all your shipment requests efficiently from here.</p>
+            <img src="/image/photo9.jpg" alt="Dashboard Image" id="dashboard-image" style="max-width: 100%; height: auto;">
         </div>
 
         <!-- Manage Shipments Section -->
-        <div id="manage-shipments-section" style="display: none;">
+        <div id="manage-shipments-section" style="display: none;  background-color: rgb(64, 51, 53);">
             <h2>Manage Shipments</h2>
 
             <!-- Search and Filter Options -->
@@ -45,23 +46,19 @@
                 <button onclick="filterShipments()">Filter</button>
             </div>
 
-            <div id="requests-container">
-                <h3>Shipment Requests</h3>
-                <ul id="shipment-list">
-                    <% shipmentRequests.forEach((request, index) => { %>
-                        <li data-status="<%= request.status %>">
-                            <strong>Location:</strong> <%= request.location %><br>
-                            <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %><br>
-                            <strong>Description:</strong> <%= request.goodsDescription %><br>
-                            <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
-                            <strong>Status:</strong> <%= request.status %><br>
-                            <button class="approve-btn" data-id="<%= request._id %>">Approve</button>
-                            <button class="reject-btn" data-id="<%= request._id %>">Reject</button>
-                        </li>
-                    <% }); %>
-                </ul>
-            </div>
-        </div>
+            <ul id="shipment-list">
+                <% shipmentRequests.forEach((request) => { %>
+                    <li data-status="<%= request.status %>">
+                        <strong>Location:</strong> <%= request.location %><br>
+                        <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %><br>
+                        <strong>Description:</strong> <%= request.goodsDescription %><br>
+                        <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
+                        <strong>Status:</strong> <%= request.status %><br>
+                        <button class="approve-btn" data-id="<%= request._id %>">Approve</button>
+                        <button class="reject-btn" data-id="<%= request._id %>">Reject</button>
+                    </li>
+                <% }); %>
+            </ul>
 
         <!-- Manage Profile Section -->
         <div id="manage-profile-section" style="display: none;">
@@ -95,31 +92,31 @@
         </div>
     </div>
     <script>
-        document.querySelectorAll('.approve-btn').forEach(button => {
-    button.addEventListener('click', async () => {
-        const id = button.getAttribute('data-id');
-        const response = await fetch('/approve-shipment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        const result = await response.json();
-        if (result.success) location.reload();
-    });
-});
+//         document.querySelectorAll('.approve-btn').forEach(button => {
+//     button.addEventListener('click', async () => {
+//         const id = button.getAttribute('data-id');
+//         const response = await fetch('/approve-shipment', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ id })
+//         });
+//         const result = await response.json();
+//         if (result.success) location.reload();
+//     });
+// });
 
-document.querySelectorAll('.reject-btn').forEach(button => {
-    button.addEventListener('click', async () => {
-        const id = button.getAttribute('data-id');
-        const response = await fetch('/reject-shipment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        const result = await response.json();
-        if (result.success) location.reload();
-    });
-});
+// document.querySelectorAll('.reject-btn').forEach(button => {
+//     button.addEventListener('click', async () => {
+//         const id = button.getAttribute('data-id');
+//         const response = await fetch('/reject-shipment', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ id })
+//         });
+//         const result = await response.json();
+//         if (result.success) location.reload();
+//     });
+// });
 
 function filterShipments() {
     const searchKeyword = document.getElementById('search-bar').value.toLowerCase();
@@ -174,20 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-document.getElementById('shipment-list').addEventListener('click', (e) => {
-    if (e.target.classList.contains('approve-btn')) {
-        alert(`Shipment approved: ${e.target.dataset.index}`);
-        // Handle approval logic here
-    } else if (e.target.classList.contains('reject-btn')) {
-        alert(`Shipment rejected: ${e.target.dataset.index}`);
-        // Handle rejection logic here
-    }
-});
-
-
-document.querySelectorAll('.approve-btn').forEach(button => {
-            button.addEventListener('click', async () => {
-                const id = button.getAttribute('data-id');
+document.addEventListener('DOMContentLoaded', () => {
+    // Assign listeners for shipment approvals/rejections
+    document.querySelectorAll('.approve-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const id = button.getAttribute('data-id');
+            try {
                 const response = await fetch('/approve-shipment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -195,17 +184,22 @@ document.querySelectorAll('.approve-btn').forEach(button => {
                 });
                 const result = await response.json();
                 if (result.success) {
-                    alert('Shipment approved successfully!');
-                    location.reload();
+                    alert(result.message); // Notify success
+                    window.location.href = '/user/notifications'; // Redirect to notifications
                 } else {
                     alert('Error approving shipment: ' + result.message);
                 }
-            });
+            } catch (err) {
+                console.error('Error approving shipment:', err);
+                alert('Failed to approve shipment.');
+            }
         });
+    });
 
-        document.querySelectorAll('.reject-btn').forEach(button => {
-            button.addEventListener('click', async () => {
-                const id = button.getAttribute('data-id');
+    document.querySelectorAll('.reject-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const id = button.getAttribute('data-id');
+            try {
                 const response = await fetch('/reject-shipment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -213,13 +207,18 @@ document.querySelectorAll('.approve-btn').forEach(button => {
                 });
                 const result = await response.json();
                 if (result.success) {
-                    alert('Shipment rejected successfully!');
-                    location.reload();
+                    alert(result.message); // Notify success
+                    window.location.href = '/user/notifications'; // Redirect to notifications
                 } else {
                     alert('Error rejecting shipment: ' + result.message);
                 }
-            });
+            } catch (err) {
+                console.error('Error rejecting shipment:', err);
+                alert('Failed to reject shipment.');
+            }
         });
+    });
+});
 
     </script>
 </body>
