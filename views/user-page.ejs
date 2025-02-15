@@ -37,7 +37,7 @@
     <div class="container my-4">
         <!-- Dashboard Section -->
         <section id="dashboard-section" class="section active">
-            <h2>Welcome to Transport Scheduler</h2>
+            <h2>Welcome to Transport Scheduler,<%= loggedInUser.name %></h2>
             <p>Transport Scheduler is your one-stop solution for scheduling and managing shipments efficiently. 
                Whether you're an individual or a business, our platform ensures that your logistics needs are met seamlessly. 
                Track your deliveries, initiate shipments, and manage your profile with ease.</p>
@@ -127,12 +127,29 @@
 
 
       <!-- Manage Profile Section -->
-      <div id="manage-profile-section" class="section">
-        <h1>Manage Profile</h1>
-        <p><strong>Username:</strong> <span id="username"><%= loggedInUser.name %></span></p>
-        <p><strong>Email:</strong> <span id="email"><%= loggedInUser.email %></span></p>
-        
-    </div>
+      <!-- Manage Profile Section -->
+<!-- Manage Profile Section -->
+<div id="manage-profile-section" class="section">
+    <h1>Manage Profile</h1>
+    
+    <!-- Display current username and email -->
+    <form action="/update-profile_2" method="POST">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="name" value="<%= loggedInUser.name %>" required />
+        </div>
+        <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= loggedInUser.email %>" required />
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Leave blank to keep current password" />
+        </div>
+        <button type="submit">Update Profile</button>
+    </form>
+</div>
+
 
         <div class="container mt-4">
             <!-- Contact Section -->

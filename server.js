@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');  // Import express-session
+//socket
+
+
 
 // Import models
 const User = require('./models/user.js');
@@ -52,16 +55,10 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/');  // Redirect to login page if not authenticated
 }
 
-
-
-
 // Routes
 app.get('/', (req, res) => {
     res.render('index.ejs');
 });
-
-
-
 
 app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
     try {
@@ -73,9 +70,6 @@ app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error fetching user data');
     }
 });
-
-
-
 
 app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
     try {
@@ -292,6 +286,8 @@ app.post('/update-profile', ensureAuthenticated, async (req, res) => {
 });
 
 
+
+
 // Route to get notifications for the logged-in user
 app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
     try {
@@ -306,6 +302,43 @@ app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
     }
 });
 
+
+
+
+
+app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const userId = req.session.user._id;  // Assuming the user ID is stored in the session
+
+        // If password is provided, hash it before saving. Otherwise, leave it unchanged.
+        let updateData = { name, email };
+        if (password) {
+            // You would hash the password here before saving it (e.g., using bcrypt)
+            updateData.password = password;  // Make sure to hash password before saving
+        }
+
+        // Find the user by ID and update their profile
+        await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+        // After updating, save the updated user data in the session
+        req.session.user.name = name;
+        req.session.user.email = email;
+
+        // Redirect to the dashboard with updated information
+        res.redirect('/user-dashboard');
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        res.status(500).send('Error updating profile');
+    }
+});
+
+
+
+
+
+
+// ---
 
 // Server setup
 app.listen(3000, () => {

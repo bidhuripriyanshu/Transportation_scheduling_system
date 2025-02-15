@@ -5,13 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporter Dashboard</title>
     <link rel="stylesheet" href="/stylesheets/transporter-page.css">
+    <style>
+        body {
+            background-color: lightblue;
+        }
+        .container {
+            background-color: lightblue;
+        }
+        nav {
+            background-color: grey;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+        .filters {
+            margin: 10px 0;
+        }
+        .filters input, .filters select {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        .approve-btn, .reject-btn {
+            margin-top: 10px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
 </head>
-<body style="background-color: lightblue;">
-    <div style="background-color: lightblue;"  class="container">
+<body>
+    <div class="container">
         <h1>Transporter Dashboard</h1>
 
         <!-- Dashboard Navigation -->
-        <nav style="background-color: grey;">
+        <nav>
             <ul>
                 <li><a href="#" id="dashboard-link">Home</a></li>
                 <li><a href="#" id="manage-shipments-link">Manage Shipments</a></li>
@@ -22,21 +57,18 @@
         </nav>
 
         <!-- Dashboard Section -->
-        <div id="dashboard-section">
+        <div id="dashboard-section" class="section active">
             <h2>Welcome to Your Dashboard, <%= loggedInUser.name %>!</h2>
             <p>Track and manage all your shipment requests efficiently from here.</p>
-            <img src="/image/photo9.jpg" alt="Dashboard Image" id="dashboard-image" style="max-width: 100%; height: auto;">
+            <img src="/image/photo9.jpg" alt="Dashboard Image" style="max-width: 100%; height: auto;">
         </div>
 
         <!-- Manage Shipments Section -->
-        <div id="manage-shipments-section" style="display: none;  background-color: rgb(64, 51, 53);">
+        <div id="manage-shipments-section" class="section">
             <h2>Manage Shipments</h2>
-
-            <!-- Search and Filter Options -->
             <div class="filters">
                 <input type="text" id="search-bar" placeholder="Search by location or description...">
                 <button onclick="filterShipments()">Search</button>
-
                 <select id="filter-status">
                     <option value="">All</option>
                     <option value="pending">Pending</option>
@@ -45,7 +77,6 @@
                 </select>
                 <button onclick="filterShipments()">Filter</button>
             </div>
-
             <ul id="shipment-list">
                 <% shipmentRequests.forEach((request) => { %>
                     <li data-status="<%= request.status %>">
@@ -59,9 +90,10 @@
                     </li>
                 <% }); %>
             </ul>
+        </div>
 
         <!-- Manage Profile Section -->
-        <div id="manage-profile-section" style="display: none;">
+        <div id="manage-profile-section" class="section">
             <h2>Manage Profile</h2>
             <form action="/update-profile" method="POST">
                 <label for="username">Username:</label>
@@ -73,7 +105,7 @@
         </div>
 
         <!-- Contact Section -->
-        <div id="contact-section" style="display: none;">
+        <div id="contact-section" class="section">
             <h2>Contact Us</h2>
             <p>If you have any questions, please reach out to us via the following channels:</p>
             <p>Email: support@transporter.com</p>
@@ -81,7 +113,7 @@
         </div>
 
         <!-- Help Section -->
-        <div id="help-section" style="display: none;">
+        <div id="help-section" class="section">
             <h2>Help Center</h2>
             <p>Here are some frequently asked questions:</p>
             <ul>
@@ -91,135 +123,81 @@
             </ul>
         </div>
     </div>
+
     <script>
-//         document.querySelectorAll('.approve-btn').forEach(button => {
-//     button.addEventListener('click', async () => {
-//         const id = button.getAttribute('data-id');
-//         const response = await fetch('/approve-shipment', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ id })
-//         });
-//         const result = await response.json();
-//         if (result.success) location.reload();
-//     });
-// });
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = {
+                dashboard: document.getElementById('dashboard-section'),
+                manageShipments: document.getElementById('manage-shipments-section'),
+                manageProfile: document.getElementById('manage-profile-section'),
+                contact: document.getElementById('contact-section'),
+                help: document.getElementById('help-section'),
+            };
 
-// document.querySelectorAll('.reject-btn').forEach(button => {
-//     button.addEventListener('click', async () => {
-//         const id = button.getAttribute('data-id');
-//         const response = await fetch('/reject-shipment', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ id })
-//         });
-//         const result = await response.json();
-//         if (result.success) location.reload();
-//     });
-// });
+            const navLinks = {
+                dashboard: document.getElementById('dashboard-link'),
+                manageShipments: document.getElementById('manage-shipments-link'),
+                manageProfile: document.getElementById('manage-profile-link'),
+                contact: document.getElementById('contact-link'),
+                help: document.getElementById('help-link'),
+            };
 
-function filterShipments() {
-    const searchKeyword = document.getElementById('search-bar').value.toLowerCase();
-    const filterStatus = document.getElementById('filter-status').value;
-
-    document.querySelectorAll('#shipment-list li').forEach(item => {
-        const matchesSearch = item.innerText.toLowerCase().includes(searchKeyword);
-        const matchesStatus = !filterStatus || item.getAttribute('data-status') === filterStatus;
-
-        if (matchesSearch && matchesStatus) {
-            item.style.display = '';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-//click section working
-document.addEventListener('DOMContentLoaded', () => {
-    const sections = {
-        dashboard: document.getElementById('dashboard-section'),
-        manageShipments: document.getElementById('manage-shipments-section'),
-        manageProfile: document.getElementById('manage-profile-section'),
-        contact: document.getElementById('contact-section'),
-        help: document.getElementById('help-section'),
-    };
-
-    const navLinks = {
-        dashboard: document.getElementById('dashboard-link'),
-        manageShipments: document.getElementById('manage-shipments-link'),
-        manageProfile: document.getElementById('manage-profile-link'),
-        contact: document.getElementById('contact-link'),
-        help: document.getElementById('help-link'),
-    };
-
-    // Function to show the selected section and hide others
-    function showSection(sectionName) {
-        for (let section in sections) {
-            sections[section].style.display = section === sectionName ? 'block' : 'none';
-        }
-    }
-
-    // Add event listeners to navigation links
-    navLinks.dashboard.addEventListener('click', () => showSection('dashboard'));
-    navLinks.manageShipments.addEventListener('click', () => showSection('manageShipments'));
-    navLinks.manageProfile.addEventListener('click', () => showSection('manageProfile'));
-    navLinks.contact.addEventListener('click', () => showSection('contact'));
-    navLinks.help.addEventListener('click', () => showSection('help'));
-
-    // Show dashboard section by default
-    showSection('dashboard');
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Assign listeners for shipment approvals/rejections
-    document.querySelectorAll('.approve-btn').forEach(button => {
-        button.addEventListener('click', async () => {
-            const id = button.getAttribute('data-id');
-            try {
-                const response = await fetch('/approve-shipment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id })
+            // Function to show the selected section and hide others
+            function showSection(sectionName) {
+                Object.keys(sections).forEach(section => {
+                    sections[section].classList.remove('active');
                 });
-                const result = await response.json();
-                if (result.success) {
-                    alert(result.message); // Notify success
-                    window.location.href = '/user/notifications'; // Redirect to notifications
-                } else {
-                    alert('Error approving shipment: ' + result.message);
-                }
-            } catch (err) {
-                console.error('Error approving shipment:', err);
-                alert('Failed to approve shipment.');
+                sections[sectionName].classList.add('active');
             }
-        });
-    });
 
-    document.querySelectorAll('.reject-btn').forEach(button => {
-        button.addEventListener('click', async () => {
-            const id = button.getAttribute('data-id');
-            try {
-                const response = await fetch('/reject-shipment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    alert(result.message); // Notify success
-                    window.location.href = '/user/notifications'; // Redirect to notifications
-                } else {
-                    alert('Error rejecting shipment: ' + result.message);
+            // Add event listeners to navigation links
+            navLinks.dashboard.addEventListener('click', () => showSection('dashboard'));
+            navLinks.manageShipments.addEventListener('click', () => showSection('manageShipments'));
+            navLinks.manageProfile.addEventListener('click', () => showSection('manageProfile'));
+            navLinks.contact.addEventListener('click', () => showSection('contact'));
+            navLinks.help.addEventListener('click', () => showSection('help'));
+
+            // Default to 'dashboard' on page load
+            showSection('dashboard');
+        });
+
+        function filterShipments() {
+            const searchKeyword = document.getElementById('search-bar').value.toLowerCase();
+            const filterStatus = document.getElementById('filter-status').value;
+
+            document.querySelectorAll('#shipment-list li').forEach(item => {
+                const matchesSearch = item.innerText.toLowerCase().includes(searchKeyword);
+                const matchesStatus = !filterStatus || item.getAttribute('data-status') === filterStatus;
+
+                item.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+            });
+        }
+
+        // Handling shipment approvals and rejections
+        document.querySelectorAll('.approve-btn, .reject-btn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const action = event.target.classList.contains('approve-btn') ? 'approve' : 'reject';
+                const id = event.target.getAttribute('data-id');
+
+                try {
+                    const response = await fetch(`/${action}-shipment`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id })
+                    });
+
+                    const result = await response.json();
+                    alert(result.message);
+
+                    if (result.success) {
+                        window.location.href = '/user/notifications';  // Redirect to notifications
+                    }
+                } catch (err) {
+                    console.error(`${action} shipment error:`, err);
+                    alert(`Failed to ${action} shipment.`);
                 }
-            } catch (err) {
-                console.error('Error rejecting shipment:', err);
-                alert('Failed to reject shipment.');
-            }
+            });
         });
-    });
-});
-
     </script>
 </body>
 </html>
