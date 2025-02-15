@@ -218,24 +218,24 @@
     </div>
 </div>
 
-<div class="max-w-2xl mx-auto bg-white p-6 shadow-lg rounded-lg">
-    <h1 class="text-2xl font-bold text-center mb-4">Notifications</h1>
-    <% if (notifications.length === 0) { %>
-        <p class="text-gray-600 text-center">No notifications available.</p>
-    <% } else { %>
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-semibold text-gray-700 mb-4">User Notifications</h1>
+    <ul class="divide-y divide-gray-300">
         <% notifications.forEach(notification => { %>
-            <div class="p-4 mb-3 rounded-lg border <%= notification.status === 'approved' ? 'bg-green-100 border-green-400 text-green-800' : 'bg-red-100 border-red-400 text-red-800' %>">
-                <p><strong>Shipment ID:</strong> <%= notification.shipmentId %></p>
-                <p><strong>Status:</strong> <%= notification.status %></p>
-                <p><strong>Message:</strong> <%= notification.message %></p>
-            </div>
-        <% }) %>
-    <% } %>
+            <li class="py-3 px-4 bg-gray-50 rounded-md mb-2 shadow-sm">
+                <span class="text-gray-800 font-medium"><%= notification.message %></span>
+                <p class="text-sm text-gray-500 mt-1"><%= notification.createdAt.toLocaleString() %></p>
+            </li>
+        <% }); %>
+    </ul>
 </div>
 
-
-
-        
+<!-- Continue to Transporter Page Section -->
+<div class="text-center mt-4">
+    <h2>Would you like to continue to the Transporter Page?</h2>
+    <button class="btn btn-success" onclick="window.location.href='/transporter-page'">Yes</button>
+    <button class="btn btn-danger" onclick="window.location.href='/user-dashboard'">No</button>
+</div>
 
         <!-- Footer -->
         <footer class="text-center mt-4">
