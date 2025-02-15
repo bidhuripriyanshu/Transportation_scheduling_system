@@ -218,25 +218,20 @@
     </div>
 </div>
 
-
-
-<!-- notification -->
- <!-- In userDashboard.ejs -->
-<!-- <h2>Your Notifications:</h2>
-<div id="notifications-container">
-    <% if (loggedInUser.notifications && loggedInUser.notifications.length > 0) { %>
-        <ul>
-            <% loggedInUser.notifications.forEach(notification => { %>
-                <li>
-                    <strong><%= notification.date.toLocaleString() %></strong><br>
-                    <%= notification.message %>
-                </li>
-            <% }); %>
-        </ul>
+<div class="max-w-2xl mx-auto bg-white p-6 shadow-lg rounded-lg">
+    <h1 class="text-2xl font-bold text-center mb-4">Notifications</h1>
+    <% if (notifications.length === 0) { %>
+        <p class="text-gray-600 text-center">No notifications available.</p>
     <% } else { %>
-        <p>You have no new notifications.</p>
+        <% notifications.forEach(notification => { %>
+            <div class="p-4 mb-3 rounded-lg border <%= notification.status === 'approved' ? 'bg-green-100 border-green-400 text-green-800' : 'bg-red-100 border-red-400 text-red-800' %>">
+                <p><strong>Shipment ID:</strong> <%= notification.shipmentId %></p>
+                <p><strong>Status:</strong> <%= notification.status %></p>
+                <p><strong>Message:</strong> <%= notification.message %></p>
+            </div>
+        <% }) %>
     <% } %>
-</div> -->
+</div>
 
 
 

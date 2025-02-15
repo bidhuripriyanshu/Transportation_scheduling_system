@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');  // Import express-session
+const Notification = require('./models/notification.js');
 //socket
 
 
@@ -12,7 +13,6 @@ const session = require('express-session');  // Import express-session
 const User = require('./models/user.js');
 const Transporter = require('./models/transporter.js');
 const Shipment = require('./models/shipment.js');
-const Notification = require('./models/notification');
 
 
 // Middleware to parse incoming requests
@@ -55,6 +55,7 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/');  // Redirect to login page if not authenticated
 }
 
+
 // Routes
 app.get('/', (req, res) => {
     res.render('index.ejs');
@@ -71,6 +72,8 @@ app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
     }
 });
 
+
+
 app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
     try {
         const shipmentRequests = await Shipment.find();
@@ -81,6 +84,8 @@ app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error fetching shipment data');
     }
 });
+
+
 
 
 
@@ -119,6 +124,8 @@ app.post('/signup', async (req, res) => {
         res.status(500).send('An error occurred during signup. Please try again.');
     }
 });
+
+
 
 
 
@@ -209,67 +216,73 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
 
 
 
-// Approve Shipment
-app.post('/approve-shipment', ensureAuthenticated, async (req, res) => {
+app.post("/notifications", async (req, res) => {
+    console.log("Received Data:", req.body); // Debugging
+
+    const { shipmentId, status, message } = req.body;
+
+    if (!shipmentId || !status || !message) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
     try {
-        const { id } = req.body;
-
-        if (!id) {
-            return res.status(400).json({ success: false, message: 'Invalid shipment ID' });
-        }
-
-        const shipment = await Shipment.findByIdAndUpdate(id, { status: 'approved' }, { new: true });
-        if (!shipment) {
-            return res.status(404).json({ success: false, message: 'Shipment not found' });
-        }
-
-        const user = await User.findById(shipment.userId);
-        if (user) {
-            const notificationMessage = `Your shipment for ${shipment.location} is approved.`;
-            const notification = new Notification({ message: notificationMessage });
-            await notification.save();
-
-            user.notifications.push(notification);
-            await user.save();
-        }
-
-        res.json({ success: true, message: 'Shipment approved successfully.' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        const newNotification = new Notification({ shipmentId, status, message });
+        await newNotification.save();
+        res.status(201).json({ message: "Notification saved successfully!" });
+    } catch (error) {
+        console.error("Error saving notification:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+
+// Approve Shipment
+app.post('/approve-shipment', async (req, res) => {
+    const { id } = req.body;
+    try {
+        // Update shipment status to approved
+        await Shipment.findByIdAndUpdate(id, { status: 'approved' });
+        
+        // Create a notification
+        await Notification.create({ message: `Shipment ${id} has been approved.`, type: 'approval' });
+        
+        res.json({ success: true, message: 'Shipment approved successfully!' });
+    } catch (err) {
+        console.error('Error approving shipment:', err);
+        res.json({ success: false, message: 'Failed to approve shipment.' });
+    }
+});
+
 
 // Reject Shipment
-app.post('/reject-shipment', ensureAuthenticated, async (req, res) => {
+app.post('/reject-shipment', async (req, res) => {
+    const { id } = req.body;
     try {
-        const { id } = req.body;
-
-        if (!id) {
-            return res.status(400).json({ success: false, message: 'Invalid shipment ID' });
-        }
-
-        const shipment = await Shipment.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
-        if (!shipment) {
-            return res.status(404).json({ success: false, message: 'Shipment not found' });
-        }
-
-        const user = await User.findById(shipment.userId);
-        if (user) {
-            const notificationMessage = `Your shipment for ${shipment.location} is rejected.`;
-            const notification = new Notification({ message: notificationMessage });
-            await notification.save();
-
-            user.notifications.push(notification);
-            await user.save();
-        }
-
-        res.json({ success: true, message: 'Shipment rejected successfully.' });
+        // Update shipment status to rejected
+        await Shipment.findByIdAndUpdate(id, { status: 'rejected' });
+        
+        // Create a notification
+        await Notification.create({ message: `Shipment ${id} has been rejected.`, type: 'rejection' });
+        
+        res.json({ success: true, message: 'Shipment rejected successfully!' });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        console.error('Error rejecting shipment:', err);
+        res.json({ success: false, message: 'Failed to reject shipment.' });
     }
 });
+
+// Route to get notifications for the logged-in user
+app.get('/user/notifications', async (req, res) => {
+    try {
+        const notifications = await Notification.find().sort({ createdAt: -1 });
+        res.render('notifications', { notifications });
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.status(500).send('Error fetching notifications');
+    }
+});
+
+
 
 app.post('/update-profile', ensureAuthenticated, async (req, res) => {
     try {
@@ -284,26 +297,6 @@ app.post('/update-profile', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error updating profile');
     }
 });
-
-
-
-
-// Route to get notifications for the logged-in user
-app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).populate('notifications');
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-        res.render('user-notifications', { notifications: user.notifications }); // Render user notifications page
-    } catch (err) {
-        console.error('Error fetching notifications:', err);
-        res.status(500).json({ success: false, message: 'Error fetching notifications' });
-    }
-});
-
-
-
 
 
 app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
@@ -334,11 +327,6 @@ app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
 });
 
 
-
-
-
-
-// ---
 
 // Server setup
 app.listen(3000, () => {
