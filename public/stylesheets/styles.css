@@ -16,11 +16,15 @@ body {
 
 .container {
     width: 400px;
+
     background: rgb(68, 94, 102);
+
+    background: rgb(139, 179, 180);
+
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    overflow: hidden;
-}
+    overflow: hidden
+};
 
 h1 {
     text-align: center;
@@ -47,7 +51,7 @@ h1 {
     background: #ddd;
     cursor: pointer;
     outline: none;
-    transition: background 0.3s;
+    transition: 0.3s;
 }
 
 .tablink.active, .tablink:hover {
@@ -80,13 +84,22 @@ input, select, button {
 }
 
 button {
+
     background:lightpink;
+
+    background: pink;
+
     color: white;
     border: none;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: 0.3s;
 }
 
 button:hover {
+
     background: #ef2a2a;
+
+    background:rgb(234, 70, 95);
+
 }
+
