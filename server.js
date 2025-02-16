@@ -214,7 +214,21 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
 });
 
 
+<<<<<<< HEAD
 //  Approve Shipment
+=======
+
+
+// / Notification Schema
+const notificationSchema = new mongoose.Schema({
+    message: String,
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Notification = mongoose.model('Notification', notificationSchema);
+
+// Approve Shipment
+>>>>>>> 5253f27426e1ab656d9088599b74f1ee21a5de98
 app.post('/approve-shipment', async (req, res) => {
     try {
         const { id } = req.body;
@@ -381,6 +395,11 @@ app.get("/user-notifications", async (req, res) => {
 
 
 
+
+// Send API Key to Frontend
+app.get("/Real_tracker", (req, res) => {
+    res.render("Real_tracker", { apiKey: process.env.GOOGLE_MAPS_API_KEY });
+});
 
 // Server setup
 app.listen(3000, () => {
