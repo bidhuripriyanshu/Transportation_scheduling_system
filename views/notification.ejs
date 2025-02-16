@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-4 text-center text-indigo-700">Submit Notification</h2>
+        <form action="/submit-notification" method="POST" class="space-y-4" id="notificationForm">
+            <!-- Shipment ID -->
+            <div>
+                <label for="shipmentId" class="block text-sm font-medium text-gray-700">Shipment ID</label>
+                <input type="text" id="shipmentId" name="shipmentId" 
+                    value="<%= shipment._id %>" 
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-200 cursor-not-allowed focus:ring-indigo-500 focus:border-indigo-500"
+                    required readonly>
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <select id="status" name="status" 
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+                    <option value="approved" <%= shipment.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                    <option value="rejected" <%= shipment.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                    <option value="pending" <%= shipment.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                </select>
+            </div>
+
+            <!-- Message -->
+            <div>
+                <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                <textarea id="message" name="message" rows="3" 
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Enter additional details here..." required><%= shipment.message %></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitBtn" 
+                class="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                Submit
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('notificationForm').addEventListener('submit', function () {
+            let submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerText = "Submitting...";
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

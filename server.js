@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');  // Import express-session
-// const Notification = require('./models/notification.js');
+const Notifications = require('./models/notification.js');
 //socket
 
 
@@ -183,7 +183,6 @@ app.post('/login', async (req, res) => {
 
 
 //shipment
-
 app.post('/shipment', ensureAuthenticated, async (req, res) => {
     console.log('Route hit: /shipment');
     console.log('Request body:', req.body);
@@ -214,35 +213,8 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// app.post("/notifications", async (req, res) => {
-//     console.log("Received Data:", req.body); // Debugging
 
-//     const { shipmentId, status, message } = req.body;
-
-//     if (!shipmentId || !status || !message) {
-//         return res.status(400).json({ error: "Missing required fields" });
-//     }
-
-//     try {
-//         const newNotification = new Notification({ shipmentId, status, message });
-//         await newNotification.save();
-//         res.status(201).json({ message: "Notification saved successfully!" });
-//     } catch (error) {
-//         console.error("Error saving notification:", error.message);
-//         res.status(500).json({ error: "Internal Server Error" });
-//     }
-// });
-
-
-// / Notification Schema
-const notificationSchema = new mongoose.Schema({
-    message: String,
-    createdAt: { type: Date, default: Date.now }
-});
-
-const Notification = mongoose.model('Notification', notificationSchema);
-
-// Approve Shipment
+//  Approve Shipment
 app.post('/approve-shipment', async (req, res) => {
     try {
         const { id } = req.body;
@@ -265,16 +237,6 @@ app.post('/reject-shipment', async (req, res) => {
         res.json({ success: false, message: 'Error rejecting shipment' });
     }
 });
-
-// Render Notifications Page
-// app.get('/user/notifications', async (req, res) => {
-//     try {
-//         const notifications = await Notification.find().sort({ createdAt: -1 });
-//         res.render('user-page', { notifications });
-//     } catch (error) {
-//         res.status(500).send('Error fetching notifications');
-//     }
-// });
 
 
 
@@ -319,15 +281,106 @@ app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error updating profile');
     }
 });
-// app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
-//     try {
-//         const notifications = await Notification.find().sort({ createdAt: -1 });
-//         const loggedInUser = req.session.user;
-//         res.render('user-page', { notifications, loggedInUser });
-//     } catch (error) {
-//         res.status(500).send('Error fetching notifications');
-//     }
-// });
+
+
+
+
+
+
+
+
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send('Error logging out');
+        }
+        res.redirect('/'); // Redirect to the login page after logout
+    }
+    );
+});
+
+
+const crypto = require('crypto');
+
+app.get('/notification/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const shipmentId = req.params.id;
+        const shipment = await Shipment.findById(shipmentId);
+
+        if (!shipment) {
+            return res.status(404).send("Shipment not found");
+        }
+
+        // Convert shipment ID to a numeric sum based on ASCII values
+        const numericRepresentation = shipmentId.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+
+        res.render('notification', { shipment, numericRepresentation });
+    } catch (error) {
+        console.error('Error fetching shipment:', error);
+        res.status(500).send('Error fetching shipment');
+    }
+});
+
+
+
+
+// task is to shipmentId into some number like status--> how to create this particular 
+
+app.post('/submit-notification', ensureAuthenticated, async (req, res) => {
+    try {
+        const { shipmentId, message } = req.body;
+        const shipment = await Shipment.findById(shipmentId);
+
+        if (!shipment) {
+            return res.status(404).json({ success: false, message: "Shipment not found" });
+        }
+
+        const notification = await Notification.create({ shipmentId, message, status: 'pending' });
+        res.redirect('/transporter-dashboard');
+    } catch (error) {
+        console.error('Error submitting notification:', error);
+        res.status(500).json({ success: false, message: 'Error submitting notification' });
+    }
+});
+
+app.get('/shipment_status', ensureAuthenticated, async (req, res) => {
+    try {
+        const notifications = await Notification.find();
+        res.render('shipment_status', { notifications });
+    } catch (error) {
+        console.error('Error fetching shipment status:', error);
+        res.status(500).json({ success: false, message: 'Error fetching shipment status' });
+    }
+});
+
+
+
+//user notification
+app.get('/user-notification', ensureAuthenticated, async (req, res) => {
+    try {
+        const notifications = await Notification.find();
+        res.render('user-notification', { notifications });
+    } catch (error) {
+        console.error('Error fetching shipment status:', error);
+        res.status(500).json({ success: false, message: 'Error fetching shipment status' });
+    }
+});
+
+
+
+app.get("/user-notifications", async (req, res) => {
+    try {
+        const notifications = await Notifications.find().sort({ createdAt: -1 }); // Fetch and sort by latest
+        res.render("user_notification", { notifications }); // Pass data to EJS page
+    } catch (error) {
+        console.error("Error fetching notifications:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+
+
 
 // Server setup
 app.listen(3000, () => {

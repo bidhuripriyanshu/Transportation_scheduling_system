@@ -51,8 +51,10 @@
                 <li><a href="#" id="dashboard-link">Home</a></li>
                 <li><a href="#" id="manage-shipments-link">Manage Shipments</a></li>
                 <li><a href="#" id="manage-profile-link">Manage Profile</a></li>
+                <li><a href="/shipment_status" id="shipment-status-link">Shipment Status</a></li>
                 <li><a href="#" id="contact-link">Contact</a></li>
                 <li><a href="#" id="help-link">Help</a></li>
+                <li style="float: right;"><a href="/logout">Logout</a></li>
             </ul>
         </nav>
 
@@ -85,8 +87,7 @@
                         <strong>Description:</strong> <%= request.goodsDescription %><br>
                         <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
                         <strong>Status:</strong> <%= request.status %><br>
-                        <button class="approve-btn" data-id="<%= request._id %>">Approve</button>
-                        <button class="reject-btn" data-id="<%= request._id %>">Reject</button>
+                        <button class="continue-btn" data-id="<%= request._id %>">Continue</button>
                     </li>
                 <% }); %>
             </ul>
@@ -173,6 +174,36 @@
             });
         }
 
+        document.querySelectorAll('.continue-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const shipmentId = this.getAttribute('data-id');
+            window.location.href = `/notification/${shipmentId}`; // Redirect to notification page
+        });
+    });
+
+
+    ///message section
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".continue-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const shipmentId = this.getAttribute("data-id");
+                const confirmRide = confirm("Do you want to continue the ride?");
+                
+                if (confirmRide) {
+                    // Proceed with the ride continuation logic
+                    alert("Ride continued for shipment ID: " + shipmentId);
+                    
+                    // You can make an API request here if needed
+                    // Example:
+                    // fetch(`/continue-ride/${shipmentId}`, { method: "POST" })
+                    // .then(response => response.json())
+                    // .then(data => console.log(data));
+                } else {
+                    alert("Ride continuation cancelled.");
+                }
+            });
+        });
+    });
     </script>
 </body>
 </html>

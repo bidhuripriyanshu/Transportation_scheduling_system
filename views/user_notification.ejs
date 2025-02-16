@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-6">User Notifications</h1>
+
+    <div class="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
+        <% if (notifications.length > 0) { %>
+            <ul class="space-y-4">
+                <% notifications.forEach(notification => { %>
+                    <li class="p-4 border rounded-md shadow-sm bg-gray-50">
+                        <p class="text-lg font-semibold">
+                            Shipment ID: <span class="text-indigo-600"><%= notification.shipmentId %></span>
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            Status: 
+                            <span class="<%= notification.status === 'approved' ? 'text-green-600' : (notification.status === 'rejected' ? 'text-red-600' : 'text-yellow-600') %>">
+                                <%= notification.status %>
+                            </span>
+                        </p>
+                        <p class="mt-2 text-gray-800">Message: <%= notification.message %></p>
+                        <p class="text-xs text-gray-500 mt-2">Received: <%= new Date(notification.createdAt).toLocaleString() %></p>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p class="text-center text-gray-500">No notifications available.</p>
+        <% } %>
+    </div>
+</body>
+</html>

@@ -23,7 +23,7 @@
                     <li class="nav-item"><a class="nav-link" href="#" data-section="contact-section">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" data-section="help-section">Help</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">Feedback</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="notifications-section">Notifications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/user-notifications" data-section="notifications-section">Notifications</a></li>
                 </ul>
                 <form class="d-flex">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -124,10 +124,7 @@
     </form>
 </section>
 
-
-
-      <!-- Manage Profile Section -->
-      <!-- Manage Profile Section -->
+     
 <!-- Manage Profile Section -->
 <div id="manage-profile-section" class="section">
     <h1>Manage Profile</h1>
@@ -218,25 +215,6 @@
     </div>
 </div>
 
-<!-- <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md"> -->
-    <!-- <h1 class="text-2xl font-semibold text-gray-700 mb-4">User Notifications</h1>
-    <ul class="divide-y divide-gray-300">
-        <% notifications.forEach(notification => { %>
-            <li class="py-3 px-4 bg-gray-50 rounded-md mb-2 shadow-sm">
-                <span class="text-gray-800 font-medium"><%= notification.message %></span>
-                <p class="text-sm text-gray-500 mt-1"><%= notification.createdAt.toLocaleString() %></p>
-            </li>
-        <% }); %>
-    </ul>
-</div> -->
-
-<!-- Continue to Transporter Page Section -->
-<div class="text-center mt-4">
-    <h2>Would you like to continue to the Transporter Page?</h2>
-    <button class="btn btn-success" onclick="window.location.href='/transporter-page'">Yes</button>
-    <button class="btn btn-danger" onclick="window.location.href='/user-dashboard'">No</button>
-</div>
-
         <!-- Footer -->
         <footer class="text-center mt-4">
             <p>&copy; 2024 Transport Scheduler. All Rights Reserved.</p>
@@ -318,62 +296,6 @@
         [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(tooltipTriggerEl => {
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
-
-
-
-        // ---
-// Fetch and display notifications dynamically on page load
-// window.onload = async function() {
-
-//     try {
-//         const response = await fetch('/user/notifications');
-//         const data = await response.json();
-        
-//         if (data.success) {
-//             const notificationsContainer = document.getElementById('notifications-container');
-//             notificationsContainer.innerHTML = ''; // Clear any existing notifications
-            
-//             if (data.notifications.length > 0) {
-//                 data.notifications.forEach(notification => {
-//                     const notificationElement = document.createElement('li');
-//                     notificationElement.innerHTML = `<strong>${new Date(notification.date).toLocaleString()}</strong><br>${notification.message}`;
-//                     notificationsContainer.appendChild(notificationElement);
-//                 });
-//             } else {
-//                 notificationsContainer.innerHTML = '<p>You have no new notifications.</p>';
-//             }
-//         }
-//     } catch (error) {
-//         console.error('Error fetching notifications:', error);
-//     }
-// };
-
-
-
-// document.getElementById('shipmentForm').addEventListener('submit', (event) => {
-//     event.preventDefault(); // Prevent default form submission
-//     fetch('/shipment', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//             location: document.getElementById('location').value,
-//             dateTime: document.getElementById('dateTime').value,
-//             goodsDescription: document.getElementById('goodsDescription').value,
-//             vehicleType: document.getElementById('vehicleType').value,
-//         }),
-//     }).then((response) => {
-//         if (response.ok) {
-//             window.location.href = '/user-dashboard';
-//         } else {
-//             alert('Error submitting shipment.');
-//         }
-//     });
-// });
-
     </script>
-    
-    
 </body>
 </html>
