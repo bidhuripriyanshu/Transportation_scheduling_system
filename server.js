@@ -319,15 +319,15 @@ app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error updating profile');
     }
 });
-app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
-    try {
-        const notifications = await Notification.find().sort({ createdAt: -1 });
-        const loggedInUser = req.session.user;
-        res.render('user-page', { notifications, loggedInUser });
-    } catch (error) {
-        res.status(500).send('Error fetching notifications');
-    }
-});
+// app.get('/user/notifications', ensureAuthenticated, async (req, res) => {
+//     try {
+//         const notifications = await Notification.find().sort({ createdAt: -1 });
+//         const loggedInUser = req.session.user;
+//         res.render('user-page', { notifications, loggedInUser });
+//     } catch (error) {
+//         res.status(500).send('Error fetching notifications');
+//     }
+// });
 
 // Server setup
 app.listen(3000, () => {
