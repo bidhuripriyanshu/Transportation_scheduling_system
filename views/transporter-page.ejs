@@ -173,31 +173,6 @@
             });
         }
 
-        // Handling shipment approvals and rejections
-        document.querySelectorAll('.approve-btn, .reject-btn').forEach(button => {
-            button.addEventListener('click', async (event) => {
-                const action = event.target.classList.contains('approve-btn') ? 'approve' : 'reject';
-                const id = event.target.getAttribute('data-id');
-
-                try {
-                    const response = await fetch(`/${action}-shipment`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id })
-                    });
-
-                    const result = await response.json();
-                    alert(result.message);
-
-                    if (result.success) {
-                        window.location.href = '/user/notifications';  // Redirect to notifications
-                    }
-                } catch (err) {
-                    console.error(`${action} shipment error:`, err);
-                    alert(`Failed to ${action} shipment.`);
-                }
-            });
-        });
     </script>
 </body>
 </html>
