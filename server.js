@@ -214,24 +214,7 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// app.post("/notifications", async (req, res) => {
-//     console.log("Received Data:", req.body); // Debugging
 
-//     const { shipmentId, status, message } = req.body;
-
-//     if (!shipmentId || !status || !message) {
-//         return res.status(400).json({ error: "Missing required fields" });
-//     }
-
-//     try {
-//         const newNotification = new Notification({ shipmentId, status, message });
-//         await newNotification.save();
-//         res.status(201).json({ message: "Notification saved successfully!" });
-//     } catch (error) {
-//         console.error("Error saving notification:", error.message);
-//         res.status(500).json({ error: "Internal Server Error" });
-//     }
-// });
 
 
 // / Notification Schema
@@ -328,6 +311,11 @@ app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
 //         res.status(500).send('Error fetching notifications');
 //     }
 // });
+
+// Send API Key to Frontend
+app.get("/Real_tracker", (req, res) => {
+    res.render("Real_tracker", { apiKey: process.env.GOOGLE_MAPS_API_KEY });
+});
 
 // Server setup
 app.listen(3000, () => {
