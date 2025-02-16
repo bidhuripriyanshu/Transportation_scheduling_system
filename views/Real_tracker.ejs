@@ -3,81 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Maps Route Finder</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Route Calculator</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
     <style>
-        #map {
-            width: 100%;
-            height: 500px;
-        }
-        input, button {
-            margin: 5px;
-            padding: 10px;
-        }
+        #map { height: 500px; width: 100%; margin-top: 10px; }
     </style>
 </head>
-<body>
-    <h2>Enter Pickup and Drop Location</h2>
+<body class="bg-gray-100 flex flex-col items-center p-6">
     
-    <input id="pickup" type="text" placeholder="Enter Pickup Location">
-    <input id="drop" type="text" placeholder="Enter Drop Location">
-    <button onclick="calculateRoute()">Show Route</button>
-    
-    <h3 id="distance"></h3>
-    <h3 id="price"></h3>
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold text-center mb-4">Enter Pickup & Drop Location</h2>
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-1">Pickup Location:</label>
+            <input id="pickup" type="text" placeholder="Enter pickup location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
 
-    <div id="map"></div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-1">Drop Location:</label>
+            <input id="drop" type="text" placeholder="Enter drop location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <button onclick="calculateRoute()" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition">Calculate Distance</button>
+        
+        <h3 id="distance" class="text-lg font-semibold text-gray-700 mt-4 text-center"></h3>
+        <h3 id="price" class="text-lg font-semibold text-gray-700 text-center"></h3>
+    </div>
+
+    <div id="map" class="mt-6 w-full max-w-3xl rounded-lg shadow-md"></div>
 
     <script>
-        let map;
-        let directionsService;
-        let directionsRenderer;
+        var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 20.5937, lng: 78.9629 }, // India Center
-                zoom: 5
-            });
+        var pickupMarker, dropMarker, routeLayer;
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer();
-            directionsRenderer.setMap(map);
+        function getCoordinates(address, callback) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${address}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        callback(data[0].lat, data[0].lon);
+                    } else {
+                        alert("Location not found!");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         function calculateRoute() {
-            const pickup = document.getElementById("pickup").value;
-            const drop = document.getElementById("drop").value;
+    const pickup = document.getElementById("pickup").value;
+    const drop = document.getElementById("drop").value;
 
-            if (!pickup || !drop) {
-                alert("Please enter both pickup and drop locations.");
-                return;
-            }
+    if (!pickup || !drop) {
+        alert("Please enter both locations.");
+        return;
+    }
 
-            const request = {
-                origin: pickup,
-                destination: drop,
-                travelMode: google.maps.TravelMode.DRIVING
-            };
+    getCoordinates(pickup, (pickupLat, pickupLng) => {
+        if (pickupMarker) map.removeLayer(pickupMarker);
+        pickupMarker = L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup").openPopup();
 
-            directionsService.route(request, function (result, status) {
-                if (status === google.maps.DirectionsStatus.OK) {
-                    directionsRenderer.setDirections(result);
+        getCoordinates(drop, (dropLat, dropLng) => {
+            if (dropMarker) map.removeLayer(dropMarker);
+            dropMarker = L.marker([dropLat, dropLng]).addTo(map).bindPopup("Drop").openPopup();
 
-                    const distanceText = result.routes[0].legs[0].distance.text; // Distance in readable format
-                    const distanceValue = result.routes[0].legs[0].distance.value / 1000; // Distance in KM
-                    const price = distanceValue * 10; // ₹10 per km
+            fetch("/calculate-route", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pickupLat, pickupLng, dropLat, dropLng })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.distance) {
+                    const distance = parseFloat(data.distance); // Ensure it's a number
+                    document.getElementById("distance").innerText = `Distance: ${distance.toFixed(2)} km`;
 
-                    document.getElementById("distance").innerText = `Distance: ${distanceText}`;
-                    document.getElementById("price").innerText = `Estimated Price: ₹${price.toFixed(2)}`;
+                    // Price calculation logic
+                    const baseFare = 20; // Fixed starting fare
+                    const costPerKm = 10; // Rate per kilometer
+                    const totalPrice = baseFare + (costPerKm * distance);
+
+                    document.getElementById("price").innerText = `Price: ₹${totalPrice.toFixed(2)}`;
+
+                    // Display the route on the map
+                    if (routeLayer) map.removeLayer(routeLayer);
+                    routeLayer = L.polyline(data.route, { color: "blue" }).addTo(map);
                 } else {
-                    alert("Route not found. Try again.");
+                    alert("Error calculating distance.");
                 }
+            })
+            .catch(error => {
+                alert("Error fetching route.");
+                console.error('Error:', error);
             });
-        }
-    </script>
+        });
+    });
+}
 
-    <!-- Load Google Maps API with API key -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= apiKey %>&callback=initMap"></script>
+    </script>
 
 </body>
 </html>

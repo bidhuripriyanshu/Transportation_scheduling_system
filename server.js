@@ -6,6 +6,8 @@ const path = require('path');
 const session = require('express-session');  // Import express-session
 const Notifications = require('./models/notification.js');
 //socket
+const axios = require('axios');
+
 
 
 
@@ -214,21 +216,6 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
 });
 
 
-<<<<<<< HEAD
-//  Approve Shipment
-=======
-
-
-// / Notification Schema
-const notificationSchema = new mongoose.Schema({
-    message: String,
-    createdAt: { type: Date, default: Date.now }
-});
-
-const Notification = mongoose.model('Notification', notificationSchema);
-
-// Approve Shipment
->>>>>>> 5253f27426e1ab656d9088599b74f1ee21a5de98
 app.post('/approve-shipment', async (req, res) => {
     try {
         const { id } = req.body;
@@ -391,17 +378,42 @@ app.get("/user-notifications", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
-
-
-
-
-
-// Send API Key to Frontend
 app.get("/Real_tracker", (req, res) => {
-    res.render("Real_tracker", { apiKey: process.env.GOOGLE_MAPS_API_KEY });
+    res.render("Real_tracker");
 });
 
-// Server setup
+app.post("/calculate-route", async (req, res) => {
+    const { pickupLat, pickupLng, dropLat, dropLng } = req.body;
+
+    try {
+        const response = await axios.get(`https://api.openrouteservice.org/v2/directions/driving-car/geojson`, {
+            params: {
+                api_key: process.env.ORS_API_KEY,
+                start: `${pickupLng},${pickupLat}`,
+                end: `${dropLng},${dropLat}`
+            }
+        });
+
+        const routeData = response.data.features[0];
+        const distanceInKm = routeData.properties.summary.distance / 1000; // Convert meters to km
+        const routeCoords = routeData.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+
+        let totalPrice = distanceInKm * 10; // ₹10 per km
+
+        res.json({
+            success: true,
+            distance: distanceInKm.toFixed(2),
+            price: totalPrice.toFixed(2),
+            route: routeCoords
+        });
+    } 
+    catch (error) {
+        console.error(error);
+        res.json({ success: false, message: "Error fetching route" });
+    }
+});
+
+
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
