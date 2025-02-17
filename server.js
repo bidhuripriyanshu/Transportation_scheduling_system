@@ -414,6 +414,18 @@ app.post("/calculate-route", async (req, res) => {
 });
 
 
+
+// ----
+// user->transporter
+app.get('/porcess/:id', async (req, res) => {
+    const id = req.params.id;
+    const shipment = await Shipment.findById(id);
+    if (!shipment) {
+        return res.status(404).send('Shipment not found');
+    }
+    res.render('porcess', { shipments });
+});
+
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });

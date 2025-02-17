@@ -25,6 +25,8 @@
                         </p>
                         <p class="mt-2 text-gray-800">Message: <%= notification.message %></p>
                         <p class="text-xs text-gray-500 mt-2">Received: <%= new Date(notification.createdAt).toLocaleString() %></p>
+                        <a class="bg-blue-500"href="/process/<%= notification.shipmentId %>"> processed to confirmRide</a>
+                        </form>
                     </li>
                 <% }) %>
             </ul>

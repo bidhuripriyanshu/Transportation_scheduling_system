@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Processing</title>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind CSS -->
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+        <h2 class="text-xl font-bold mb-4">Process Shipment</h2>
+        
+        <ul>
+            <% shipments.forEach((shipment) => { %>
+                <li class="mb-4 p-4 border rounded-lg shadow-sm bg-gray-50">
+                    <p><strong>Shipment ID:</strong> <%= shipment.shipmentId %></p>
+                    
+                    <form action="/process" method="POST" class="mt-4">
+                        <input type="hidden" name="shipmentId" value="<%= shipment.shipmentId %>">
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                            Process to Transporter
+                        </button>
+                    </form>
+                </li>
+            <% }); %>
+        </ul>
+
+    </div>
+
+</body>
+</html>
