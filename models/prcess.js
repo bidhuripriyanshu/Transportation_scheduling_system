@@ -11,6 +11,10 @@ const processSchema = new mongoose.Schema({
         enum: ['pending', 'in-transit', 'delivered'],
         default: 'pending'
     },
+    rideNo: {
+        type: Number,    // Assuming ride number is a numeric value
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

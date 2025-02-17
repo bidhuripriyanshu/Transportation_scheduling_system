@@ -17,6 +17,9 @@
                         <p class="text-lg font-semibold">
                             Shipment ID: <span class="text-indigo-600"><%= notification.shipmentId %></span>
                         </p>
+                        <p class="text-lg font-semibold">
+                            Ride No: <span class="text-indigo-600"><%= notification.Rideno %></span>
+                        </p>
                         <p class="text-sm text-gray-700">
                             Status: 
                             <span class="<%= notification.status === 'approved' ? 'text-green-600' : (notification.status === 'rejected' ? 'text-red-600' : 'text-yellow-600') %>">
@@ -25,8 +28,7 @@
                         </p>
                         <p class="mt-2 text-gray-800">Message: <%= notification.message %></p>
                         <p class="text-xs text-gray-500 mt-2">Received: <%= new Date(notification.createdAt).toLocaleString() %></p>
-                        <a class="bg-blue-500"href="/process/<%= notification.shipmentId %>"> processed to confirmRide</a>
-                        </form>
+                        <a class="bg-blue-500" href="/process/<%= notification.shipmentId %>"> processed to confirmRide</a>
                     </li>
                 <% }) %>
             </ul>

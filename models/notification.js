@@ -13,6 +13,9 @@ const notificationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+   Rideno: {
+     type:Number,
+   },
     createdAt: {               
         type: Date,
         default: Date.now

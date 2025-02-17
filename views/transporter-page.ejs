@@ -39,6 +39,33 @@
         .section.active {
             display: block;
         }
+
+        /* Typing effect */
+    @keyframes typing {
+        from {
+            width: 0;
+        }
+        to {
+            width: 100%;
+        }
+    }
+
+    /* Cursor blinking effect */
+    @keyframes blink-caret {
+        50% {
+            border-color: transparent;
+        }
+    }
+
+    #typed-text {
+        display: inline-block;
+        overflow: hidden; /* Ensures the text is hidden until it's typed */
+        white-space: nowrap; /* Prevents wrapping of text */
+        border-right: 4px solid; /* Simulates the cursor */
+        width: 0;
+        animation: typing 4s steps(30) 1s forwards, blink-caret 0.75s step-end infinite;
+    }
+
     </style>
 </head>
 <body>
@@ -54,16 +81,21 @@
                 <li><a href="/shipment_status" id="shipment-status-link">Shipment Status</a></li>
                 <li><a href="#" id="contact-link">Contact</a></li>
                 <li><a href="#" id="help-link">Help</a></li>
-                <li style="float: right;"><a href="/logout">Logout</a></li>
+                <li style="float: right;">
+                    <div style="display: inline-block;">
+                        <a href="/logout" style="background-color: red; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Logout</a>
+                    </div>
+                </li></div>
             </ul>
         </nav>
-
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="section active">
-            <h2>Welcome to Your Dashboard, <%= loggedInUser.name %>!</h2>
-            <p>Track and manage all your shipment requests efficiently from here.</p>
-            <img src="/image/photo9.jpg" alt="Dashboard Image" style="max-width: 100%; height: auto;">
-        </div>
+<!-- Dashboard Section -->
+<div id="dashboard-section" class="section active">
+    <h2>
+        <span id="typed-text">Welcome to Your Dashboard, <%= loggedInUser.name %>!</span>
+    </h2>
+    <p>Track and manage all your shipment requests efficiently from here.</p>
+    <img src="/image/photo9.jpg" alt="Dashboard Image" style="max-width: 100%; height: auto;">
+</div>
 
         <!-- Manage Shipments Section -->
         <div id="manage-shipments-section" class="section">
@@ -87,7 +119,7 @@
                         <strong>Description:</strong> <%= request.goodsDescription %><br>
                         <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
                         <strong>Status:</strong> <%= request.status %><br>
-                        <button class="continue-btn" data-id="<%= request._id %>">Continue</button>
+                        <button class="continue-btn" data-id="<%= request._id %>" style="background-color: rgb(0, 255, 174); padding: 10px; border-radius: 5px;">Continue</button>
                     </li>
                 <% }); %>
             </ul>
@@ -124,6 +156,12 @@
             </ul>
         </div>
     </div>
+
+    <!-- Footer Section -->
+<footer style="background-color: grey; color: white; text-align: center; padding: 20px 0; margin-top: 20px;">
+    <p>&copy; 2025 Transporter scheduler. All rights reserved.</p>
+</footer>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -203,6 +241,11 @@
                 }
             });
         });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const typedTextElement = document.getElementById("typed-text");
+        typedTextElement.style.width = "auto"; // Makes sure the width adjusts properly
     });
     </script>
 </body>

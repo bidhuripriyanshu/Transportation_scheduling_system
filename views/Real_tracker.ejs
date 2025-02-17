@@ -15,30 +15,60 @@
 
     <style>
         #map { height: 500px; width: 100%; margin-top: 10px; }
+        .hero {
+            background-image: url('https://via.placeholder.com/1500x800'); /* Replace with your image */
+            background-size: cover;
+            background-position: center;
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center p-6">
-    
-    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold text-center mb-4">Enter Pickup & Drop Location</h2>
-        
-        <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-1">Pickup Location:</label>
-            <input id="pickup" type="text" placeholder="Enter pickup location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
+<body class="bg-gray-100">
 
-        <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-1">Drop Location:</label>
-            <input id="drop" type="text" placeholder="Enter drop location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-7">
+                    <div>
+                        <a href="#" class="flex items-center py-4 px-2">
+                            <span class="font-semibold text-gray-500 text-lg">Route Calculator</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="/user-dashboard" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">Back To Home</a>
+                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">Services</a>
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <button onclick="calculateRoute()" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition">Calculate Distance</button>
-        
-        <h3 id="distance" class="text-lg font-semibold text-gray-700 mt-4 text-center"></h3>
-        <h3 id="price" class="text-lg font-semibold text-gray-700 text-center"></h3>
+    <!-- Hero Section -->
+    <div class="hero flex items-center justify-center py-20">
+        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-center mb-4">Enter Pickup & Drop Location</h2>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-1">Pickup Location:</label>
+                <input id="pickup" type="text" placeholder="Enter pickup location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-1">Drop Location:</label>
+                <input id="drop" type="text" placeholder="Enter drop location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <button onclick="calculateRoute()" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition">Calculate Distance</button>
+            <button onclick="processShipment()" class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition mt-4">Process Shipment</button>
+            
+            <h3 id="distance" class="text-lg font-semibold text-gray-700 mt-4 text-center"></h3>
+            <h3 id="price" class="text-lg font-semibold text-gray-700 text-center"></h3>
+            <h3 id="shipmentMessage" class="text-lg font-semibold text-green-700 text-center mt-4"></h3>
+        </div>
     </div>
 
-    <div id="map" class="mt-6 w-full max-w-3xl rounded-lg shadow-md"></div>
+    <!-- Map Section -->
+    <div id="map" class="mt-6 w-full max-w-6xl mx-auto rounded-lg shadow-md"></div>
 
     <script>
         var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
@@ -60,31 +90,23 @@
         }
 
         function calculateRoute() {
-    const pickup = document.getElementById("pickup").value;
-    const drop = document.getElementById("drop").value;
+            const pickup = document.getElementById("pickup").value;
+            const drop = document.getElementById("drop").value;
 
-    if (!pickup || !drop) {
-        alert("Please enter both locations.");
-        return;
-    }
+            if (!pickup || !drop) {
+                alert("Please enter both locations.");
+                return;
+            }
 
-    getCoordinates(pickup, (pickupLat, pickupLng) => {
-        if (pickupMarker) map.removeLayer(pickupMarker);
-        pickupMarker = L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup").openPopup();
+            getCoordinates(pickup, (pickupLat, pickupLng) => {
+                if (pickupMarker) map.removeLayer(pickupMarker);
+                pickupMarker = L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup").openPopup();
 
-        getCoordinates(drop, (dropLat, dropLng) => {
-            if (dropMarker) map.removeLayer(dropMarker);
-            dropMarker = L.marker([dropLat, dropLng]).addTo(map).bindPopup("Drop").openPopup();
+                getCoordinates(drop, (dropLat, dropLng) => {
+                    if (dropMarker) map.removeLayer(dropMarker);
+                    dropMarker = L.marker([dropLat, dropLng]).addTo(map).bindPopup("Drop").openPopup();
 
-            fetch("/calculate-route", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pickupLat, pickupLng, dropLat, dropLng })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.distance) {
-                    const distance = parseFloat(data.distance); // Ensure it's a number
+                    const distance = calculateDistance(pickupLat, pickupLng, dropLat, dropLng);
                     document.getElementById("distance").innerText = `Distance: ${distance.toFixed(2)} km`;
 
                     // Price calculation logic
@@ -96,19 +118,36 @@
 
                     // Display the route on the map
                     if (routeLayer) map.removeLayer(routeLayer);
-                    routeLayer = L.polyline(data.route, { color: "blue" }).addTo(map);
-                } else {
-                    alert("Error calculating distance.");
-                }
-            })
-            .catch(error => {
-                alert("Error fetching route.");
-                console.error('Error:', error);
+                    routeLayer = L.polyline([[pickupLat, pickupLng], [dropLat, dropLng]], { color: "blue" }).addTo(map);
+                });
             });
-        });
-    });
-}
+        }
 
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                0.5 - Math.cos(dLat)/2 + 
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                (1 - Math.cos(dLon))/2;
+
+            return R * 2 * Math.asin(Math.sqrt(a));
+        }
+
+        function processShipment() {
+            const pickup = document.getElementById("pickup").value;
+            const drop = document.getElementById("drop").value;
+
+            if (!pickup || !drop) {
+                alert("Please enter both locations.");
+                return;
+            }
+
+            // Simulate shipment processing
+            document.getElementById("shipmentMessage").innerText = "Shipment processed successfully!";
+            window.location.href = "/shipment";
+        }
     </script>
 
 </body>

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');  // Import express-session
-const Notifications = require('./models/notification.js');
+const Notification = require('./models/notification.js');
 //socket
 const axios = require('axios');
 
@@ -182,7 +182,9 @@ app.post('/login', async (req, res) => {
 
 
 
-
+app.get('/shipment',(req, res) => {
+    res.render('shipment.ejs');
+});
 
 //shipment
 app.post('/shipment', ensureAuthenticated, async (req, res) => {
@@ -215,32 +217,6 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
     }
 });
 
-
-app.post('/approve-shipment', async (req, res) => {
-    try {
-        const { id } = req.body;
-        await Shipment.findByIdAndUpdate(id, { status: 'Approved' });
-        await Notification.create({ message: `Shipment ${id} approved` });
-        res.json({ success: true, message: 'Shipment approved successfully!' });
-    } catch (error) {
-        res.json({ success: false, message: 'Error approving shipment' });
-    }
-});
-
-// Reject Shipment
-app.post('/reject-shipment', async (req, res) => {
-    try {
-        const { id } = req.body;
-        await Shipment.findByIdAndUpdate(id, { status: 'Rejected' });
-        await Notification.create({ message: `Shipment ${id} rejected` });
-        res.json({ success: true, message: 'Shipment rejected successfully!' });
-    } catch (error) {
-        res.json({ success: false, message: 'Error rejecting shipment' });
-    }
-});
-
-
-
 app.post('/update-profile', ensureAuthenticated, async (req, res) => {
     try {
         const { name, email } = req.body;
@@ -254,7 +230,6 @@ app.post('/update-profile', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error updating profile');
     }
 });
-
 
 app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
     try {
@@ -301,7 +276,7 @@ app.get('/logout', (req, res) => {
 });
 
 
-const crypto = require('crypto');
+
 
 app.get('/notification/:id', ensureAuthenticated, async (req, res) => {
     try {
@@ -311,7 +286,7 @@ app.get('/notification/:id', ensureAuthenticated, async (req, res) => {
         if (!shipment) {
             return res.status(404).send("Shipment not found");
         }
-
+        console.log("Shipment Data:", shipment); // Debugging line
         // Convert shipment ID to a numeric sum based on ASCII values
         const numericRepresentation = shipmentId.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
 
@@ -324,25 +299,40 @@ app.get('/notification/:id', ensureAuthenticated, async (req, res) => {
 
 
 
-
-// task is to shipmentId into some number like status--> how to create this particular 
+// task is to convert shipmentId into some number like status--> how to create this particular 
 
 app.post('/submit-notification', ensureAuthenticated, async (req, res) => {
     try {
-        const { shipmentId, message } = req.body;
-        const shipment = await Shipment.findById(shipmentId);
+        const { shipmentId, status, message } = req.body;
+        
+        // Clean the shipmentId, removing unwanted characters
+        const cleanedShipmentId = shipmentId.split(' ')[0]; // Assumes the first part is the valid ID
+
+        // Check if the cleaned shipmentId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(cleanedShipmentId)) {
+            return res.status(400).json({ success: false, message: 'Invalid shipment ID' });
+        }
+
+        const shipment = await Shipment.findById(cleanedShipmentId);
+        console.log("Shipment Data:", cleanedShipmentId);
 
         if (!shipment) {
             return res.status(404).json({ success: false, message: "Shipment not found" });
         }
 
-        const notification = await Notification.create({ shipmentId, message, status: 'pending' });
+        // Convert shipment ID to a numeric sum based on ASCII values
+        const numericRepresentation = cleanedShipmentId.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+
+        await Notification.create({ shipmentId: cleanedShipmentId, status, message, Rideno: numericRepresentation });
         res.redirect('/transporter-dashboard');
     } catch (error) {
         console.error('Error submitting notification:', error);
         res.status(500).json({ success: false, message: 'Error submitting notification' });
     }
 });
+
+
+
 
 app.get('/shipment_status', ensureAuthenticated, async (req, res) => {
     try {
@@ -356,60 +346,76 @@ app.get('/shipment_status', ensureAuthenticated, async (req, res) => {
 
 
 
-//user notification
-app.get('/user-notification', ensureAuthenticated, async (req, res) => {
+
+// //user notification
+// app.get('/user-notifications', ensureAuthenticated, async (req, res) => {
+//     try {
+//         const notifications = await Notification.find();
+//         res.render('user_notification', { notifications });
+//     } catch (error) {
+//         console.error('Error fetching shipment status:', error);
+//         res.status(500).json({ success: false, message: 'Error fetching shipment status' });
+//     }
+// });
+
+
+
+app.get('/user-notifications', ensureAuthenticated, async (req, res) => {
     try {
-        const notifications = await Notification.find();
-        res.render('user-notification', { notifications });
-    } catch (error) {
-        console.error('Error fetching shipment status:', error);
-        res.status(500).json({ success: false, message: 'Error fetching shipment status' });
-    }
-});
-
-
-
-app.get("/user-notifications", async (req, res) => {
-    try {
-        const notifications = await Notifications.find().sort({ createdAt: -1 }); // Fetch and sort by latest
+        const notifications = await Notification.find().sort({ createdAt: -1 }); // Fetch and sort by latest
         res.render("user_notification", { notifications }); // Pass data to EJS page
     } catch (error) {
         console.error("Error fetching notifications:", error);
         res.status(500).send("Internal Server Error");
     }
 });
+
 app.get("/Real_tracker", (req, res) => {
     res.render("Real_tracker");
 });
 
+
+
 app.post("/calculate-route", async (req, res) => {
     const { pickupLat, pickupLng, dropLat, dropLng } = req.body;
 
+    // Validate input
+    if (!pickupLat || !pickupLng || !dropLat || !dropLng) {
+        return res.status(400).json({ success: false, message: "Missing required coordinates" });
+    }
+
     try {
-        const response = await axios.get(`https://api.openrouteservice.org/v2/directions/driving-car/geojson`, {
+        // Call OpenRouteService API
+        const response = await axios.get(`https://api.openrouteservice.org/v2/directions/driving-car`, {
             params: {
-                api_key: process.env.ORS_API_KEY,
+                api_key: process.env.ORS_API_KEY, // Ensure your API key is in .env
                 start: `${pickupLng},${pickupLat}`,
                 end: `${dropLng},${dropLat}`
             }
         });
 
+        // Extract route data
         const routeData = response.data.features[0];
+        if (!routeData) {
+            return res.status(404).json({ success: false, message: "No route found" });
+        }
+
         const distanceInKm = routeData.properties.summary.distance / 1000; // Convert meters to km
-        const routeCoords = routeData.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+        const routeCoords = routeData.geometry.coordinates.map(coord => [coord[1], coord[0]]); // Swap lat/lng for Leaflet
 
-        let totalPrice = distanceInKm * 10; // ₹10 per km
+        // Calculate price (₹10 per km)
+        const totalPrice = distanceInKm * 10;
 
+        // Send response
         res.json({
             success: true,
             distance: distanceInKm.toFixed(2),
             price: totalPrice.toFixed(2),
             route: routeCoords
         });
-    } 
-    catch (error) {
-        console.error(error);
-        res.json({ success: false, message: "Error fetching route" });
+    } catch (error) {
+        console.error("Error fetching route:", error.message);
+        res.status(500).json({ success: false, message: "Error fetching route", error: error.message });
     }
 });
 
@@ -417,14 +423,30 @@ app.post("/calculate-route", async (req, res) => {
 
 // ----
 // user->transporter
-app.get('/porcess/:id', async (req, res) => {
-    const id = req.params.id;
-    const shipment = await Shipment.findById(id);
-    if (!shipment) {
-        return res.status(404).send('Shipment not found');
+app.get('/process/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const notification = await Notification.findById(id);
+
+        if (!notification) {
+            return res.status(404).send('Notification not found');
+        }
+
+        const { shipmentId, status, Rideno } = notification;
+        res.render('process', { shipmentId, status, Rideno });
+    } catch (error) {
+        console.error('Error fetching notification:', error);
+        res.status(500).send('Error fetching notification');
     }
-    res.render('porcess', { shipments });
 });
+
+
+
+app.post('/process-submit', async (req, res) => {
+     
+})
+
+
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');

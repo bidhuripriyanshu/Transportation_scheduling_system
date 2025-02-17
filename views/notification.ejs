@@ -5,25 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notification Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes backgroundAnimation {
+            0% { background-image: url('/image/image.png'); }
+            33% { background-image: url('/image/photo_2.jpg'); }
+            66% { background-image: url('/image/photo_4.jpg'); }
+            100% { background-image: url('/image/photo9.jpg'); }
+        }
+        body {
+            animation: backgroundAnimation 15s infinite linear;
+            background-size: cover;
+            background-position: center;
+        }
+        .form-container {
+            width: 500px;  /* Increased Width */
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+        .form-container:hover {
+            transform: scale(1.02);
+        }
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-4 text-center text-indigo-700">Submit Notification</h2>
-        <form action="/submit-notification" method="POST" class="space-y-4" id="notificationForm">
+    <div class="form-container">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-700">Submit Status</h2>
+        <form action="/submit-notification" method="POST" class="space-y-6" id="notificationForm">
             <!-- Shipment ID -->
             <div>
-                <label for="shipmentId" class="block text-sm font-medium text-gray-700">Shipment ID</label>
+                <label for="shipmentId" class="block text-lg font-medium text-gray-700">Shipment ID</label>
                 <input type="text" id="shipmentId" name="shipmentId" 
-                    value="<%= shipment._id %>" 
-                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-200 cursor-not-allowed focus:ring-indigo-500 focus:border-indigo-500"
+                value="<%= shipment._id %> (Numeric: <%= numericRepresentation %>)"  
+                    class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm bg-gray-200 cursor-not-allowed focus:ring-indigo-500 focus:border-indigo-500 text-lg"
                     required readonly>
             </div>
 
             <!-- Status -->
             <div>
-                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <label for="status" class="block text-lg font-medium text-gray-700">Status</label>
                 <select id="status" name="status" 
-                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-lg"
                     required>
                     <option value="approved" <%= shipment.status === 'approved' ? 'selected' : '' %>>Approved</option>
                     <option value="rejected" <%= shipment.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
@@ -33,16 +63,22 @@
 
             <!-- Message -->
             <div>
-                <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-                <textarea id="message" name="message" rows="3" 
-                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                <label for="message" class="block text-lg font-medium text-gray-700">Message</label>
+                <textarea id="message" name="message" rows="4" 
+                    class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-lg"
                     placeholder="Enter additional details here..." required><%= shipment.message %></textarea>
             </div>
 
             <!-- Submit Button -->
             <button type="submit" id="submitBtn" 
-                class="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 transition btn disabled:opacity-50 disabled:cursor-not-allowed text-lg">
                 Submit
+            </button>
+
+            <!-- Back to Transporter Page Button -->
+            <button type="button" onclick="goBack()" 
+                class="w-full mt-3 bg-gray-500 text-white p-3 rounded-md hover:bg-gray-700 transition btn text-lg">
+                Back to Transporter Page
             </button>
         </form>
     </div>
@@ -53,6 +89,10 @@
             submitBtn.innerText = "Submitting...";
             submitBtn.disabled = true;
         });
+
+        function goBack() {
+            window.location.href = "/transporter-dashboard";  // Change this URL to the actual transporter page
+        }
     </script>
 </body>
 </html>
