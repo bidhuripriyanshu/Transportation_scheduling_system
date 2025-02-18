@@ -6,9 +6,51 @@
     <title>Transportation Scheduling</title>
     <link rel="stylesheet" href="/stylesheets/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+           /* Full-page Background Slideshow */
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        animation: backgroundSlideshow 15s infinite;
+    }
 
+    @keyframes backgroundSlideshow {
+        0% { background-image: url('/image/image.jpg'); }
+        33% { background-image: url('/image/photo_2.jpg'); }
+        66% { background-image: url('/image/photo_3.jpg'); }
+        100% { background-image: url('/image/photo_7.jpg'); }
+    }
+    </style>
 </head>
 <body>
+    <div>
+        <h1 class="text-4xl mt-4 typing-text" style="color: white;"> Welcome To Transportation Scheduler</h1>
+        <p class="mt-2 text-lg" style="color: rgb(25, 123, 124);">Your one-stop solution for managing and scheduling your transportation needs efficiently.</p>
+        <style>
+            .typing-text {
+            overflow: hidden;
+            border-right: .15em solid orange;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end) infinite, blink-caret .75s step-end infinite;
+            }
+
+            @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+            }
+
+            @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange; }
+            }
+        </style>
+    </div>
     <div class="container">
         <h1>Transportation Scheduler</h1>
         <div class="form-container">

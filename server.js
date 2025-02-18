@@ -210,7 +210,7 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
 
         await shipment.save();
         console.log('Shipment created successfully:', shipment);
-        res.redirect('/user-dashboard');
+        res.redirect('/Real_tracker');
     } catch (err) {
         console.error('Error creating shipment:', err.message, err.stack);
         res.status(500).send('Error creating shipment');
