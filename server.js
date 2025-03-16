@@ -432,21 +432,16 @@ app.get('/process/:id', ensureAuthenticated, async (req, res) => {
             return res.status(400).send('Invalid notification ID');
         }
 
-        // const notification = await Notification.findById(id);
+        // Convert ID to a numeric hash (e.g., sum of char codes)
+        let numericId = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-        // if (!notification) {
-        //     console.log('Notification not found in DB');
-        //     return res.status(404).send('Notification not found');
-        // }
-
-        // console.log('Notification found:', notification);
-        // const { shipmentId, status, Rideno } = notification;
-        res.render('process',{id});
+        res.render('process', { id: numericId });
     } catch (error) {
         console.error('Error fetching notification:', error);
         res.status(500).send('Error fetching notification');
     }
 });
+
 
 
 
@@ -470,6 +465,11 @@ app.post('/process-submit', ensureAuthenticated, async (req, res) => {
     }
 });
 
+
+// app.post("/process-payment", async(req,res) =>{
+//     const {shipmentId, status, Rideno} = req.body;
+//     await
+// })
 
 
 app.listen(3000, () => {

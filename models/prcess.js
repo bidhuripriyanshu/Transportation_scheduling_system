@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
 
 const processSchema = new mongoose.Schema({
-    shipmentId: {
+    ConfirmationtId: {
         type: String,
         required: true,
         unique: true
     },
-    status: {
+    Name: {
         type: String,
-        enum: ['pending', 'in-transit', 'delivered'],
-        default: 'pending'
+        required:true
     },
-    rideNo: {
+    payment: {
         type: Number,    // Assuming ride number is a numeric value
         required: true
     },

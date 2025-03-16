@@ -22,13 +22,14 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
         h1 {
-            text-align: center;
             color: #333;
         }
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
         .form-group label {
             display: block;
@@ -41,16 +42,20 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .form-group input[type="submit"] {
+        .form-group input[type="submit"], .payment-button {
             background-color: #28a745;
             color: #fff;
             border: none;
             cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
         }
-        .form-group input[type="submit"]:hover {
+        .form-group input[type="submit"]:hover, .payment-button:hover {
             background-color: #218838;
         }
     </style>
+   
 </head>
 <body>
     <div class="container">
@@ -65,17 +70,12 @@
                 <input type="text" id="name" name="name" required>
             </div>
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>
-             <div class="form-group">
-                <input type="submit" value="Confirm Ride">
+                <button class="payment-button" onclick="location.href='payment.html'">Proceed to Payment</button>
             </div>
         </form>
+        <div class="form-group">
+            <input type="submit" value="Confirm Ride">
+        </div>
     </div>
 </body>
 </html>
