@@ -426,14 +426,22 @@ app.post("/calculate-route", async (req, res) => {
 app.get('/process/:id', ensureAuthenticated, async (req, res) => {
     try {
         const id = req.params.id;
-        const notification = await Notification.findById(id);
+        console.log('Fetching notification with ID:', id);
 
-        if (!notification) {
-            return res.status(404).send('Notification not found');
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send('Invalid notification ID');
         }
 
-        const { shipmentId, status, Rideno } = notification;
-        res.render('process', { shipmentId, status, Rideno });
+        // const notification = await Notification.findById(id);
+
+        // if (!notification) {
+        //     console.log('Notification not found in DB');
+        //     return res.status(404).send('Notification not found');
+        // }
+
+        // console.log('Notification found:', notification);
+        // const { shipmentId, status, Rideno } = notification;
+        res.render('process',{id});
     } catch (error) {
         console.error('Error fetching notification:', error);
         res.status(500).send('Error fetching notification');
@@ -442,9 +450,25 @@ app.get('/process/:id', ensureAuthenticated, async (req, res) => {
 
 
 
-app.post('/process-submit', async (req, res) => {
-     
-})
+
+app.post('/process-submit', ensureAuthenticated, async (req, res) => {
+    try {
+        const { shipmentId, status, Rideno } = req.body;
+
+        // Validate input
+        if (!shipmentId || !status || !Rideno) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        // Update the notification status
+        await Notification.findByIdAndUpdate(shipmentId, { status, Rideno });
+
+        res.redirect('/transporter-dashboard');
+    } catch (error) {
+        console.error('Error processing notification:', error);
+        res.status(500).send('Error processing notification');
+    }
+});
 
 
 

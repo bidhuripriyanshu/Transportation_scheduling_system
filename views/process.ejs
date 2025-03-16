@@ -3,30 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shipment Processing</title>
-    <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind CSS -->
+    <title>Ride Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group input[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group input[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-
-    <div class="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 class="text-xl font-bold mb-4">Process Shipment</h2>
-        
-        <ul>
-            <% shipments.forEach((shipment) => { %>
-                <li class="mb-4 p-4 border rounded-lg shadow-sm bg-gray-50">
-                    <p><strong>Shipment ID:</strong> <%= shipment.shipmentId %></p>
-                    
-                    <form action="/process" method="POST" class="mt-4">
-                        <input type="hidden" name="shipmentId" value="<%= shipment.shipmentId %>">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                            Process to Transporter
-                        </button>
-                    </form>
-                </li>
-            <% }); %>
-        </ul>
-
+<body>
+    <div class="container">
+        <h1>Ride Booking Confirmation</h1>
+        <form action="/confirm-ride" method="POST">
+            <div class="form-group">
+                <label for="confirmation-id">Confirmation ID</label>
+                <input type="text" id="confirmation-id" name="confirmation_id" value="<%= id %>" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+             <div class="form-group">
+                <input type="submit" value="Confirm Ride">
+            </div>
+        </form>
     </div>
-
 </body>
 </html>
