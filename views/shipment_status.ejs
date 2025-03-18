@@ -3,22 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shipment Status</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Payment Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #87aede;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            background: rgb(205, 222, 126);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        h2 {
+            color: green;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-6">
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
-        <h2 class="text-2xl font-bold mb-4 text-center">Shipment Status</h2>
-        <ul class="space-y-4">
-            <% notifications.forEach(notification => { %>
-                <li class="p-4 border rounded-lg shadow-md">
-                    <strong>Shipment ID:</strong> <%= notification.shipmentId %><br>
-                    <strong>Status:</strong> <%= notification.status %><br>
-                    <strong>Message:</strong> <%= notification.message %><br>
-                    <strong>Created At:</strong> <%= new Date(notification.createdAt).toLocaleString() %><br>
-                </li>
-            <% }); %>
-        </ul>
+<body class="bg-blue-300">
+    <div class="container">
+        <h2>Payment Successful 🎉</h2>
+        <p>Thank you, <span id="userName"></span>!</p>
+        <p>Your Confirmation ID: <strong></strong></p>
+        <button id="downloadReceipt">Download Receipt</button>
     </div>
+
+    <script>
+        document.getElementById("downloadReceipt").addEventListener("click", function () {
+            alert("Downloading receipt...");
+            // Simulating download (You can replace this with actual PDF generation)
+        });
+    </script>
 </body>
 </html>

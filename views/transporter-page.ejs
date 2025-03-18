@@ -95,12 +95,12 @@
     </h2>
     <p>Track and manage all your shipment requests efficiently from here.</p>
     <img src="/image/photo9.jpg" alt="Dashboard Image" style="max-width: 100%; height: auto;">
-</div>
+</div class="bg-gray-500">
 
         <!-- Manage Shipments Section -->
-        <div id="manage-shipments-section" class="section">
+        <div id="manage-shipments-section" class="section bg-gray-500">
             <h2>Manage Shipments</h2>
-            <div class="filters">
+            <div class="filters bg-gray-500">
                 <input type="text" id="search-bar" placeholder="Search by location or description...">
                 <button onclick="filterShipments()">Search</button>
                 <select id="filter-status">
@@ -111,9 +111,9 @@
                 </select>
                 <button onclick="filterShipments()">Filter</button>
             </div>
-            <ul id="shipment-list">
+            <ul id="shipment-list" style="background-color: rgb(220, 240, 200);">
                 <% shipmentRequests.forEach((request) => { %>
-                    <li data-status="<%= request.status %>">
+                    <li data-status="<%= request.status %>" class="bg-blue-300"></li>
                         <strong>Location:</strong> <%= request.location %><br>
                         <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %><br>
                         <strong>Description:</strong> <%= request.goodsDescription %><br>
