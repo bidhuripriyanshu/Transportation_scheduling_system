@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');  // Import express-session
 const Notification = require('./models/notification.js');
+const Process = require('./models/process.js');
 //socket
 const axios = require('axios');
 
@@ -466,11 +467,30 @@ app.post('/process-submit', ensureAuthenticated, async (req, res) => {
 });
 
 
-// app.post("/process-payment", async(req,res) =>{
-//     const {shipmentId, status, Rideno} = req.body;
-//     await
-// })
+app.get("/payment", (req, res) => {
+    res.render('payment.ejs');
+});
 
+
+app.post('/confirm-ride', async (req, res) => {
+    try {
+        const { confirmationId, Name } = req.body;
+
+        // Validate input
+        if (!confirmationId ||! Name ) {
+         return res.status(400).send('Missing required fields');
+        }
+
+        // Update the notification status   
+        await Process.create({ confirmationId, Name });
+
+        res.redirect('/user-notifications');
+    } catch (error) {
+        console.error('Error processing notification:', error);
+        res.status(500).send('Error processing notification');
+    }
+}
+);
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');

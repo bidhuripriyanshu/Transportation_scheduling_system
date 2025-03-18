@@ -57,25 +57,36 @@
     </style>
    
 </head>
-<body>
-    <div class="container">
+<body style="background-color: #3e4feb;">
+    <div class="container" style="background-color: #daddf8;">
         <h1>Ride Booking Confirmation</h1>
         <form action="/confirm-ride" method="POST">
             <div class="form-group">
-                <label for="confirmation-id">Confirmation ID</label>
-                <input type="text" id="confirmation-id" name="confirmation_id" value="<%= id %>" required>
+                <label for="confirmationId">Confirmation ID</label>
+                <input type="text" id="confirmationId" name="confirmationId" value="<%= id %>" required>
             </div>
             <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" required>
+                <label for="Name">Name</label>
+                <input type="text" id="Name" name="Name" required>
             </div>
             <div class="form-group">
-                <button class="payment-button" onclick="location.href='payment.html'">Proceed to Payment</button>
+                <button class="payment-button" style="background-color: #007bff; padding: 5px; font-size: 12px;" onclick="event.preventDefault(); location.href='/payment';">Proceed to Payment</button>
             </div>
+            <div class="form-group">
+                <input type="submit" value="Confirm Ride" onclick="event.preventDefault(); validateForm();">
+            </div>
+            <script>
+                function validateForm() {
+                    const name = document.getElementById('name').value;
+                    if (!name) {
+                        alert('Name is required.');
+                        return;
+                    }
+                    document.querySelector('form').submit();
+                }
+            </script>
         </form>
-        <div class="form-group">
-            <input type="submit" value="Confirm Ride">
-        </div>
+        
     </div>
 </body>
 </html>

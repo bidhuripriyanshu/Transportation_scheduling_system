@@ -11,7 +11,7 @@ const processSchema = new mongoose.Schema({
         required:true
     },
     payment: {
-        type: Number,    // Assuming ride number is a numeric value
+        type: String,    // Assuming ride number is a numeric value
         required: true
     },
     createdAt: {

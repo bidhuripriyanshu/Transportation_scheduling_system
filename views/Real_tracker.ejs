@@ -14,7 +14,7 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <style>
-        #map { height: 500px; width: 100%; margin-top: 10px; }
+        #map { height: 500px; width: 100%; margin-top: 10px; border: 1px solid gray; }
         .hero {
             background-image: url('https://via.placeholder.com/1500x800'); /* Replace with your image */
             background-size: cover;
@@ -22,22 +22,22 @@
         }
     </style>
 </head>
-<body class="bg-blue-100">
+<body class="bg-blue-300">
 
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg">
+    <nav class="bg-black text-white shadow-lg">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between">
                 <div class="flex space-x-7">
                     <div>
                         <a href="#" class="flex items-center py-4 px-2">
-                            <span class="font-semibold text-gray-500 text-lg">Route Calculator</span>
+                            <span class="font-semibold text-white-500 text-lg">Route Calculator</span>
                         </a>
                     </div>
                 </div>
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="/user-dashboard" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">Back To Home</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300">Services</a>
+                    <a href="/user-dashboard" class="py-4 px-2 text--500 font-semibold hover:text-blue-500 transition duration-300">Back To Home</a>
+                    <a href="#" class="py-4 px-2 text-white-500 font-semibold hover:text-white-500 transition duration-300">Services</a>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
 
     <!-- Hero Section -->
     <div class="hero flex items-center justify-center py-20">
-        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+        <div class="bg-gray-100 shadow-lg rounded-lg p-6 w-full max-w-md">
             <h2 class="text-xl font-bold text-center mb-4">Enter Pickup & Drop Location</h2>
             
             <div class="mb-4">
@@ -67,9 +67,16 @@
         </div>
     </div>
 
+
+
     <!-- Map Section -->
     <div id="map" class="mt-6 w-full max-w-6xl mx-auto rounded-lg shadow-md"></div>
 
+    <!-- Footer Section -->
+    <footer class="bg-black text-white text-center py-4 mt-4">
+        <p>&copy; 2025 Route Calculator. All rights reserved.</p>
+    </footer>
+ 
     <script>
         var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
