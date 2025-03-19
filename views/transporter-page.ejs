@@ -85,7 +85,7 @@
                     <div style="display: inline-block;">
                         <a href="/logout" style="background-color: red; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Logout</a>
                     </div>
-                </li></div>
+                </li>
             </ul>
         </nav>
 <!-- Dashboard Section -->
@@ -110,17 +110,22 @@
                     <option value="rejected">Rejected</option>
                 </select>
                 <button onclick="filterShipments()">Filter</button>
-            </div>
-            <ul id="shipment-list" style="background-color: rgb(220, 240, 200);">
+            </div class="bg-gray-500">
+            <ul id="shipment-list" style="background-color: rgb(32, 42, 23);">
                 <% shipmentRequests.forEach((request) => { %>
-                    <li data-status="<%= request.status %>" class="bg-blue-300"></li>
+                    <li data-status="<%= request.status %>" class="bg-blue-400">
                         <strong>Location:</strong> <%= request.location %><br>
                         <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %><br>
                         <strong>Description:</strong> <%= request.goodsDescription %><br>
                         <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
-                        <strong>Status:</strong> <%= request.status %><br>
+                        <div style="display: flex; align-items: center;">
+                            <div>
+                                <button class="view-photo-btn" data-photo="<%= request.photo %>" style="background-color: rgb(98, 166, 239); color: rgb(205, 241, 113); padding: 3px 7px; border-radius: 5px;">View Photo</button>
+                            </div>
+                        </div>
+
                         <button class="continue-btn" data-id="<%= request._id %>" style="background-color: rgb(0, 255, 174); padding: 10px; border-radius: 5px;">Continue</button>
-                    </li>
+                    
                 <% }); %>
             </ul>
         </div>

@@ -10,7 +10,12 @@ const shipmentSchema = new mongoose.Schema({
     dateTime: Date,
     goodsDescription: String,   
     vehicleType: String,
-});
+    photo :{
+        type: String,
+        required: true,
+    }
+},{
+    timestamps: true});
 
 const Shipment = mongoose.model('Shipment', shipmentSchema);
 module.exports = Shipment;

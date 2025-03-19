@@ -8,7 +8,7 @@ const Notification = require('./models/notification.js');
 const Process = require('./models/process.js');
 //socket
 const axios = require('axios');
-
+const { uploadOnCloudinary } = require('./utils/cloudinary.js');
 
 
 
@@ -200,6 +200,9 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
         if (isNaN(parsedDate.getTime())) {
             return res.status(400).send('Invalid date format');
         }
+        const photos = req.files?.photo[0]?.path;
+         //upload on cloudinary
+        const photo = await uploadOnCloudinary(photos);
 
         // Create the Shipment instance
         const shipment = new Shipment({
@@ -207,6 +210,7 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
             dateTime: parsedDate, // Use parsedDate here
             goodsDescription,
             vehicleType,
+            photo: photo.url, // Use the URL from Cloudinary
         });
 
         await shipment.save();
