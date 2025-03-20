@@ -8,7 +8,10 @@ const Notification = require('./models/notification.js');
 const Process = require('./models/process.js');
 //socket
 const axios = require('axios');
-const { uploadOnCloudinary } = require('./utils/cloudinary.js');
+
+const cloudinary = require("./utils/cloudinary.js");
+const upload = require("./middleware/multer.middleware.js");
+
 
 
 
@@ -181,36 +184,52 @@ app.post('/login', async (req, res) => {
 });
 
 
-
-
 app.get('/shipment',(req, res) => {
     res.render('shipment.ejs');
 });
 
+
 //shipment
-app.post('/shipment', ensureAuthenticated, async (req, res) => {
-    console.log('Route hit: /shipment');
-    console.log('Request body:', req.body);
-
-    const { location, dateTime, goodsDescription, vehicleType } = req.body;
-
+app.post('/shipment', ensureAuthenticated, upload.single('photo'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: "Photo is required" });
+    }
     try {
-        // Parse the dateTime into a Date object
+        console.log('Route hit: /shipment');
+        console.log('Request body:', req.body);
+        
+        const { location, dateTime, goodsDescription, vehicleType } = req.body;
+
+        // Parse dateTime into a Date object
         const parsedDate = new Date(dateTime);
         if (isNaN(parsedDate.getTime())) {
-            return res.status(400).send('Invalid date format');
+            return res.status(400).json({ success: false, message: "Invalid date format" });
         }
-        const photos = req.files?.photo[0]?.path;
-         //upload on cloudinary
-        const photo = await uploadOnCloudinary(photos);
 
-        // Create the Shipment instance
+        // Ensure a file was uploaded
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Photo is required" });
+        }
+
+        console.log('Uploaded file path:', req.file.path);
+
+        // Upload image to Cloudinary
+        let result;
+        try {
+            result = await cloudinary.uploader.upload(req.file.path);
+            console.log('Cloudinary upload result:', result);
+        } catch (error) {
+            console.error('Cloudinary upload error:', error);
+            return res.status(500).json({ success: false, message: "Error uploading photo to Cloudinary" });
+        }
+
+        // Create a Shipment instance
         const shipment = new Shipment({
             location,
-            dateTime: parsedDate, // Use parsedDate here
+            dateTime: parsedDate,
             goodsDescription,
             vehicleType,
-            photo: photo.url, // Use the URL from Cloudinary
+            photo: result.secure_url,
         });
 
         await shipment.save();
@@ -218,9 +237,10 @@ app.post('/shipment', ensureAuthenticated, async (req, res) => {
         res.redirect('/Real_tracker');
     } catch (err) {
         console.error('Error creating shipment:', err.message, err.stack);
-        res.status(500).send('Error creating shipment');
+        res.status(500).json({ success: false, message: "Error creating shipment" });
     }
 });
+
 
 app.post('/update-profile', ensureAuthenticated, async (req, res) => {
     try {
@@ -426,7 +446,9 @@ app.post("/calculate-route", async (req, res) => {
 
 
 
-// ----
+
+
+
 // user->transporter
 app.get('/process/:id', ensureAuthenticated, async (req, res) => {
     try {
@@ -446,7 +468,6 @@ app.get('/process/:id', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Error fetching notification');
     }
 });
-
 
 
 
@@ -471,30 +492,148 @@ app.post('/process-submit', ensureAuthenticated, async (req, res) => {
 });
 
 
+
 app.get("/payment", (req, res) => {
     res.render('payment.ejs');
 });
 
 
+
+
+
 app.post('/confirm-ride', async (req, res) => {
     try {
-        const { confirmationId, Name } = req.body;
+        const { confirmationId, Name, Action } = req.body;
 
-        // Validate input
-        if (!confirmationId ||! Name ) {
-         return res.status(400).send('Missing required fields');
+        // Detailed validation
+        let errors = [];
+        if (!confirmationId) errors.push('Confirmation ID is required');
+        if (!Name) errors.push('Name is required');
+        if (!Action) errors.push('Action is required');
+
+        if (errors.length > 0) {
+            return res.status(400).send(errors.join(', '));
         }
 
-        // Update the notification status   
-        await Process.create({ confirmationId, Name });
-
+        // Create the document in the database
+        await Process.create({ confirmationId, Name, Action });
         res.redirect('/user-notifications');
     } catch (error) {
         console.error('Error processing notification:', error);
-        res.status(500).send('Error processing notification');
+        res.status(500).send('Error processing notification: ' + error.message);
     }
-}
-);
+});
+
+
+
+// GET endpoint to fetch all processes
+app.get('/api/processes', async (req, res) => {
+    try {
+        const processes = await Process.find();
+        res.json(processes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+
+
+
+
+const Feedback = require('./models/feedback.js');
+// Feedback form route      
+// Feedback submission route
+app.post('/submit-feedback', async (req, res) => {
+    try {
+        const { shipmentId, Rideno, rating, comments } = req.body;
+
+        let errors = [];
+        if (!shipmentId) errors.push('Shipment ID is required');
+        if (!Rideno) errors.push('Ride number is required');
+        if (!rating) errors.push('Rating is required');
+        if (rating < 1 || rating > 5) errors.push('Rating must be between 1 and 5');
+
+        if (errors.length > 0) {
+            return res.status(400).send(errors.join(', '));
+        }
+
+        await Feedback.create({ shipmentId, Rideno, rating, comments });
+        res.status(201).send('Feedback submitted successfully');
+    } catch (error) {
+        console.error('Error submitting feedback:', error);
+        res.status(500).send('Error submitting feedback: ' + error.message);
+    }
+});
+
+// Fetch all feedback
+app.get('/api/feedback', async (req, res) => {
+    try {
+        const feedback = await Feedback.find();
+        res.json(feedback);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Render transporter feedback page
+app.get('/transporter-feedback', (req, res) => {
+    res.render('transporter_feedback');
+});
+
+
+
+
+
+
+
+
+
+
+const SuperCoin = require('./models/super_coin.js');
+//supercoins
+app.get('/api/super-coins', async (req, res) => {
+    try {
+        let superCoin = await SuperCoin.findOne();
+        if (!superCoin) {
+            superCoin = await SuperCoin.create({ coins: 0 });
+        }
+        res.json({ coins: superCoin.coins });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/super-coins', async (req, res) => {
+    try {
+        const { coins } = req.body;
+        if (!coins || coins < 1) {
+            return res.status(400).send('Invalid coin value');
+        }
+
+        let superCoin = await SuperCoin.findOne();
+        if (!superCoin) {
+            superCoin = await SuperCoin.create({ coins });
+        } else {
+            superCoin.coins += coins;
+            superCoin.updatedAt = Date.now();
+            await superCoin.save();
+        }
+
+        res.json({ coins: superCoin.coins });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Render Super Coin page
+app.get('/super_coin', (req, res) => {
+    res.render('super_coin');
+});
+
+
+
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');

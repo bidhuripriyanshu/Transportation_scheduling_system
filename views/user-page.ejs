@@ -24,9 +24,17 @@
                     <li class="nav-item"><a class="nav-link" href="#" data-section="help-section">Help</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">Feedback</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user-notifications" data-section="notifications-section">Notifications</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Real_tracker" data-section="notifications-section">Real-time Tracking</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary text-light" href="/Real_tracker" data-section="notifications-section">Real-time Tracking</a>
+                    </li></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/super_coin" id="super-coin" style="color: gold; font-weight: bold; background-color: rgb(224, 11, 11); border-radius: 5px; padding: 5px 10px;"></a>
+                            Super Coin: 100
+                        </a>
+                    </li>
 
                 </ul>
+            
                 <form class="d-flex">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-light" type="submit">Search</button>
@@ -298,6 +306,10 @@
         [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(tooltipTriggerEl => {
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
-    </script>
+        
+        
+        
+        
+        </script>
 </body>
 </html>

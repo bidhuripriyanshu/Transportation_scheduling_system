@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporter Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .table-container {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .table-header {
+            position: sticky;
+            top: 0;
+            background-color: #1f2937;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-blue-300 min-h-screen flex flex-col items-center py-10">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-6">Transporter Feedback</h1>
+
+    <div class="w-full max-w-4xl bg-gray-600 p-6 rounded-lg shadow-md">
+        <!-- Search Input -->
+        <div class="mb-4">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Search by Shipment ID or Ride No..." 
+                class="w-full max-w-md p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+        </div>
+
+        <!-- Feedback Table -->
+        <div class="table-container">
+            <table class="w-full text-left">
+                <thead class="table-header text-white">
+                    <tr>
+                        <th class="p-3">Shipment ID</th>
+                        <th class="p-3">Ride No</th>
+                        <th class="p-3">Rating</th>
+                        <th class="p-3">Comments</th>
+                        <th class="p-3">Received</th>
+                    </tr>
+                </thead>
+                <tbody id="feedbackTable" class="divide-y divide-gray-200 bg-gray-50">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noFeedback" class="hidden text-center text-gray-500 mt-4">
+            No feedback available.
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Fetch feedback from backend
+        async function fetchFeedback() {
+            try {
+                const response = await fetch('/api/feedback'); // Adjust this endpoint as needed
+                if (!response.ok) throw new Error('Network response was not ok');
+                const feedback = await response.json();
+                return feedback;
+            } catch (error) {
+                console.error('Error fetching feedback:', error);
+                return [];
+            }
+        }
+
+        // Display feedback in table
+        function displayFeedback(feedback) {
+            const tableBody = document.getElementById('feedbackTable');
+            const noFeedbackDiv = document.getElementById('noFeedback');
+            tableBody.innerHTML = '';
+
+            if (feedback.length === 0) {
+                noFeedbackDiv.classList.remove('hidden');
+                return;
+            }
+
+            noFeedbackDiv.classList.add('hidden');
+            feedback.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-100';
+                row.innerHTML = `
+                    <td class="p-3">${item.shipmentId}</td>
+                    <td class="p-3">${item.Rideno}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium 
+                            ${item.rating >= 4 ? 'bg-green-100 text-green-800' : 
+                              item.rating >= 3 ? 'bg-yellow-100 text-yellow-800' : 
+                              'bg-red-100 text-red-800'}">
+                            ${item.rating}/5
+                        </span>
+                    </td>
+                    <td class="p-3">${item.comments || 'N/A'}</td>
+                    <td class="p-3">${new Date(item.createdAt).toLocaleString()}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Filter feedback
+        function filterFeedback(feedback, searchTerm) {
+            return feedback.filter(item => {
+                const searchLower = searchTerm.toLowerCase();
+                return item.shipmentId.toLowerCase().includes(searchLower) || 
+                       item.Rideno.toLowerCase().includes(searchLower);
+            });
+        }
+
+        // Initialize page
+        async function init() {
+            const feedback = await fetchFeedback();
+            displayFeedback(feedback);
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', async () => {
+                const allFeedback = await fetchFeedback();
+                const filteredFeedback = filterFeedback(allFeedback, searchInput.value);
+                displayFeedback(filteredFeedback);
+            });
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

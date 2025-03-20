@@ -28,7 +28,15 @@
                         </p>
                         <p class="mt-2 text-gray-800">Message: <%= notification.message %></p>
                         <p class="text-xs text-gray-500 mt-2">Received: <%= new Date(notification.createdAt).toLocaleString() %></p>
-                        <a class="bg-blue-500" href="/process/<%= notification.shipmentId %>"> processed to confirmRide</a>
+                        <div class="mt-4 flex gap-4">
+                            <a class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" href="/process/<%= notification.shipmentId %>">Processed to Confirm Ride</a>
+                            <button 
+                                onclick="openFeedbackModal('<%= notification.shipmentId %>', '<%= notification.Rideno %>')" 
+                                class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                            >
+                                Submit Feedback
+                            </button>
+                        </div>
                     </li>
                 <% }) %>
             </ul>
@@ -36,5 +44,83 @@
             <p class="text-center text-gray-500">No notifications available.</p>
         <% } %>
     </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4">Submit Feedback</h2>
+            <form id="feedbackForm">
+                <input type="hidden" id="feedbackShipmentId" name="shipmentId">
+                <input type="hidden" id="feedbackRideNo" name="Rideno">
+                <div class="mb-4">
+                    <label class="block text-gray-700">Rating (1-5):</label>
+                    <input 
+                        type="number" 
+                        name="rating" 
+                        min="1" 
+                        max="5" 
+                        class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        required
+                    >
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Comments:</label>
+                    <textarea 
+                        name="comments" 
+                        class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        rows="4"
+                    ></textarea>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="closeFeedbackModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openFeedbackModal(shipmentId, rideNo) {
+            document.getElementById('feedbackShipmentId').value = shipmentId;
+            document.getElementById('feedbackRideNo').value = rideNo;
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+            document.getElementById('feedbackForm').reset();
+        }
+
+        document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const feedbackData = {
+                shipmentId: formData.get('shipmentId'),
+                Rideno: formData.get('Rideno'),
+                rating: formData.get('rating'),
+                comments: formData.get('comments')
+            };
+
+            try {
+                const response = await fetch('/submit-feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(feedbackData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+
+                alert('Feedback submitted successfully!');
+                closeFeedbackModal();
+            } catch (error) {
+                alert('Error submitting feedback: ' + error.message);
+            }
+        });
+    </script>
 </body>
 </html>
