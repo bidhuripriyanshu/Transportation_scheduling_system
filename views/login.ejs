@@ -52,6 +52,52 @@
             display: none;
             border-radius: 10px;
         }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 10px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .btn-google {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            color: #333;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn-google:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
@@ -64,6 +110,15 @@
                 </div>
 
                 <div class="alert alert-danger" id="errorAlert" role="alert"></div>
+
+                <button type="button" class="btn btn-google" onclick="handleGoogleSignIn()">
+                    <img src="https://www.google.com/favicon.ico" alt="Google logo">
+                    Continue with Google
+                </button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
 
                 <form id="loginForm" action="/login" method="POST">
                     <div class="mb-3">
@@ -175,6 +230,12 @@
                 });
             });
         });
+
+        function handleGoogleSignIn() {
+            // This is a dummy implementation
+            console.log('Google Sign-In clicked');
+            alert('Google Sign-In functionality will be implemented with actual OAuth integration');
+        }
     </script>
 </body>
 </html>
