@@ -67,6 +67,14 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
+app.get("/login",(req,res)=>{
+     res.render('login.ejs')
+})
+
+app.get("/register",(req,res)=>{
+     res.render('signup.ejs')
+})
+
 app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
     try {
         const loggedInUser = req.session.user;
@@ -396,7 +404,7 @@ app.get('/user-notifications', ensureAuthenticated, async (req, res) => {
 });
 
 app.get("/Real_tracker", (req, res) => {
-    res.render("Real_tracker");
+    res.render("Real_tracker.ejs");
 });
 
 

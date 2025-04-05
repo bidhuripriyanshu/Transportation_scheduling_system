@@ -3,128 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transportation Scheduling</title>
-    <link rel="stylesheet" href="/stylesheets/styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Shipment Tracker - Your Reliable Shipping Partner</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <style>
-           /* Full-page Background Slideshow */
-    body {
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        animation: backgroundSlideshow 15s infinite;
-    }
+        /* Custom Styles */
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+        }
 
-    @keyframes backgroundSlideshow {
-        0% { background-image: url('/image/image.jpg'); }
-        33% { background-image: url('/image/photo_2.jpg'); }
-        66% { background-image: url('/image/photo_3.jpg'); }
-        100% { background-image: url('/image/photo_7.jpg'); }
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('/images/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            background-color: transparent !important;
+            transition: 0.3s;
+        }
+
+        .navbar.scrolled {
+            background-color: white !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: white !important;
+            margin: 0 10px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            transition: 0.3s;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .testimonial-card {
+            background-color: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .footer {
+            background-color: #1e293b;
+            color: white;
+            padding: 50px 0;
+        }
     </style>
 </head>
 <body>
-    <div>
-        <h1 class="text-4xl mt-4 typing-text" style="color: white;"> Welcome To Transportation Scheduler</h1>
-        <p class="mt-2 text-lg" style="color: rgb(25, 123, 124);">Your one-stop solution for managing and scheduling your transportation needs efficiently.</p>
-        <style>
-            .typing-text {
-            overflow: hidden;
-            border-right: .15em solid orange;
-            white-space: nowrap;
-            margin: 0 auto;
-            letter-spacing: .15em;
-            animation: typing 3.5s steps(40, end) infinite, blink-caret .75s step-end infinite;
-            }
-
-            @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-            }
-
-            @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: orange; }
-            }
-        </style>
-    </div>
-    <div class="container">
-        <h1>Transportation Scheduler</h1>
-        <div class="form-container">
-            <div class="tab">
-                <button class="tablink active" onclick="openTab(event, 'login')">Login</button>
-                <button class="tablink" onclick="openTab(event, 'signup')">Signup</button>
-            </div>
-
-            <!-- Login Form -->
-            <div id="login" class="tab-content">
-                <h2>Login</h2>
-                <form id="login-form" action="/login" method="POST">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-
-                    <label for="role">Login as:</label>
-                    <select id="role" name="role" required>
-
-                        <option value="user">User</option>
-                        <option value="transporter">Transporter</option>
-
-                    </select>
-
-                    <button type="submit">Login</button>
-                </form>
-                <!-- <a href="/user-p">Visit User Page</a> -->
-            </div>
-
-            <!-- Signup Form -->
-            <div id="signup" class="tab-content" style="display: none;">
-                <h2>Signup</h2>
-                <form id="signup-form" action="/signup" method="POST">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
-                    
-                    <label for="email">Email:</label>
-                    <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
-                    
-                    <label for="password">Password:</label>
-                    <input type="password" id="signup-password" name="password" placeholder="Create a password" required>
-                    <small>Password must be at least 6 characters long and include at least one number.</small>
-                
-                    <label for="role">Sign up as:</label>
-                    <select id="role-signup" name="role" required>
-                        <option value="" disabled selected>Select your role</option>
-                        <option value="user">User</option>
-                        <option value="transporter">Transporter</option>
-                    </select>
-                
-                    <button type="submit">Signup</button>
-                </form>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand text-white" href="/">ShipmentTracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary ms-2" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light ms-2" href="/register">Register</a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
-    <script src="/scripts/script.js"></script>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Ship Smart, Ship Safe</h1>
+                    <p class="lead mb-4">Connect with reliable transporters and track your shipments in real-time. The smartest way to manage your logistics.</p>
+                    <a href="/register" class="btn btn-primary btn-lg me-3">Get Started</a>
+                    <a href="#how-it-works" class="btn btn-outline-light btn-lg">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Why Choose Us</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-check feature-icon mb-3"></i>
+                            <h4>Secure Shipping</h4>
+                            <p>Your shipments are fully insured and tracked in real-time</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-clock feature-icon mb-3"></i>
+                            <h4>Fast Delivery</h4>
+                            <p>Express shipping options with guaranteed delivery times</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-cash-stack feature-icon mb-3"></i>
+                            <h4>Best Rates</h4>
+                            <p>Competitive pricing with no hidden charges</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">How It Works</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <img src="/images/how-it-works.svg" alt="Process" class="img-fluid">
+                </div>
+                <div class="col-md-6">
+                    <div class="steps">
+                        <div class="step mb-4">
+                            <h4>1. Register</h4>
+                            <p>Create your account as a user or transporter</p>
+                        </div>
+                        <div class="step mb-4">
+                            <h4>2. Book Shipment</h4>
+                            <p>Enter shipment details and get instant quotes</p>
+                        </div>
+                        <div class="step mb-4">
+                            <h4>3. Track</h4>
+                            <p>Monitor your shipment in real-time</p>
+                        </div>
+                        <div class="step">
+                            <h4>4. Deliver</h4>
+                            <p>Receive your shipment at your doorstep</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">What Our Customers Say</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <p class="mb-3">"Excellent service! My shipments always arrive on time."</p>
+                        <h5 class="mb-1">John Doe</h5>
+                        <small class="text-muted">Business Owner</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <p class="mb-3">"The tracking system is fantastic. I always know where my packages are."</p>
+                        <h5 class="mb-1">Jane Smith</h5>
+                        <small class="text-muted">Regular Customer</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <p class="mb-3">"Best shipping rates I've found. Highly recommended!"</p>
+                        <h5 class="mb-1">Mike Johnson</h5>
+                        <small class="text-muted">E-commerce Seller</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>ShipmentTracker</h5>
+                    <p>Your reliable shipping partner for all your logistics needs.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">About Us</a></li>
+                        <li><a href="#" class="text-white">Services</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                        <li><a href="#" class="text-white">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li>Email: info@shipmenttracker.com</li>
+                        <li>Phone: +1 234 567 890</li>
+                        <li>Address: 123 Shipping Street</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4">
+            <div class="text-center">
+                <p>&copy; 2024 ShipmentTracker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+    <!-- Custom JavaScript -->
     <script>
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+        // Navbar color change on scroll
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                document.querySelector('.navbar').classList.add('scrolled');
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.style.color = '#000 !important';
+                });
+            } else {
+                document.querySelector('.navbar').classList.remove('scrolled');
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.style.color = '#fff !important';
+                });
             }
-            tablinks = document.getElementsByClassName("tablink");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-        document.getElementById("login").style.display = "block"; // Show the login tab by default
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
     </script>
-    <script src="/scripts/script.js"></script>
 </body>
 </html>       
