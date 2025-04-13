@@ -21,6 +21,7 @@ const Transporter = require('./models/transporter.js');
 const Shipment = require('./models/shipment.js');
 
 
+
 // Middleware to parse incoming requests
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -43,7 +44,7 @@ app.use(session({
 
 // MongoDB connection
 mongoose
-    .connect('mongodb://localhost:27017/transportationDB_final', {
+    .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
