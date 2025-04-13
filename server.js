@@ -46,7 +46,7 @@ app.use(session({
 mongoose
     .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000, // 30 seconds
     })
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Failed to connect to MongoDB:', err));
@@ -644,6 +644,7 @@ app.get('/super_coin', (req, res) => {
 
 
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+const PORT = process.env.PORT || 3001; // Use a different port, e.g., 3001
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
