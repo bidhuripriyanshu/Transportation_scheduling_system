@@ -43,6 +43,7 @@ app.use(session({
 
 
 // MongoDB connection
+mongoose.set('bufferCommands', false);
 mongoose
     .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
