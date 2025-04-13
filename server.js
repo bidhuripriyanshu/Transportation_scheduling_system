@@ -50,8 +50,6 @@ const connectWithRetry = () => {
     console.log('MongoDB connection with retry');
     mongoose
         .connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             serverSelectionTimeoutMS: 60000,
             socketTimeoutMS: 45000,
             connectTimeoutMS: 60000,
@@ -659,8 +657,15 @@ app.get('/super_coin', (req, res) => {
     res.render('super_coin');
 });
 
-
-
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    res.status(200).json({ 
+        status: 'ok',
+        database: dbStatus,
+        timestamp: new Date().toISOString()
+    });
+});
 
 const PORT = process.env.PORT || 3001; // Use a different port, e.g., 3001
 app.listen(PORT, () => {
