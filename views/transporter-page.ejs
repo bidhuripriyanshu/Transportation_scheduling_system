@@ -3,183 +3,977 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Transporter Dashboard for logistics management">
     <title>Transporter Dashboard</title>
     <link rel="stylesheet" href="/stylesheets/transporter-page.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #3a7bd5;
+            --secondary-color: #00d2ff;
+            --accent-color: #ffd700;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
         body {
-            background-color: lightblue;
+            background: linear-gradient(to right, #ECE9E6, #FFFFFF);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .container {
-            background-color: lightblue;
+        
+        /* Header styles */
+        .modern-navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 30px;
         }
-        nav {
-            background-color: grey;
+        
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            color: white !important;
         }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin-right: 15px;
-        }
-        .filters {
-            margin: 10px 0;
-        }
-        .filters input, .filters select {
-            padding: 5px;
+        
+        .navbar-brand:before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            display: inline-block;
             margin-right: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
-        .approve-btn, .reject-btn {
-            margin-top: 10px;
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
         }
+        
+        .nav-item {
+            margin: 0 5px;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            padding: 8px 15px !important;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            color: white !important;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.3);
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background-color: var(--danger-color) !important;
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #c0392b !important;
+        }
+        
+        #super-coin {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #312e2e !important;
+            font-weight: 700;
+            border-radius: 30px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+            animation: coin-pulse 2s infinite;
+            border: none;
+        }
+        
+        @keyframes coin-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Main content styles */
+        .container {
+            background-color: transparent;
+            padding: 20px;
+            flex: 1;
+        }
+        
         .section {
             display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
         }
+        
         .section.active {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn 0.5s ease forwards;
         }
-
+        
+        h1, h2 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 60px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+        
         /* Typing effect */
-    @keyframes typing {
-        from {
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            50% { border-color: transparent; }
+        }
+        
+        #typed-text {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 4px solid var(--accent-color);
             width: 0;
+            animation: 
+                typing 4s steps(40) 1s forwards,
+                blink-caret 0.75s step-end infinite;
+            color: var(--primary-color);
+            font-weight: 600;
         }
-        to {
+        
+        /* Section-specific styles */
+        #dashboard-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        #dashboard-section img {
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        #dashboard-section img:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Shipment list styles */
+        #shipment-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        #shipment-list li {
+            background: white;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        #shipment-list li:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .filters input, .filters select {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .filters input:focus, .filters select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(58, 123, 213, 0.3);
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+        }
+        
+        .continue-btn {
+            background: linear-gradient(to right, var(--success-color), #27ae60);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .view-photo-btn {
+            background: linear-gradient(to right, var(--primary-color), #3498db);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .view-photo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Form styles */
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        form input, form select, form textarea {
             width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            transition: all 0.3s ease;
         }
-    }
-
-    /* Cursor blinking effect */
-    @keyframes blink-caret {
-        50% {
-            border-color: transparent;
+        
+        form input:focus, form select:focus, form textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(58, 123, 213, 0.3);
         }
-    }
-
-    #typed-text {
-        display: inline-block;
-        overflow: hidden; /* Ensures the text is hidden until it's typed */
-        white-space: nowrap; /* Prevents wrapping of text */
-        border-right: 4px solid; /* Simulates the cursor */
-        width: 0;
-        animation: typing 4s steps(30) 1s forwards, blink-caret 0.75s step-end infinite;
-    }
-
+        
+        form button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        form button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loader animation */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: var(--primary-color);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: none;
+        }
+        
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <div class="loader" id="page-loader"></div>
+    
+    <!-- Enhanced Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark modern-navbar animate__animated animate__fadeInDown">
+        <div class="container">
+            <a class="navbar-brand" href="#">Transporter Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="dashboard-link">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="manage-shipments-link">
+                            <i class="fas fa-truck me-1"></i> Manage Shipments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="manage-profile-link">
+                            <i class="fas fa-user me-1"></i> Manage Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/shipment_status" id="shipment-status-link">
+                            <i class="fas fa-clipboard-check me-1"></i> Shipment Status
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="contact-link">
+                            <i class="fas fa-envelope me-1"></i> Contact
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="help-link">
+                            <i class="fas fa-question-circle me-1"></i> Help
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="super-coin">
+                            <i class="fas fa-coins me-1"></i> Super Coin: 100
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="logout-btn" href="/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
-        <h1>Transporter Dashboard</h1>
-
-        <!-- Dashboard Navigation -->
-        <nav>
-            <ul>
-                <li><a href="#" id="dashboard-link">Home</a></li>
-                <li><a href="#" id="manage-shipments-link">Manage Shipments</a></li>
-                <li><a href="#" id="manage-profile-link">Manage Profile</a></li>
-                <li><a href="/shipment_status" id="shipment-status-link">Shipment Status</a></li>
-                <li><a href="#" id="contact-link">Contact</a></li>
-                <li><a href="#" id="help-link">Help</a></li>
-                <li style="float: right;">
-                    <div style="display: inline-block;">
-                        <a href="/logout" style="background-color: red; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Logout</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="super-coin" style="color: gold; font-weight: bold; background-color: black; border-radius: 5px; padding: 5px 10px;">
-                        Super Coin: 100
-                    </a>
-                </li>
-                <li class ="nav-item">
-                    <a class="nav-link" href="#" id="super-coin" style="color: gold; font-weight: bold; background-color: black; border-radius: 5px; padding: 5px 10px;">
-                        
-                    </a>
-
-            </ul>
-        </nav>
-<!-- Dashboard Section -->
-<div id="dashboard-section" class="section active">
-    <h2>
-        <span id="typed-text">Welcome to Your Dashboard, <%= loggedInUser.name %>!</span>
-    </h2>
-    <p>Track and manage all your shipment requests efficiently from here.</p>
-    <img src="/image/photo9.jpg" alt="Dashboard Image" style="max-width: 100%; height: auto;">
-</div class="bg-gray-500">
-
-        <!-- Manage Shipments Section -->
-        <div id="manage-shipments-section" class="section bg-gray-500">
-            <h2>Manage Shipments</h2>
-            <div class="filters bg-gray-500">
-                <input type="text" id="search-bar" placeholder="Search by location or description...">
-                <button onclick="filterShipments()">Search</button>
-                <select id="filter-status">
-                    <option value="">All</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-                <button onclick="filterShipments()">Filter</button>
-            </div class="bg-gray-500">
-            <ul id="shipment-list" style="background-color: rgb(32, 42, 23);">
-                <% shipmentRequests.forEach((request) => { %>
-                    <li data-status="<%= request.status %>" class="bg-blue-400">
-                        <strong>Location:</strong> <%= request.location %><br>
-                        <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %><br>
-                        <strong>Description:</strong> <%= request.goodsDescription %><br>
-                        <strong>Vehicle Type:</strong> <%= request.vehicleType %><br>
-                        <div style="display: flex; align-items: center;">
-                            <div>
-                                <button class="view-photo-btn" data-photo="<%= request.photo %>" style="background-color: rgb(98, 166, 239); color: rgb(205, 241, 113); padding: 3px 7px; border-radius: 5px;">View Photo</button>
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section active animate__animated animate__fadeIn">
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <h2 class="animate__animated animate__fadeInLeft">
+                        <span id="typed-text">Welcome to Your Dashboard, <%= (loggedInUser && loggedInUser.name) ? loggedInUser.name : 'Transporter' %>!</span>
+                    </h2>
+                    <p class="lead animate__animated animate__fadeInRight">Track and manage all your shipment requests efficiently from here.</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.3s">
+                                <div class="card-body">
+                                    <i class="fas fa-truck-moving fa-3x mb-3 text-primary"></i>
+                                    <h5 class="card-title">Active Shipments</h5>
+                                    <p class="card-text display-4 fw-bold"><%= shipmentRequests.filter(r => r.status === 'approved').length || 0 %></p>
+                                </div>
                             </div>
                         </div>
-
-                        <button class="continue-btn" data-id="<%= request._id %>" style="background-color: rgb(0, 255, 174); padding: 10px; border-radius: 5px;">Continue</button>
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.5s">
+                                <div class="card-body">
+                                    <i class="fas fa-clock fa-3x mb-3 text-warning"></i>
+                                    <h5 class="card-title">Pending Requests</h5>
+                                    <p class="card-text display-4 fw-bold"><%= shipmentRequests.filter(r => r.status === 'pending').length || 0 %></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center shadow-sm h-100 animate__animated animate__fadeIn" style="animation-delay: 0.7s">
+                                <div class="card-body">
+                                    <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                                    <h5 class="card-title">Completed</h5>
+                                    <p class="card-text display-4 fw-bold"><%= shipmentRequests.filter(r => r.status === 'completed').length || 0 %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
-                <% }); %>
-            </ul>
+                    <div class="card mt-4 border-0 shadow-sm animate__animated animate__fadeIn" style="animation-delay: 0.9s">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-bolt me-2 text-warning"></i>Quick Actions</h5>
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <button class="btn btn-primary" onclick="document.getElementById('manage-shipments-link').click()">
+                                    <i class="fas fa-truck me-1"></i> View Shipments
+                                </button>
+                                <button class="btn btn-success" onclick="document.getElementById('manage-profile-link').click()">
+                                    <i class="fas fa-user-edit me-1"></i> Update Profile
+                                </button>
+                                <a href="/shipment_status" class="btn btn-info text-white">
+                                    <i class="fas fa-map-marker-alt me-1"></i> Track Shipments
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-0 overflow-hidden shadow h-100 animate__animated animate__fadeIn" style="animation-delay: 0.5s">
+                        <img src="/image/photo9.jpg" alt="Dashboard Image" class="card-img-top img-fluid">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-star me-2 text-warning"></i>Transporter Benefits</h5>
+                            <ul class="list-group list-group-flush mt-2">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2 text-success"></i> Flexible scheduling
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2 text-success"></i> Competitive compensation
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2 text-success"></i> Real-time tracking
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2 text-success"></i> 24/7 support team
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Shipments Section -->
+        <div id="manage-shipments-section" class="section animate__animated animate__fadeIn">
+            <h2><i class="fas fa-truck me-2"></i>Manage Shipments</h2>
+            
+            <div class="filters shadow-sm">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="search-bar" class="form-control" placeholder="Search by location or description...">
+                    <button class="btn btn-primary" onclick="filterShipments()">Search</button>
+                </div>
+                <div class="input-group">
+                    <label class="input-group-text" for="filter-status"><i class="fas fa-filter"></i></label>
+                    <select id="filter-status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="filterShipments()">Filter</button>
+                </div>
+            </div>
+            
+            <% if (shipmentRequests && shipmentRequests.length > 0) { %>
+                <div class="shipment-count mb-3">
+                    <span class="badge bg-info"><i class="fas fa-list me-1"></i> Showing <span id="visible-count"><%= shipmentRequests.length %></span> of <%= shipmentRequests.length %> shipments</span>
+                </div>
+                
+                <ul id="shipment-list" class="animate__animated animate__fadeIn">
+                    <% shipmentRequests.forEach((request, index) => { %>
+                        <li data-status="<%= request.status %>" data-index="<%= index %>" class="animate__animated animate__fadeIn">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge <%= request.status === 'pending' ? 'bg-warning' : request.status === 'approved' ? 'bg-success' : request.status === 'completed' ? 'bg-info' : 'bg-danger' %> me-2">
+                                            <%= request.status %>
+                                        </span>
+                                        <h5 class="mb-0"><%= request.location %></h5>
+                                    </div>
+                                    <div class="shipment-details">
+                                        <p><i class="far fa-calendar-alt me-2"></i> <strong>Date/Time:</strong> <%= request.dateTime.toLocaleString() %></p>
+                                        <p><i class="fas fa-box me-2"></i> <strong>Description:</strong> <%= request.goodsDescription %></p>
+                                        <p><i class="fas fa-truck me-2"></i> <strong>Vehicle Type:</strong> <%= request.vehicleType %></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex flex-column align-items-end justify-content-between h-100">
+                                        <button class="view-photo-btn mb-2 w-100">
+                                            <i class="fas fa-image me-1"></i> View Photo
+                                        </button>
+                                        <button class="continue-btn w-100" data-id="<%= request._id %>">
+                                            <i class="fas fa-arrow-right me-1"></i> Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle me-2"></i> No shipment requests available at the moment.
+                </div>
+            <% } %>
         </div>
 
         <!-- Manage Profile Section -->
-        <div id="manage-profile-section" class="section">
-            <h2>Manage Profile</h2>
-            <form action="/update-profile" method="POST">
-                <label for="username">Username:</label>
-                <input type="text" name="name" id="username" value="<%= loggedInUser.name %>" required><br>
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" value="<%= loggedInUser.email %>" required><br>
-                <button type="submit">Update Profile</button>
-            </form>
+        <div id="manage-profile-section" class="section animate__animated animate__fadeIn">
+            <h2><i class="fas fa-user me-2"></i>Manage Profile</h2>
+            
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <div class="avatar mb-3">
+                                    <i class="fas fa-user-circle fa-5x text-primary"></i>
+                                </div>
+                                <h4><%= (loggedInUser && loggedInUser.name) ? loggedInUser.name : 'Transporter' %></h4>
+                                <p class="text-muted"><%= (loggedInUser && loggedInUser.email) ? loggedInUser.email : '' %></p>
+                            </div>
+                            
+                            <form action="/update-profile" method="POST" class="animate__animated animate__fadeIn">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" name="name" id="username" class="form-control" value="<%= (loggedInUser && loggedInUser.name) ? loggedInUser.name : '' %>" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        <input type="email" name="email" id="email" class="form-control" value="<%= (loggedInUser && loggedInUser.email) ? loggedInUser.email : '' %>" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password (leave blank to keep current)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" name="password" id="password" class="form-control" placeholder="Enter new password">
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save me-1"></i> Update Profile
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Contact Section -->
-        <div id="contact-section" class="section">
-            <h2>Contact Us</h2>
-            <p>If you have any questions, please reach out to us via the following channels:</p>
-            <p>Email: support@transporter.com</p>
-            <p>Phone: +1-234-567-890</p>
+        <div id="contact-section" class="section animate__animated animate__fadeIn">
+            <h2><i class="fas fa-envelope me-2"></i>Contact Us</h2>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Get in Touch</h5>
+                            <form id="contactForm">
+                                <div class="mb-3">
+                                    <label for="contactName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="contactName" placeholder="Enter your name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactEmail" class="form-label">Your Email</label>
+                                    <input type="email" class="form-control" id="contactEmail" placeholder="Enter your email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactSubject" class="form-label">Subject</label>
+                                    <input type="text" class="form-control" id="contactSubject" placeholder="Enter subject" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactMessage" class="form-label">Message</label>
+                                    <textarea class="form-control" id="contactMessage" rows="5" placeholder="Enter your message" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-paper-plane me-1"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Contact Information</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <div class="me-3">
+                                        <span class="icon-circle bg-primary text-white">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Email Address</h6>
+                                        <p class="mb-0 text-muted">support@transporter.com</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <div class="me-3">
+                                        <span class="icon-circle bg-primary text-white">
+                                            <i class="fas fa-phone"></i>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Phone Number</h6>
+                                        <p class="mb-0 text-muted">+1-234-567-890</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <div class="me-3">
+                                        <span class="icon-circle bg-primary text-white">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Office Address</h6>
+                                        <p class="mb-0 text-muted">123 Logistics Drive, Transport City, 10001</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center border-0 ps-0">
+                                    <div class="me-3">
+                                        <span class="icon-circle bg-primary text-white">
+                                            <i class="fas fa-clock"></i>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Operating Hours</h6>
+                                        <p class="mb-0 text-muted">Monday - Friday: 9AM - 5PM</p>
+                                    </div>
+                                </li>
+                            </ul>
+                            
+                            <h5 class="card-title mb-3 mt-4">Follow Us</h5>
+                            <div class="social-icons">
+                                <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Help Section -->
-        <div id="help-section" class="section">
-            <h2>Help Center</h2>
-            <p>Here are some frequently asked questions:</p>
-            <ul>
-                <li><strong>How can I manage my shipments?</strong> You can manage your shipments from the 'Manage Shipments' section.</li>
-                <li><strong>How do I update my profile?</strong> Use the 'Manage Profile' section to update your username and email.</li>
-                <li><strong>Who can I contact for support?</strong> You can reach us through the 'Contact Us' section for any support queries.</li>
-            </ul>
+        <div id="help-section" class="section animate__animated animate__fadeIn">
+            <h2><i class="fas fa-question-circle me-2"></i>Help Center</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-6 mx-auto">
+                    <div class="input-group mb-4">
+                        <input type="text" class="form-control" placeholder="Search for help topics...">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="accordion" id="helpAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fas fa-truck me-2"></i> How can I manage my shipments?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>You can manage your shipments from the 'Manage Shipments' section in the navigation menu. This section allows you to:</p>
+                                    <ul>
+                                        <li>View all available shipment requests</li>
+                                        <li>Search for specific shipments by location or description</li>
+                                        <li>Filter shipments by their status</li>
+                                        <li>Continue with shipment deliveries</li>
+                                    </ul>
+                                    <p>Click on the 'Continue' button for any shipment to proceed with the delivery process.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <i class="fas fa-user me-2"></i> How do I update my profile?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>To update your profile information:</p>
+                                    <ol>
+                                        <li>Click on the 'Manage Profile' section in the navigation menu</li>
+                                        <li>Update your username, email, or password as needed</li>
+                                        <li>Click the 'Update Profile' button to save your changes</li>
+                                    </ol>
+                                    <p>Note: If you don't want to change your password, leave the password field blank.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <i class="fas fa-phone me-2"></i> Who can I contact for support?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>You can reach our support team through multiple channels:</p>
+                                    <ul>
+                                        <li><strong>Email:</strong> support@transporter.com</li>
+                                        <li><strong>Phone:</strong> +1-234-567-890</li>
+                                        <li><strong>Contact Form:</strong> Use the form in the 'Contact' section</li>
+                                    </ul>
+                                    <p>Our support team is available Monday through Friday, 9AM to 5PM.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    <i class="fas fa-coins me-2"></i> What are Super Coins and how do I earn them?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p>Super Coins are our reward points system for transporters. You can earn them by:</p>
+                                    <ul>
+                                        <li>Completing shipment deliveries on time</li>
+                                        <li>Maintaining high customer ratings</li>
+                                        <li>Accepting shipment requests during peak hours</li>
+                                        <li>Completing special delivery challenges</li>
+                                    </ul>
+                                    <p>Super Coins can be redeemed for various benefits including priority access to shipment requests, reduced platform fees, and special promotions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Footer Section -->
-<footer style="background-color: grey; color: white; text-align: center; padding: 20px 0; margin-top: 20px;">
-    <p>&copy; 2025 Transporter scheduler. All rights reserved.</p>
-</footer>
+    <!-- Enhanced Footer -->
+    <footer class="mt-auto py-4 animate__animated animate__fadeInUp" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3 text-warning">Transport Scheduler</h5>
+                    <p class="mb-3">Your trusted partner for efficient, reliable, and secure logistics solutions. We connect transporters with customers for seamless delivery experiences.</p>
+                    <div class="social-icons">
+                        <a href="#" class="me-2 btn btn-sm btn-dark rounded-circle">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="me-2 btn btn-sm btn-dark rounded-circle">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="me-2 btn btn-sm btn-dark rounded-circle">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="me-2 btn btn-sm btn-dark rounded-circle">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h6 class="text-warning mb-3">Quick Links</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white" id="footer-home">
+                                <i class="fas fa-angle-right me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white" id="footer-shipments">
+                                <i class="fas fa-angle-right me-1"></i> Shipments
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white" id="footer-profile">
+                                <i class="fas fa-angle-right me-1"></i> Profile
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a href="#" class="nav-link p-0 text-white" id="footer-help">
+                                <i class="fas fa-angle-right me-1"></i> Help
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h6 class="text-warning mb-3">Contact Us</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2 d-flex align-items-start">
+                            <i class="fas fa-map-marker-alt me-2 mt-1"></i>
+                            <span>123 Logistics Drive, Transport City, 10001</span>
+                        </li>
+                        <li class="nav-item mb-2 d-flex align-items-start">
+                            <i class="fas fa-envelope me-2 mt-1"></i>
+                            <span>support@transporter.com</span>
+                        </li>
+                        <li class="nav-item mb-2 d-flex align-items-start">
+                            <i class="fas fa-phone me-2 mt-1"></i>
+                            <span>+1-234-567-890</span>
+                        </li>
+                        <li class="nav-item mb-2 d-flex align-items-start">
+                            <i class="fas fa-clock me-2 mt-1"></i>
+                            <span>Mon - Fri: 9AM - 5PM</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3">
+                    <h6 class="text-warning mb-3">Subscribe</h6>
+                    <p>Get the latest news and updates directly to your inbox.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Email address" aria-label="Email address">
+                        <button class="btn btn-warning" type="button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4" style="border-color: rgba(255, 255, 255, 0.1);">
+            
+            <div class="d-flex flex-column flex-sm-row justify-content-between">
+                <p>&copy; <span id="current-year">2024</span> Transport Scheduler. All rights reserved.</p>
+                <ul class="list-unstyled d-flex">
+                    <li class="ms-3"><a class="text-white" href="#">Privacy Policy</a></li>
+                    <li class="ms-3"><a class="text-white" href="#">Terms of Service</a></li>
+                    <li class="ms-3"><a class="text-white" href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 
-
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Show loader on page load
+        const pageLoader = document.getElementById('page-loader');
+        if (pageLoader) {
+            pageLoader.style.display = 'block';
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
+            // Hide loader when DOM is loaded
+            if (pageLoader) {
+                pageLoader.style.display = 'none';
+            }
+            
+            // Section management
             const sections = {
                 dashboard: document.getElementById('dashboard-section'),
                 manageShipments: document.getElementById('manage-shipments-section'),
@@ -195,73 +989,212 @@
                 contact: document.getElementById('contact-link'),
                 help: document.getElementById('help-link'),
             };
+            
+            const footerLinks = {
+                dashboard: document.getElementById('footer-home'),
+                manageShipments: document.getElementById('footer-shipments'),
+                manageProfile: document.getElementById('footer-profile'),
+                help: document.getElementById('footer-help'),
+            };
 
-            // Function to show the selected section and hide others
+            // Function to show the selected section with animation
             function showSection(sectionName) {
-                Object.keys(sections).forEach(section => {
-                    sections[section].classList.remove('active');
+                // Show loader when changing sections
+                if (pageLoader) {
+                    pageLoader.style.display = 'block';
+                }
+                
+                // Update active navigation link
+                Object.values(navLinks).forEach(link => {
+                    if (link) link.classList.remove('active');
                 });
-                sections[sectionName].classList.add('active');
+                
+                if (navLinks[sectionName]) {
+                    navLinks[sectionName].classList.add('active');
+                }
+                
+                // Hide all sections first with a small delay
+                setTimeout(() => {
+                    Object.values(sections).forEach(section => {
+                        if (section) {
+                            section.classList.remove('active');
+                            section.style.display = 'none';
+                        }
+                    });
+                    
+                    // Show the selected section
+                    if (sections[sectionName]) {
+                        sections[sectionName].style.display = 'block';
+                        setTimeout(() => {
+                            sections[sectionName].classList.add('active');
+                            
+                            // Hide loader after section is shown
+                            if (pageLoader) {
+                                pageLoader.style.display = 'none';
+                            }
+                        }, 50);
+                    }
+                }, 200);
             }
 
             // Add event listeners to navigation links
-            navLinks.dashboard.addEventListener('click', () => showSection('dashboard'));
-            navLinks.manageShipments.addEventListener('click', () => showSection('manageShipments'));
-            navLinks.manageProfile.addEventListener('click', () => showSection('manageProfile'));
-            navLinks.contact.addEventListener('click', () => showSection('contact'));
-            navLinks.help.addEventListener('click', () => showSection('help'));
+            Object.entries(navLinks).forEach(([section, link]) => {
+                if (link) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showSection(section);
+                    });
+                }
+            });
+            
+            // Add event listeners to footer links
+            Object.entries(footerLinks).forEach(([section, link]) => {
+                if (link) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showSection(section);
+                    });
+                }
+            });
 
             // Default to 'dashboard' on page load
             showSection('dashboard');
+            
+            // Initialize the typing effect
+            const typedTextElement = document.getElementById('typed-text');
+            if (typedTextElement) {
+                typedTextElement.style.width = 'auto'; // Ensure correct width for animation
+            }
+            
+            // Initialize the current year
+            const currentYearElement = document.getElementById('current-year');
+            if (currentYearElement) {
+                currentYearElement.textContent = new Date().getFullYear();
+            }
+            
+            // Add animation classes to elements that should be animated on scroll
+            const animatedElements = document.querySelectorAll('.card, h2, .list-group');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate__animated', 'animate__fadeIn');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
         });
 
+        // Shipment filtering function
         function filterShipments() {
             const searchKeyword = document.getElementById('search-bar').value.toLowerCase();
             const filterStatus = document.getElementById('filter-status').value;
+            let visibleCount = 0;
 
             document.querySelectorAll('#shipment-list li').forEach(item => {
                 const matchesSearch = item.innerText.toLowerCase().includes(searchKeyword);
                 const matchesStatus = !filterStatus || item.getAttribute('data-status') === filterStatus;
+                const shouldShow = matchesSearch && matchesStatus;
 
-                item.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
-            });
-        }
-
-        document.querySelectorAll('.continue-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const shipmentId = this.getAttribute('data-id');
-            window.location.href = `/notification/${shipmentId}`; // Redirect to notification page
-        });
-    });
-
-
-    ///message section
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".continue-btn").forEach(button => {
-            button.addEventListener("click", function () {
-                const shipmentId = this.getAttribute("data-id");
-                const confirmRide = confirm("Do you want to continue the ride?");
-                
-                if (confirmRide) {
-                    // Proceed with the ride continuation logic
-                    alert("Ride continued for shipment ID: " + shipmentId);
-                    
-                    // You can make an API request here if needed
-                    // Example:
-                    // fetch(`/continue-ride/${shipmentId}`, { method: "POST" })
-                    // .then(response => response.json())
-                    // .then(data => console.log(data));
+                if (shouldShow) {
+                    item.style.display = '';
+                    visibleCount++;
                 } else {
-                    alert("Ride continuation cancelled.");
+                    item.style.display = 'none';
                 }
             });
-        });
-    });
+            
+            // Update the visible count
+            const visibleCountElement = document.getElementById('visible-count');
+            if (visibleCountElement) {
+                visibleCountElement.textContent = visibleCount;
+            }
+        }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const typedTextElement = document.getElementById("typed-text");
-        typedTextElement.style.width = "auto"; // Makes sure the width adjusts properly
-    });
+        // Continue button functionality
+        document.querySelectorAll('.continue-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const shipmentId = this.getAttribute('data-id');
+                
+                // Show loader
+                if (pageLoader) {
+                    pageLoader.style.display = 'block';
+                }
+                
+                // Add slight delay for better user experience
+                setTimeout(() => {
+                    const confirmRide = confirm("Do you want to continue with this shipment?");
+                    
+                    if (confirmRide) {
+                        alert("Proceeding with shipment ID: " + shipmentId);
+                        window.location.href = `/notification/${shipmentId}`;
+                    } else {
+                        alert("Shipment action cancelled.");
+                        if (pageLoader) {
+                            pageLoader.style.display = 'none';
+                        }
+                    }
+                }, 300);
+            });
+        });
+
+        // View photo button functionality
+        document.querySelectorAll('.view-photo-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                alert("Photo viewer functionality will be implemented soon!");
+            });
+        });
+        
+        // Contact form submission
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (pageLoader) {
+                    pageLoader.style.display = 'block';
+                }
+                
+                setTimeout(() => {
+                    alert("Your message has been sent! Our team will get back to you soon.");
+                    contactForm.reset();
+                    
+                    if (pageLoader) {
+                        pageLoader.style.display = 'none';
+                    }
+                }, 800);
+            });
+        }
+        
+        // Apply animations to form inputs
+        document.querySelectorAll('input, textarea, select').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.classList.add('animate__animated', 'animate__pulse');
+            });
+            
+            element.addEventListener('blur', function() {
+                this.classList.remove('animate__animated', 'animate__pulse');
+            });
+        });
+        
+        // Add hover effects to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.classList.add('btn-hover');
+        });
+
+        // Apply animation delays to shipment list items
+        document.querySelectorAll('#shipment-list li').forEach(item => {
+            const index = item.getAttribute('data-index');
+            if (index) {
+                item.style.animationDelay = (0.1 * parseInt(index)) + 's';
+            }
+        });
     </script>
 </body>
 </html>
