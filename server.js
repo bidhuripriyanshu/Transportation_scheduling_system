@@ -47,7 +47,11 @@ mongoose.set('bufferCommands', false);
 mongoose
     .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
-        serverSelectionTimeoutMS: 30000, // 30 seconds
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 60000, // Increase to 60 seconds
+        socketTimeoutMS: 45000, // Socket timeout
+        connectTimeoutMS: 60000, // Connection timeout
+        maxPoolSize: 10, // Maintain up to 10 socket connections
     })
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('Failed to connect to MongoDB:', err));
