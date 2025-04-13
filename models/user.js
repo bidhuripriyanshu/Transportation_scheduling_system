@@ -7,4 +7,7 @@ const userSchema = new mongoose.Schema({
     role: { type: String, required: true },
 });
 
+// Add index for faster queries
+userSchema.index({ email: 1 });
+
 module.exports = mongoose.models.User || mongoose.model('User', userSchema);

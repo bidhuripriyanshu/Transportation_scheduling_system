@@ -44,17 +44,30 @@ app.use(session({
 
 // MongoDB connection
 mongoose.set('bufferCommands', false);
-mongoose
-    .connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 60000, // Increase to 60 seconds
-        socketTimeoutMS: 45000, // Socket timeout
-        connectTimeoutMS: 60000, // Connection timeout
-        maxPoolSize: 10, // Maintain up to 10 socket connections
-    })
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Failed to connect to MongoDB:', err));
+
+// Connection retry logic
+const connectWithRetry = () => {
+    console.log('MongoDB connection with retry');
+    mongoose
+        .connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 60000,
+            socketTimeoutMS: 45000,
+            connectTimeoutMS: 60000,
+            maxPoolSize: 10,
+            family: 4 // Force IPv4
+        })
+        .then(() => {
+            console.log('MongoDB is connected');
+        })
+        .catch(err => {
+            console.error('MongoDB connection unsuccessful, retry after 5 seconds:', err);
+            setTimeout(connectWithRetry, 5000);
+        });
+};
+
+connectWithRetry();
 
 
 
