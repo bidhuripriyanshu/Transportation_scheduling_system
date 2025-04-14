@@ -12,88 +12,319 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <style>
-        #map { height: 500px; width: 100%; margin-top: 10px; border: 1px solid gray; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #EBF4F5 0%, #B5C6E0 100%);
+            min-height: 100vh;
+        }
+        
+        #map { 
+            height: 500px; 
+            width: 100%; 
+            margin-top: 10px; 
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        #map:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+        
         .hero {
-            background-image: url('https://via.placeholder.com/1500x800'); /* Replace with your image */
+            background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80');
             background-size: cover;
             background-position: center;
+            position: relative;
+            padding: 4rem 0;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+        
+        .hero > div {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4F46E5;
+        }
+        
+        .custom-input {
+            padding-left: 2.5rem !important;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .custom-input:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        
+        .custom-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .custom-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        .custom-btn:hover::after {
+            left: 0;
+        }
+        
+        .custom-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .result-card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #4F46E5;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .loader {
+            display: none;
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #4F46E5;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        @keyframes rotation {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        #shipmentMessage {
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
-<body class="bg-blue-300">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div id="loader" class="loader"></div>
 
     <!-- Navigation Bar -->
-    <nav class="bg-black text-white shadow-lg">
+    <nav class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-lg sticky top-0 z-10 animate__animated animate__fadeIn">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between">
                 <div class="flex space-x-7">
                     <div>
                         <a href="#" class="flex items-center py-4 px-2">
-                            <span class="font-semibold text-white-500 text-lg">Route Calculator</span>
+                            <i class="fas fa-route text-2xl mr-2"></i>
+                            <span class="font-semibold text-white text-lg">Route Calculator</span>
                         </a>
                     </div>
                 </div>
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="/user-dashboard" class="py-4 px-2 text--500 font-semibold hover:text-blue-500 transition duration-300">Back To Home</a>
-                    <a href="#" class="py-4 px-2 text-white-500 font-semibold hover:text-white-500 transition duration-300">Services</a>
+                    <a href="/user-dashboard" class="py-4 px-2 text-white nav-link font-semibold hover:text-blue-200 transition duration-300">
+                        <i class="fas fa-home mr-1"></i> Back To Home
+                    </a>
+                    <a href="#" class="py-4 px-2 text-white nav-link font-semibold hover:text-blue-200 transition duration-300">
+                        <i class="fas fa-cog mr-1"></i> Services
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <div class="hero flex items-center justify-center py-20">
-        <div class="bg-gray-100 shadow-lg rounded-lg p-6 w-full max-w-md">
-            <h2 class="text-xl font-bold text-center mb-4">Enter Pickup & Drop Location</h2>
+    <div class="hero flex items-center justify-center py-20 animate__animated animate__fadeIn">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md shadow-2xl backdrop-blur-md bg-opacity-90">
+            <h2 class="text-2xl font-bold text-center mb-6 text-indigo-700">
+                <i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i>Track Your Shipment
+            </h2>
             
-            <div class="mb-4">
-                <label class="block text-blue-700 font-semibold mb-1">Pickup Location:</label>
-                <input id="pickup" type="text" placeholder="Enter pickup location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="input-container">
+                <i class="fas fa-location-arrow"></i>
+                <input id="pickup" type="text" placeholder="Enter pickup location" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none">
             </div>
 
-            <div class="mb-4">
-                <label class="block text-blue-700 font-semibold mb-1">Drop Location:</label>
-                <input id="drop" type="text" placeholder="Enter drop location" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="input-container">
+                <i class="fas fa-map-pin"></i>
+                <input id="drop" type="text" placeholder="Enter drop location" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none">
             </div>
 
-            <button onclick="calculateRoute()" class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition">Calculate Distance</button>
-            <button onclick="processShipment()" class="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-700 transition mt-4">Process Shipment</button>
+            <button onclick="calculateRoute()" class="custom-btn w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center">
+                <i class="fas fa-calculator mr-2"></i> Calculate Distance
+            </button>
             
-            <h3 id="distance" class="text-lg font-semibold text-gray-700 mt-4 text-center"></h3>
-            <h3 id="price" class="text-lg font-semibold text-gray-700 text-center"></h3>
-            <h3 id="shipmentMessage" class="text-lg font-semibold text-green-700 text-center mt-4"></h3>
+            <button onclick="processShipment()" class="custom-btn w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-4 flex items-center justify-center">
+                <i class="fas fa-truck mr-2"></i> Process Shipment
+            </button>
+            
+            <div id="results" class="result-card">
+                <h3 id="distance" class="text-xl font-semibold text-indigo-700 mb-2 text-center"></h3>
+                <h3 id="price" class="text-lg font-semibold text-gray-700 text-center"></h3>
+                <h3 id="shipmentMessage" class="text-lg font-semibold text-green-700 text-center mt-4"></h3>
+            </div>
         </div>
     </div>
 
-
-
     <!-- Map Section -->
-    <div id="map" class="mt-6 w-full max-w-6xl mx-auto rounded-lg shadow-md"></div>
+    <div class="container mx-auto px-4 pb-12 animate__animated animate__fadeInUp" style="animation-delay: 0.5s">
+        <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+            <i class="fas fa-map-marked-alt mr-2"></i> Interactive Map
+        </h2>
+        <div id="map" class="rounded-xl"></div>
+    </div>
 
     <!-- Footer Section -->
-    <footer class="bg-black text-white text-center py-4 mt-4">
-        <p>&copy; 2025 Route Calculator. All rights reserved.</p>
+    <footer class="bg-gradient-to-r from-indigo-800 to-blue-700 text-white py-6 mt-4 animate__animated animate__fadeIn" style="animation-delay: 0.8s">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-lg"><i class="fas fa-route mr-2"></i> Route Calculator</p>
+                    <p class="text-sm text-indigo-200">&copy; 2025 All rights reserved.</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-white hover:text-indigo-200 transition">
+                        <i class="fab fa-facebook-f text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-indigo-200 transition">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-indigo-200 transition">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-indigo-200 transition">
+                        <i class="fab fa-linkedin-in text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </footer>
  
     <script>
+        // Hide results card initially
+        document.getElementById('results').style.display = 'none';
+        
         var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         var pickupMarker, dropMarker, routeLayer;
 
         function getCoordinates(address, callback) {
+            // Show loader
+            document.getElementById('loader').style.display = 'block';
+            
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${address}`)
                 .then(response => response.json())
                 .then(data => {
+                    // Hide loader
+                    document.getElementById('loader').style.display = 'none';
+                    
                     if (data.length > 0) {
                         callback(data[0].lat, data[0].lon);
                     } else {
                         alert("Location not found!");
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    // Hide loader
+                    document.getElementById('loader').style.display = 'none';
+                    console.error('Error:', error);
+                });
         }
 
         function calculateRoute() {
@@ -107,25 +338,58 @@
 
             getCoordinates(pickup, (pickupLat, pickupLng) => {
                 if (pickupMarker) map.removeLayer(pickupMarker);
-                pickupMarker = L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup").openPopup();
+                pickupMarker = L.marker([pickupLat, pickupLng], {
+                    icon: L.divIcon({
+                        html: '<i class="fas fa-location-arrow text-indigo-600 text-2xl"></i>',
+                        className: 'custom-div-icon',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    })
+                }).addTo(map).bindPopup("Pickup: " + pickup).openPopup();
 
                 getCoordinates(drop, (dropLat, dropLng) => {
                     if (dropMarker) map.removeLayer(dropMarker);
-                    dropMarker = L.marker([dropLat, dropLng]).addTo(map).bindPopup("Drop").openPopup();
+                    dropMarker = L.marker([dropLat, dropLng], {
+                        icon: L.divIcon({
+                            html: '<i class="fas fa-map-pin text-red-600 text-2xl"></i>',
+                            className: 'custom-div-icon',
+                            iconSize: [30, 30],
+                            iconAnchor: [15, 15]
+                        })
+                    }).addTo(map).bindPopup("Drop: " + drop).openPopup();
 
                     const distance = calculateDistance(pickupLat, pickupLng, dropLat, dropLng);
-                    document.getElementById("distance").innerText = `Distance: ${distance.toFixed(2)} km`;
+                    document.getElementById("distance").innerHTML = `<i class="fas fa-route mr-2"></i>Distance: <span class="text-indigo-600 font-bold">${distance.toFixed(2)} km</span>`;
 
                     // Price calculation logic
                     const baseFare = 20; // Fixed starting fare
                     const costPerKm = 10; // Rate per kilometer
                     const totalPrice = baseFare + (costPerKm * distance);
 
-                    document.getElementById("price").innerText = `Price: ₹${totalPrice.toFixed(2)}`;
+                    document.getElementById("price").innerHTML = `<i class="fas fa-tags mr-2"></i>Price: <span class="text-green-600 font-bold">₹${totalPrice.toFixed(2)}</span>`;
+
+                    // Show the results card with animation
+                    const resultsCard = document.getElementById('results');
+                    resultsCard.style.display = 'block';
+                    setTimeout(() => {
+                        resultsCard.classList.add('active');
+                    }, 50);
 
                     // Display the route on the map
                     if (routeLayer) map.removeLayer(routeLayer);
-                    routeLayer = L.polyline([[pickupLat, pickupLng], [dropLat, dropLng]], { color: "blue" }).addTo(map);
+                    routeLayer = L.polyline([[pickupLat, pickupLng], [dropLat, dropLng]], { 
+                        color: "#4F46E5",
+                        weight: 5,
+                        opacity: 0.7,
+                        dashArray: "10, 10"
+                    }).addTo(map);
+                    
+                    // Fit map to show both markers
+                    const bounds = L.latLngBounds([
+                        [pickupLat, pickupLng],
+                        [dropLat, dropLng]
+                    ]);
+                    map.fitBounds(bounds, { padding: [50, 50] });
                 });
             });
         }
@@ -151,10 +415,31 @@
                 return;
             }
 
-            // Simulate shipment processing
-            document.getElementById("shipmentMessage").innerText = "Shipment processed successfully!";
-            window.location.href = "/shipment";
+            // Show loader
+            document.getElementById('loader').style.display = 'block';
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                // Hide loader
+                document.getElementById('loader').style.display = 'none';
+                
+                // Simulate shipment processing
+                document.getElementById("shipmentMessage").innerHTML = '<i class="fas fa-check-circle mr-2 text-green-500"></i>Shipment processed successfully!';
+                
+                // Redirect after a short delay for better UX
+                setTimeout(() => {
+                    window.location.href = "/shipment";
+                }, 1500);
+            }, 1000);
         }
+        
+        // Add pulse animation to map when loaded
+        map.on('load', function() {
+            document.getElementById('map').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('map').classList.remove('pulse');
+            }, 2000);
+        });
     </script>
 
 </body>
