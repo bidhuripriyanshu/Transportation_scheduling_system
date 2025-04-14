@@ -9,6 +9,9 @@ const Process = require('./models/process.js');
 //socket
 const axios = require('axios');
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const cloudinary = require("./utils/cloudinary.js");
 const upload = require("./middleware/multer.middleware.js");
 
@@ -73,14 +76,17 @@ const setupSession = () => {
         saveUninitialized: false,
         store: MongoStore.create({
             mongoUrl: MONGO_URI,
-            ttl: 14 * 24 * 60 * 60, // = 14 days. Default
-            autoRemove: 'native', // Default
+            ttl: 14 * 24 * 60 * 60, // = 14 days
+            autoRemove: 'native',
             touchAfter: 24 * 3600 // time period in seconds
         }),
         cookie: { 
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
-        }
+            secure: process.env.NODE_ENV === 'production' ? true : false,
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+            httpOnly: true
+        },
+        proxy: process.env.NODE_ENV === 'production' // Trust the reverse proxy when in production
     }));
     
     console.log('Session middleware configured with MongoStore');
@@ -97,10 +103,25 @@ const startServer = () => {
 
 // Middleware for authentication (ensuring session is available)
 function ensureAuthenticated(req, res, next) {
-    if (req.session.user) {  // Check if user session exists
-        return next();
+    console.log('Session check:', req.session.id);
+    
+    if (!req.session) {
+        console.log('No session object found');
+        return res.redirect('/login');
     }
-    res.redirect('/');  // Redirect to login page if not authenticated
+    
+    if (!req.session.user) {
+        console.log('No user in session');
+        return res.redirect('/login');
+    }
+    
+    if (!req.session.user.loggedIn) {
+        console.log('User not marked as logged in');
+        return res.redirect('/login');
+    }
+    
+    console.log(`Authenticated user: ${req.session.user.email} (${req.session.user.role})`);
+    next();
 }
 
 // Initialize MongoDB connection
@@ -110,6 +131,19 @@ connectWithRetry();
 const setupRoutes = () => {
     // Routes
     app.get('/', (req, res) => {
+        // If user is already logged in, redirect to appropriate dashboard
+        if (req.session && req.session.user && req.session.user.loggedIn) {
+            console.log(`User already logged in: ${req.session.user.email}`);
+            
+            if (req.session.user.role === 'user') {
+                return res.redirect('/user-dashboard');
+            } else if (req.session.user.role === 'transporter') {
+                return res.redirect('/transporter-dashboard');
+            }
+        }
+        
+        // Otherwise render login page
+        console.log('No user logged in, showing index page');
         res.render('index.ejs');
     });
 
@@ -187,10 +221,13 @@ const setupRoutes = () => {
     // Handle login (POST) with improved error handling
     app.post('/login', async (req, res) => {
         const { email, password, role } = req.body;
+        
+        console.log(`Login attempt: ${email} as ${role}`);
 
         try {
             // Check if MongoDB is connected
             if (!mongoConnected) {
+                console.log('Database not connected during login attempt');
                 return res.status(503).send('Database connection not available. Please try again later.');
             }
 
@@ -202,11 +239,13 @@ const setupRoutes = () => {
             } else if (role === 'transporter') {
                 user = await Transporter.findOne({ email });
             } else {
+                console.log(`Invalid role provided: ${role}`);
                 return res.status(400).send('Invalid role. Please select a valid role.');
             }
 
             // Check if user exists
             if (!user) {
+                console.log(`User not found: ${email}`);
                 return res.status(400).send('Invalid email or password.');
             }
 
@@ -214,16 +253,32 @@ const setupRoutes = () => {
             const isMatch = await bcrypt.compare(password, user.password);
 
             if (!isMatch) {
+                console.log(`Invalid password for: ${email}`);
                 return res.status(400).send('Invalid email or password.');
             }
 
-            // Store the user info in the session
+            // Store the user info in the session with more details
             req.session.user = {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: role
+                role: role,
+                loggedIn: true,
+                loginTime: new Date().toISOString()
             };
+
+            // Save the session explicitly
+            await new Promise((resolve, reject) => {
+                req.session.save(err => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        reject(err);
+                    } else {
+                        console.log(`Login successful: ${email} (${role})`);
+                        resolve();
+                    }
+                });
+            });
 
             // Redirect to the appropriate dashboard based on the role
             if (role === 'user') {
@@ -585,6 +640,32 @@ const setupRoutes = () => {
                 status: 'running',
                 version: process.version
             }
+        });
+    });
+
+    // Add a route to check MongoDB connection and session status
+    app.get('/health', (req, res) => {
+        // Check session
+        const sessionStatus = req.session ? 'active' : 'not configured';
+        
+        // Check database connection
+        const dbStatus = mongoConnected ? 'connected' : 'disconnected';
+        
+        // Gather some environment info
+        const environment = {
+            nodeEnv: process.env.NODE_ENV || 'not set',
+            sessionSecret: process.env.SESSION_SECRET ? 'configured' : 'not configured',
+            mongoUri: process.env.MONGO_URI ? 'configured' : 'not configured',
+        };
+        
+        res.json({
+            status: 'online',
+            timestamp: new Date().toISOString(),
+            database: dbStatus,
+            session: sessionStatus,
+            environment: environment,
+            requestId: req.session?.id || 'no session id',
+            authUser: req.session?.user ? 'authenticated' : 'not authenticated'
         });
     });
 };
