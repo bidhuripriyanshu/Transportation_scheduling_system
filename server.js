@@ -163,23 +163,96 @@ const setupRoutes = () => {
 
     app.get('/user-dashboard', ensureAuthenticated, async (req, res) => {
         try {
+            // Ensure user session exists and contains necessary data
+            if (!req.session || !req.session.user) {
+                console.log('User session missing or incomplete');
+                return res.redirect('/');
+            }
+            
             const loggedInUser = req.session.user;
-            // const userShipments = await Shipment.find({ userId: loggedInUser._id });
-            res.render('user-page.ejs', { loggedInUser });
+            console.log('User dashboard accessed by:', loggedInUser.email);
+            
+            // Ensure loggedInUser has all required properties
+            if (!loggedInUser.name) {
+                // If name is missing, try to fetch it from the database
+                try {
+                    const userDoc = await User.findById(loggedInUser.id);
+                    if (userDoc) {
+                        // Update session with full user data
+                        loggedInUser.name = userDoc.name || 'User';
+                        req.session.user = loggedInUser;
+                        await new Promise(resolve => req.session.save(resolve));
+                    }
+                } catch (err) {
+                    console.error('Error fetching user data:', err);
+                    // Continue with default name if fetch fails
+                    loggedInUser.name = 'User';
+                }
+            }
+            
+            // Render the page with the user data
+            res.render('user-page.ejs', { 
+                loggedInUser: {
+                    name: loggedInUser.name || 'User',
+                    email: loggedInUser.email || 'user@example.com',
+                    role: loggedInUser.role || 'user',
+                    id: loggedInUser.id
+                } 
+            });
         } catch (err) {
-            console.error('Error fetching user data:', err);
-            res.status(500).send('Error fetching user data');
+            console.error('Error in user dashboard route:', err);
+            res.status(500).send('Error accessing dashboard. Please try logging in again.');
         }
     });
 
     app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
         try {
-            const shipmentRequests = await Shipment.find();
+            // Ensure user session exists and contains necessary data
+            if (!req.session || !req.session.user) {
+                console.log('Transporter session missing or incomplete');
+                return res.redirect('/');
+            }
+            
             const loggedInUser = req.session.user;
-            res.render('transporter-page.ejs', { shipmentRequests, loggedInUser });
+            console.log('Transporter dashboard accessed by:', loggedInUser.email);
+
+            // Ensure loggedInUser has all required properties
+            if (!loggedInUser.name) {
+                // If name is missing, try to fetch it from the database
+                try {
+                    const transporterDoc = await Transporter.findById(loggedInUser.id);
+                    if (transporterDoc) {
+                        // Update session with full user data
+                        loggedInUser.name = transporterDoc.name || 'Transporter';
+                        req.session.user = loggedInUser;
+                        await new Promise(resolve => req.session.save(resolve));
+                    }
+                } catch (err) {
+                    console.error('Error fetching transporter data:', err);
+                    // Continue with default name if fetch fails
+                    loggedInUser.name = 'Transporter';
+                }
+            }
+
+            // Fetch shipment requests
+            const shipmentRequests = await Shipment.find().catch(err => {
+                console.error('Error fetching shipments:', err);
+                return [];
+            });
+            
+            // Render the page with the user data
+            res.render('transporter-page.ejs', { 
+                shipmentRequests,
+                loggedInUser: {
+                    name: loggedInUser.name || 'Transporter',
+                    email: loggedInUser.email || 'transporter@example.com',
+                    role: loggedInUser.role || 'transporter',
+                    id: loggedInUser.id
+                } 
+            });
         } catch (err) {
-            console.error('Error fetching shipment requests:', err);
-            res.status(500).send('Error fetching shipment data');
+            console.error('Error in transporter dashboard route:', err);
+            res.status(500).send('Error accessing dashboard. Please try logging in again.');
         }
     });
 
@@ -266,12 +339,19 @@ const setupRoutes = () => {
             // Store the user info in the session with more details
             req.session.user = {
                 id: user._id,
-                name: user.name,
+                name: user.name || 'User',
                 email: user.email,
                 role: role,
                 loggedIn: true,
                 loginTime: new Date().toISOString()
             };
+
+            console.log('User session created with data:', {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: role
+            });
 
             // Save the session explicitly
             await new Promise((resolve, reject) => {
@@ -280,7 +360,7 @@ const setupRoutes = () => {
                         console.error('Session save error:', err);
                         reject(err);
                     } else {
-                        console.log(`Login successful: ${email} (${role})`);
+                        console.log(`Login successful: ${email} (${role}), session ID: ${req.session.id}`);
                         resolve();
                     }
                 });

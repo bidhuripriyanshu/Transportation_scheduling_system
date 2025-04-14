@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <% 
+    // Ensure loggedInUser exists with fallback values
+    const user = typeof loggedInUser !== 'undefined' && loggedInUser ? loggedInUser : { name: 'User', email: '', role: 'user', id: '' };
+    %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Transport Scheduler User Dashboard">
@@ -353,7 +357,7 @@
     <div class="container my-4">
         <!-- Dashboard Section -->
         <section id="dashboard-section" class="section active fade-in">
-            <h2 class="animate__animated animate__fadeInLeft">Welcome to Transport Scheduler, <%= (loggedInUser && loggedInUser.name) ? loggedInUser.name : 'User' %></h2>
+            <h2 class="animate__animated animate__fadeInLeft">Welcome to Transport Scheduler, <%= (user && user.name) ? user.name : 'User' %></h2>
             <p class="animate__animated animate__fadeInRight">Transport Scheduler is your one-stop solution for scheduling and managing shipments efficiently. 
                Whether you're an individual or a business, our platform ensures that your logistics needs are met seamlessly. 
                Track your deliveries, initiate shipments, and manage your profile with ease.</p>
@@ -448,11 +452,11 @@
             <form action="/update-profile_2" method="POST" class="animate__animated animate__fadeIn">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" name="name" class="form-control" value="<%= (loggedInUser && loggedInUser.name) ? loggedInUser.name : 'User' %>" required />
+                    <input type="text" id="username" name="name" class="form-control" value="<%= (user && user.name) ? user.name : 'User' %>" required />
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" value="<%= (loggedInUser && loggedInUser.email) ? loggedInUser.email : '' %>" required />
+                    <input type="email" id="email" name="email" class="form-control" value="<%= (user && user.email) ? user.email : '' %>" required />
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
@@ -576,7 +580,7 @@
         document.getElementById('page-loader').style.display = 'block';
         
         // Retrieve logged-in user details from localStorage
-        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+        const user = JSON.parse(localStorage.getItem("loggedInUser")) || { name: 'User', email: '', role: 'user' };
     
         // Hide loader when page is loaded
         window.addEventListener('load', function() {
@@ -584,7 +588,7 @@
         });
         
         // Redirect to login if no user is logged in
-        if (!loggedInUser) {
+        if (!user) {
             alert("No user is logged in. Redirecting to login page.");
             window.location.href = "login.html"; // Update the redirect URL
         } else {
@@ -593,11 +597,11 @@
             const emailElement = document.getElementById("email");
             
             if (usernameElement) {
-                usernameElement.textContent = (loggedInUser && loggedInUser.name) ? loggedInUser.name : 'User';
+                usernameElement.textContent = (user && user.name) ? user.name : 'User';
             }
             
             if (emailElement) {
-                emailElement.textContent = (loggedInUser && loggedInUser.email) ? loggedInUser.email : '';
+                emailElement.textContent = (user && user.email) ? user.email : '';
             }
         }
     
@@ -652,7 +656,7 @@
                     const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
                     feedbacks.push({
                         feedback,
-                        user: loggedInUser && loggedInUser.email ? loggedInUser.email : 'anonymous',
+                        user: user && user.email ? user.email : 'anonymous',
                         timestamp: new Date().toISOString()
                     });
                     localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
