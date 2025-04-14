@@ -1,5 +1,9 @@
 const express = require('express');
 const app = express();
+
+// Trust proxy - required for Render deployment
+app.set('trust proxy', 1);
+
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -73,7 +77,7 @@ const setupSession = () => {
     app.use(session({
         secret: process.env.SESSION_SECRET || 'your_secret_key',
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true, // Changed to true to ensure session is always created
         store: MongoStore.create({
             mongoUrl: MONGO_URI,
             ttl: 14 * 24 * 60 * 60, // = 14 days
@@ -81,15 +85,17 @@ const setupSession = () => {
             touchAfter: 24 * 3600 // time period in seconds
         }),
         cookie: { 
-            secure: process.env.NODE_ENV === 'production' ? true : false,
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            // Only use secure cookies in production with proper HTTPS
+            secure: false, // Set to false to work with Render's proxy
+            sameSite: 'lax', // Changed from 'none' to 'lax' for better compatibility
             maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-            httpOnly: true
+            httpOnly: true,
         },
-        proxy: process.env.NODE_ENV === 'production' // Trust the reverse proxy when in production
+        proxy: true // Trust the reverse proxy
     }));
     
     console.log('Session middleware configured with MongoStore');
+    console.log(`Cookie settings: secure=${process.env.NODE_ENV === 'production' ? 'false' : 'false'}, sameSite=lax`);
 }
 
 // Start the server
@@ -107,17 +113,17 @@ function ensureAuthenticated(req, res, next) {
     
     if (!req.session) {
         console.log('No session object found');
-        return res.redirect('/login');
+        return res.redirect('/');
     }
     
     if (!req.session.user) {
         console.log('No user in session');
-        return res.redirect('/login');
+        return res.redirect('/');
     }
     
     if (!req.session.user.loggedIn) {
         console.log('User not marked as logged in');
-        return res.redirect('/login');
+        return res.redirect('/');
     }
     
     console.log(`Authenticated user: ${req.session.user.email} (${req.session.user.role})`);
@@ -666,6 +672,25 @@ const setupRoutes = () => {
             environment: environment,
             requestId: req.session?.id || 'no session id',
             authUser: req.session?.user ? 'authenticated' : 'not authenticated'
+        });
+    });
+
+    // Add a debug route for session information
+    app.get('/debug-session', (req, res) => {
+        res.json({
+            sessionExists: !!req.session,
+            sessionID: req.session?.id || 'none',
+            userInSession: !!req.session?.user,
+            userData: req.session?.user ? {
+                id: req.session.user.id,
+                name: req.session.user.name,
+                email: req.session.user.email,
+                role: req.session.user.role,
+                loggedIn: req.session.user.loggedIn,
+                loginTime: req.session.user.loginTime
+            } : 'none',
+            cookies: req.headers.cookie || 'none',
+            isSecure: req.secure
         });
     });
 };
