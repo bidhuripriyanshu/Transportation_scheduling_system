@@ -7,13 +7,124 @@
     %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Transport Scheduler User Dashboard">
-    <title>User Dashboard</title>
-    <link rel="stylesheet" href="/stylesheets/user-page.css">
+    <meta name="description" content="Transport Scheduler - Manage your shipments efficiently with real-time tracking and seamless logistics">
+    <meta name="keywords" content="logistics, shipping, transport, scheduler, delivery">
+    <meta name="theme-color" content="#4361ee">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Transport Scheduler | User Dashboard</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Core stylesheets -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Animation Styles */
+        :root {
+            /* Primary palette */
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --primary-light: #4cc9f0;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            
+            /* Neutral colors */
+            --dark: #0b132b;
+            --medium: #566270;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            
+            /* Semantic colors */
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --info: #118ab2;
+            
+            /* UI spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2.5rem;
+            
+            /* Fonts */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --font-heading: 'Poppins', var(--font-primary);
+            --font-code: 'Fira Code', monospace;
+            
+            /* Border radius */
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 1rem;
+            --radius-full: 9999px;
+            
+            /* Transitions */
+            --transition-fast: 200ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.05);
+            --shadow-focus: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+        
+        /* Base styles */
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--spacing-md);
+            color: var(--dark);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: -0.025em;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            letter-spacing: -0.025em;
+        }
+        
+        p {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* Animation utilities */
         .fade-in {
             animation: fadeIn 1s ease-in;
         }
@@ -28,54 +139,57 @@
         }
         
         @keyframes slideIn {
-            from { transform: translateY(50px); opacity: 0; }
+            from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
+        .scale-in {
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .slide-from-left {
+            animation: slideFromLeft 0.5s ease-out;
+        }
+        
+        @keyframes slideFromLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .slide-from-right {
+            animation: slideFromRight 0.5s ease-out;
+        }
+        
+        @keyframes slideFromRight {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         .pulse {
-            animation: pulse 2s infinite;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
         }
         
-        .btn-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .btn-hover:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #fff;
-            transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover::after {
-            width: 100%;
-        }
-        
+        /* Layout components */
         .section {
             transition: all 0.5s ease;
             opacity: 0;
             transform: translateY(20px);
             display: none;
+            padding: var(--spacing-lg);
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-lg);
         }
         
         .section.active {
@@ -84,494 +198,1499 @@
             display: block;
         }
         
-        .rotating {
-            animation: rotate 10s linear infinite;
+        .card {
+            border: none;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            overflow: hidden;
         }
         
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
         }
         
-        .shake {
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        .form-control:focus {
-            transform: scale(1.02);
-            transition: transform 0.3s ease;
-        }
-        
-        /* Loader animation */
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 5px solid #FFF;
-            border-bottom-color: #FF3D00;
-            border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            display: none;
-        }
-        
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        #super-coin {
-            animation: coin-pulse 2s infinite;
-        }
-        
-        @keyframes coin-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); box-shadow: 0 0 10px gold; }
-            100% { transform: scale(1); }
-        }
-        
-        /* Enhanced Header and Footer Styles */
+        /* Navbar styling */
         .modern-navbar {
-            background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            padding: 15px 0;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-md) 0;
             position: sticky;
             top: 0;
             z-index: 1000;
         }
         
         .navbar-brand {
-            font-size: 1.8rem;
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0 15px;
-            position: relative;
+            letter-spacing: -0.025em;
+            color: var(--white) !important;
             display: flex;
             align-items: center;
+            gap: var(--spacing-sm);
         }
         
-        .navbar-brand:before {
-            content: "";
-            width: 12px;
-            height: 12px;
-            background: #ffe600;
-            display: inline-block;
-            margin-right: 10px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        .nav-item {
-            margin: 0 5px;
+        .navbar-brand i {
+            font-size: 1.75rem;
+            color: var(--accent);
         }
         
         .nav-link {
+            color: var(--white) !important;
             font-weight: 500;
-            letter-spacing: 0.5px;
-            padding: 8px 15px !important;
-            border-radius: 4px;
-            transition: all 0.3s ease;
+            padding: var(--spacing-sm) var(--spacing-md) !important;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            position: relative;
+            margin: 0 var(--spacing-xs);
+            font-size: 0.95rem;
         }
         
         .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
         }
         
         .nav-link.active {
-            background-color: rgba(255,255,255,0.2);
-            color: #fff !important;
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
         }
         
-        .modern-footer {
-            background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
-            color: white;
-            padding: 50px 0 20px;
-            margin-top: 60px;
+        .nav-link i {
+            margin-right: var(--spacing-xs);
+            font-size: 1rem;
+        }
+        
+        /* Button styles */
+        .btn {
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+            border: none;
             position: relative;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         
-        .modern-footer:before {
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:active::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Loader animation */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            animation: loader-spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes loader-spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Form controls */
+        .form-control {
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: none;
+            transition: all var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-focus);
+            transform: none;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            color: var(--medium);
+        }
+        
+        /* Super coin badge */
+        #super-coin {
+            position: relative;
+            background: linear-gradient(45deg, #ffd700, #ff9d00);
+            color: var(--dark) !important;
+            font-weight: 700;
+            border-radius: var(--radius-full);
+            padding: var(--spacing-sm) var(--spacing-md);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transition: all var(--transition-normal);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        #super-coin:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        #super-coin i {
+            margin-right: var(--spacing-xs);
+            animation: coin-spin 4s linear infinite;
+        }
+        
+        @keyframes coin-spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        
+        /* Footer styling */
+        .modern-footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: var(--white);
+            padding: var(--spacing-xl) 0 var(--spacing-md);
+            margin-top: auto;
+            position: relative;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modern-footer::before {
             content: "";
             position: absolute;
             top: -20px;
             left: 0;
             right: 0;
             height: 20px;
-            background: linear-gradient(135deg, transparent 33%, #2b5876 33%, #2b5876 66%, transparent 66%);
-            background-size: 40px 40px;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' fill='%233a0ca3' opacity='.25'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' fill='%233a0ca3' opacity='.5'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%233a0ca3'/%3E%3C/svg%3E") center/cover no-repeat;
         }
         
-        .footer-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        
-        .footer-section {
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 30px;
-        }
-        
-        .footer-section h5 {
-            color: #ffe600;
-            margin-bottom: 20px;
+        .footer-heading {
+            color: var(--white);
             font-weight: 600;
+            margin-bottom: var(--spacing-md);
             position: relative;
-            padding-bottom: 10px;
+            padding-bottom: var(--spacing-sm);
         }
         
-        .footer-section h5:after {
+        .footer-heading::after {
             content: '';
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 50px;
-            height: 2px;
-            background: #ffe600;
-        }
-        
-        .footer-section p {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: var(--radius-sm);
         }
         
         .footer-links {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: var(--spacing-sm);
         }
         
         .footer-links a {
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: block;
-            padding: 5px 0;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .footer-links a i {
+            margin-right: var(--spacing-sm);
+            font-size: 0.85rem;
+            transition: transform var(--transition-fast);
         }
         
         .footer-links a:hover {
-            color: #fff;
-            transform: translateX(5px);
+            color: var(--white);
+            transform: translateX(2px);
+        }
+        
+        .footer-links a:hover i {
+            transform: translateX(2px);
         }
         
         .social-icons {
-            list-style: none;
-            padding: 0;
             display: flex;
-            margin-top: 20px;
-        }
-        
-        .social-icons li {
-            margin-right: 15px;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
         }
         
         .social-icons a {
-            color: #fff;
-            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            transition: all var(--transition-normal);
         }
         
         .social-icons a:hover {
-            background: #ffe600;
-            color: #2b5876;
+            background: var(--white);
+            color: var(--primary);
             transform: translateY(-3px);
         }
         
         .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: var(--spacing-md);
+            margin-top: var(--spacing-lg);
             text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
         }
         
-        .footer-bottom p {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.6);
+        /* Media Queries */
+        @media (max-width: 992px) {
+            html {
+                font-size: 14px;
+            }
+            
+            .nav-link {
+                padding: var(--spacing-xs) var(--spacing-sm) !important;
+            }
+            
+            .section {
+                padding: var(--spacing-md);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            html {
+                font-size: 13px;
+            }
+            
+            .section {
+                padding: var(--spacing-sm);
+            }
+            
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.75rem; }
+        }
+        
+        /* Print styles */
+        @media print {
+            .modern-navbar, .modern-footer, .no-print {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+            }
+            
+            .section {
+                box-shadow: none;
+                margin: 0;
+                padding: 1cm;
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --dark: #f8f9fa;
+                --medium: #adb5bd;
+                --light: #212529;
+                --white: #1a1a1a;
+            }
+            
+            .form-control {
+                background-color: #2d3748;
+                border-color: #4a5568;
+                color: #e2e8f0;
+            }
+            
+            .section, .card {
+                background-color: #2d3748;
+            }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body style="background-color: lightblue;">
+<body>
+    <!-- Page loader -->
     <div class="loader" id="page-loader"></div>
     
-    <!-- Enhanced Header/Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark modern-navbar animate__animated animate__fadeInDown">
-        <div class="container-fluid">
-            <a class="navbar-brand text-light" href="#">Transport Scheduler</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Navbar -->
+    <header class="modern-navbar animate__animated animate__fadeIn">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-truck-moving"></i>
+                    <span>Transport Scheduler</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
+                        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav" >
+                
+                <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard-section"><i class="fas fa-home me-1"></i> Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="initiate-shipment-section"><i class="fas fa-truck me-1"></i> Initiate Shipment</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="manage-profile-section"><i class="fas fa-user me-1"></i> Manage Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="contact-section"><i class="fas fa-envelope me-1"></i> Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-section="help-section"><i class="fas fa-question-circle me-1"></i> Help</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal"><i class="fas fa-comment me-1"></i> Feedback</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/user-notifications" data-section="notifications-section"><i class="fas fa-bell me-1"></i> Notifications</a></li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-primary text-light btn-hover" href="/Real_tracker" data-section="notifications-section"><i class="fas fa-map-marker-alt me-1"></i> Real-time Tracking</a>
-                    </li>
+                            <a class="nav-link active" href="#" data-section="dashboard-section">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                        </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/super_coin" id="super-coin" style="color: gold; font-weight: bold; background-color: rgb(224, 11, 11); border-radius: 5px; padding: 5px 10px;">
-                            <i class="fas fa-coins me-1"></i> Super Coin: 100
+                            <a class="nav-link" href="#" data-section="initiate-shipment-section">
+                                <i class="fas fa-truck"></i> Ship
                         </a>
                     </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="manage-profile-section">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="contact-section">
+                                <i class="fas fa-envelope"></i> Contact
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="help-section">
+                                <i class="fas fa-question-circle"></i> Help
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/user-notifications">
+                                <i class="fas fa-bell"></i> Notifications
+                                <span class="badge rounded-pill bg-danger">3</span>
+                            </a>
+                        </li>
                 </ul>
             
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light btn-hover" type="submit"><i class="fas fa-search"></i></button>
-                </form>
+                    <div class="d-flex align-items-center">
+                        <a href="/super_coin" id="super-coin" class="me-3">
+                            <i class="fas fa-coins"></i> 100
+                        </a>
+                        
+                        <a href="/Real_tracker" class="btn btn-primary me-2">
+                            <i class="fas fa-map-marker-alt"></i> Track
+                        </a>
+                        
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" 
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=random" 
+                                     alt="<%= user.name %>" class="rounded-circle me-1" width="32" height="32">
+                                <span class="d-none d-sm-inline-block"><%= user.name %></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="#" data-section="manage-profile-section">
+                                        <i class="fas fa-user-circle me-2"></i> My Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                                        <i class="fas fa-cog me-2"></i> Settings
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="#" data-section="logout-section">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
             </div>
         </div>
     </nav>
+        </div>
+    </header>
 
     <!-- Main Container -->
-    <div class="container my-4">
+    <main class="container py-4">
         <!-- Dashboard Section -->
-        <section id="dashboard-section" class="section active fade-in">
-            <h2 class="animate__animated animate__fadeInLeft">Welcome to Transport Scheduler, <%= (user && user.name) ? user.name : 'User' %></h2>
-            <p class="animate__animated animate__fadeInRight">Transport Scheduler is your one-stop solution for scheduling and managing shipments efficiently. 
-               Whether you're an individual or a business, our platform ensures that your logistics needs are met seamlessly. 
-               Track your deliveries, initiate shipments, and manage your profile with ease.</p>
-
-            <!-- Carousel -->
-            <div id="carouselExample" class="carousel slide animate__animated animate__fadeIn" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <section id="dashboard-section" class="section active">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="slide-from-left">
+                    <h1 class="mb-0">Welcome, <%= user.name %></h1>
+                    <p class="text-muted mb-0">Here's what's happening with your shipments today</p>
                 </div>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="/image/project.1.JPG" class="d-block w-100" alt="Book, track, and travel with ease">
-                        <div class="carousel-caption">
-                            <h5 class="pulse">Book, track, and travel with ease</h5>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="/image/photo8.JPG" class="d-block w-100" alt="Fast and easy transportation services for everyone">
-                        <div class="carousel-caption">
-                            <h5 class="pulse">Fast and easy transportation services for everyone</h5>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="/image/photo_3.JPG" class="d-block w-100" alt="Connect with reliable transporters for your needs">
-                        <div class="carousel-caption">
-                            <h5 class="pulse">Connect with reliable transporters for your needs</h5>
-                        </div>
-                    </div>
+                <div class="slide-from-right">
+                    <button class="btn btn-primary" data-section="initiate-shipment-section">
+                        <i class="fas fa-plus me-2"></i> New Shipment
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
             </div>
-
-            <!-- Features Section -->
-            <h5 class="mt-4 slide-in">Why Choose Us?</h5>
-            <ul class="slide-in">
-                <li>Easy-to-use shipment scheduling and management.</li>
-                <li>Wide range of vehicles for diverse transport needs.</li>
-                <li>Real-time updates and notifications.</li>
-                <li>Secure and reliable delivery solutions.</li>
-            </ul>
-
-            <h5 class="slide-in">How It Works?</h5>
-            <ul class="slide-in">
-                <li>Create your account and log in.</li>
-                <li>Initiate your shipment by entering details like location, date, and vehicle type.</li>
-                <li>Relax while we handle the rest.</li>
-            </ul>
-        </section>
-
-        <!-- Initiate Shipment Section -->
-        <section id="initiate-shipment-section" class="section">
-            <h1 class="animate__animated animate__fadeInDown">Initiate Shipment</h1>
-            <form id="shipmentForm" action="/shipment" method="post" class="animate__animated animate__fadeIn">
-                <div class="mb-3">
-                    <label for="location" class="form-label">Drop-off Location:</label>
-                    <input type="text" id="location" name="location" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="dateTime" class="form-label">Select Date and Time:</label>
-                    <input type="datetime-local" id="dateTime" name="dateTime" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="goodsDescription" class="form-label">Describe Goods:</label>
-                    <textarea id="goodsDescription" name="goodsDescription" class="form-control" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="vehicleType" class="form-label">Choose Vehicle Type:</label>
-                    <select id="vehicleType" name="vehicleType" class="form-select" required>
-                        <option value="Truck">Truck</option>
-                        <option value="Van">Van</option>
-                        <option value="Bike">Bike</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-hover">Submit Delivery Request</button>
-            </form>
-        </section>
-
-        <!-- Manage Profile Section -->
-        <section id="manage-profile-section" class="section">
-            <h1 class="animate__animated animate__fadeInDown">Manage Profile</h1>
             
-            <!-- Display current username and email -->
-            <form action="/update-profile_2" method="POST" class="animate__animated animate__fadeIn">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" name="name" class="form-control" value="<%= (user && user.name) ? user.name : 'User' %>" required />
+            <!-- Stats cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 scale-in" style="--delay: 100ms">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-subtitle mb-2 text-muted">Active Shipments</h6>
+                                    <h2 class="card-title mb-0">3</h2>
                 </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" value="<%= (user && user.email) ? user.email : '' %>" required />
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-truck-loading text-primary fa-2x"></i>
+                        </div>
+                    </div>
+                            <div class="mt-3 pt-1 border-top">
+                                <small class="text-success">
+                                    <i class="fas fa-arrow-up me-1"></i>
+                                    10% from last month
+                                </small>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 scale-in" style="--delay: 200ms">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-subtitle mb-2 text-muted">Pending</h6>
+                                    <h2 class="card-title mb-0">1</h2>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Leave blank to keep current password" />
-                </div>
-                <button type="submit" class="btn btn-primary btn-hover">Update Profile</button>
-            </form>
-        </section>
-
-
-        <div class="container mt-4">
-            <!-- Contact Section -->
-            <section id="contact-section" class="section">
-                <h2 class="animate__animated animate__fadeInDown">Contact Us</h2>
-                <p class="animate__animated animate__fadeIn">Have questions or need support? Reach out to us through the form below:</p>
-                <form id="contactForm" class="animate__animated animate__fadeIn">
-                    <div class="mb-3">
-                        <label for="contactName" class="form-label">Your Name</label>
-                        <input type="text" class="form-control" id="contactName" placeholder="Enter your name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contactEmail" class="form-label">Your Email</label>
-                        <input type="email" class="form-control" id="contactEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contactMessage" class="form-label">Your Message</label>
-                        <textarea class="form-control" id="contactMessage" rows="4" placeholder="Enter your message" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-hover">Send Message</button>
-                </form>
-            </section>
-        
-            <!-- Help Section -->
-            <section id="help-section" class="section">
-                <h2 class="animate__animated animate__fadeInDown">Help Center</h2>
-                <p class="animate__animated animate__fadeIn">Find answers to common questions below or contact us for more support:</p>
-                <ul class="animate__animated animate__fadeIn">
-                    <li><strong>How do I create a shipment?</strong>
-                        <p>Go to the "Initiate Shipment" section and fill out the required details. Submit the form to create a new shipment request.</p>
-                    </li>
-                    <li><strong>How can I track my shipments?</strong>
-                        <p>Tracking features will be added soon! Stay tuned for updates.</p>
-                    </li>
-                    <li><strong>How do I update my profile?</strong>
-                        <p>Go to the "Manage Profile" section to edit your personal information.</p>
-                    </li>
-                </ul>
-            </section>
-        </div>
-
-        <!-- Feedback Modal -->
-        <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-            <div class="modal-dialog animate__animated animate__zoomIn">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="feedbackModalLabel">Submit Your Feedback</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form id="feedbackForm">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="feedbackInput" class="form-label">Your Feedback</label>
-                                <textarea class="form-control" id="feedbackInput" rows="4" placeholder="Enter your feedback" required></textarea>
+                                <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-clock text-warning fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-1 border-top">
+                                <small class="text-muted">
+                                    <i class="fas fa-equals me-1"></i>
+                                    Same as last month
+                                </small>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-hover" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary btn-hover">Submit Feedback</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Enhanced Footer -->
-        <footer class="modern-footer animate__animated animate__fadeInUp">
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-section">
-                        <h5>About Us</h5>
-                        <p>Transport Scheduler is your one-stop solution for scheduling and managing shipments efficiently. We provide reliable, secure, and fast transportation services across the country.</p>
-                        <ul class="social-icons">
-                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-                            <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h5>Quick Links</h5>
-                        <ul class="footer-links">
-                            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Home</a></li>
-                            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Services</a></li>
-                            <li><a href="#"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
-                            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Terms & Conditions</a></li>
-                            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h5>Contact Us</h5>
-                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Transport Street, Logistics City</p>
-                        <p><i class="fas fa-phone-alt me-2"></i> +1 (555) 123-4567</p>
-                        <p><i class="fas fa-envelope me-2"></i> contact@transportscheduler.com</p>
-                        <p><i class="fas fa-clock me-2"></i> Mon - Fri: 9:00 AM - 6:00 PM</p>
                     </div>
                 </div>
                 
-                <div class="footer-bottom">
-                    <p>&copy; <span id="current-year">2024</span> Transport Scheduler. All Rights Reserved.</p>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 scale-in" style="--delay: 300ms">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-subtitle mb-2 text-muted">Completed</h6>
+                                    <h2 class="card-title mb-0">24</h2>
+                                </div>
+                                <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-check-circle text-success fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-1 border-top">
+                                <small class="text-success">
+                                    <i class="fas fa-arrow-up me-1"></i>
+                                    25% from last month
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="card h-100 scale-in" style="--delay: 400ms">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-subtitle mb-2 text-muted">Super Coins</h6>
+                                    <h2 class="card-title mb-0">100</h2>
+                                </div>
+                                <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-coins text-warning fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-1 border-top">
+                                <a href="/super_coin" class="text-primary text-decoration-none">
+                                    <small>View benefits <i class="fas fa-arrow-right ms-1"></i></small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent shipments -->
+            <div class="card mb-4 slide-in">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Shipments</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Location</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="fw-medium">#SH-2024</span>
+                                    </td>
+                                    <td>New York, NY</td>
+                                    <td>June 10, 2023</td>
+                                    <td>
+                                        <span class="badge bg-success">Delivered</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                </button>
+                                            <button class="btn btn-outline-secondary">
+                                                <i class="fas fa-file-alt"></i>
+                </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="fw-medium">#SH-2023</span>
+                                    </td>
+                                    <td>Los Angeles, CA</td>
+                                    <td>June 8, 2023</td>
+                                    <td>
+                                        <span class="badge bg-info">In Transit</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="fw-medium">#SH-2022</span>
+                                    </td>
+                                    <td>Chicago, IL</td>
+                                    <td>June 5, 2023</td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured service -->
+            <div class="card mb-0 slide-in" style="--delay: 300ms">
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="/image/photo_2.JPG" alt="Real-time tracking" class="img-fluid rounded-start h-100" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 class="card-title">Real-time Tracking</h4>
+                                        <p class="card-text">Track your shipments in real-time with our advanced GPS technology. Know exactly where your goods are at all times.</p>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">New</span>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="/Real_tracker" class="btn btn-primary">
+                                        Try it now <i class="fas fa-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Initiate Shipment Section -->
+<section id="initiate-shipment-section" class="section">
+            <div class="card mb-4 slide-from-right">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Initiate Shipment</h5>
+        </div>
+                <div class="card-body">
+                    <form id="shipment-form" action="/shipment" method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="fromAddress" name="fromAddress" placeholder="From Address" required>
+                                    <label for="fromAddress"><i class="fas fa-map-marker-alt text-primary me-2"></i>From Address</label>
+        </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="toAddress" name="toAddress" placeholder="To Address" required>
+                                    <label for="toAddress"><i class="fas fa-map-pin text-danger me-2"></i>To Address</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="vehicleType" name="vehicleType" required>
+                                        <option value="" selected disabled>Select vehicle type</option>
+                                        <option value="bicycle">Bicycle</option>
+                                        <option value="motorbike">Motorbike</option>
+                                        <option value="car">Car</option>
+                                        <option value="van">Van</option>
+                                        <option value="truck">Truck</option>
+                                    </select>
+                                    <label for="vehicleType"><i class="fas fa-truck text-secondary me-2"></i>Vehicle Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="itemType" name="itemType" placeholder="Item Type" required>
+                                    <label for="itemType"><i class="fas fa-box text-warning me-2"></i>Item Type</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="itemWeight" name="itemWeight" placeholder="Item Weight (kg)" required>
+                                    <label for="itemWeight"><i class="fas fa-weight-hanging text-success me-2"></i>Item Weight (kg)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="itemWidth" name="itemWidth" placeholder="Item Width (cm)" required>
+                                    <label for="itemWidth"><i class="fas fa-ruler-horizontal text-info me-2"></i>Item Width (cm)</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="itemLength" name="itemLength" placeholder="Item Length (cm)" required>
+                                    <label for="itemLength"><i class="fas fa-ruler text-primary me-2"></i>Item Length (cm)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="itemHeight" name="itemHeight" placeholder="Item Height (cm)" required>
+                                    <label for="itemHeight"><i class="fas fa-ruler-vertical text-danger me-2"></i>Item Height (cm)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="itemQuantity" name="itemQuantity" placeholder="Item Quantity" required>
+                                    <label for="itemQuantity"><i class="fas fa-layer-group text-success me-2"></i>Item Quantity</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description" style="height: 100px"></textarea>
+                                    <label for="itemDescription"><i class="fas fa-info-circle text-secondary me-2"></i>Item Description</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+        <div class="mb-3">
+                                    <label for="itemImage" class="form-label d-block">
+                                        <i class="fas fa-image text-primary me-2"></i>Item Image
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="itemImage" name="itemImage">
+                                        <label class="input-group-text" for="itemImage">Upload</label>
+        </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+        <div class="mb-3">
+                                    <label for="expectedDeliveryTime" class="form-label">
+                                        <i class="fas fa-clock text-warning me-2"></i>Expected Delivery Date
+                                    </label>
+                                    <input type="date" class="form-control" id="expectedDeliveryTime" name="expectedDeliveryTime" required>
+        </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="fragileItem" name="fragileItem">
+                                    <label class="form-check-label" for="fragileItem">
+                                        <i class="fas fa-wine-glass-alt text-danger me-2"></i>This item is fragile
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-truck-loading me-2"></i>Initiate Shipment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+    </form>
+                </div>
+            </div>
+</section>
+     
+<!-- Manage Profile Section -->
+        <section id="manage-profile-section" class="section">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card mb-4 slide-from-left">
+                        <div class="card-body text-center">
+                            <div class="avatar-wrapper mb-3">
+                                <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=random" 
+                                     alt="<%= user.name %>" class="rounded-circle img-fluid" style="width: 150px;">
+                                <div class="avatar-upload">
+                                    <label for="upload-avatar" class="btn btn-sm btn-primary rounded-circle">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="upload-avatar" class="d-none">
+                                </div>
+                            </div>
+                            <h5 class="mb-1"><%= user.name %></h5>
+                            <p class="text-muted mb-3"><%= user.email %></p>
+                            <div class="d-flex justify-content-center mb-2">
+                                <span class="badge bg-success me-2">
+                                    <i class="fas fa-check-circle me-1"></i> Verified
+                                </span>
+                                <span class="badge bg-info">
+                                    <i class="fas fa-star me-1"></i> Premium
+                                </span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-around text-center mt-3">
+        <div>
+                                    <h6>28</h6>
+                                    <small class="text-muted">Shipments</small>
+        </div>
+        <div>
+                                    <h6>100</h6>
+                                    <small class="text-muted">Super Coins</small>
+        </div>
+        <div>
+                                    <h6>4.9</h6>
+                                    <small class="text-muted">Rating</small>
+        </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-4 slide-from-left" style="--delay: 200ms">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Account Info</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <div>
+                                        <i class="fas fa-user-circle fa-lg text-primary me-3"></i>
+                                        <span>Member Since</span>
+                                    </div>
+                                    <span class="text-muted">June 2023</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <div>
+                                        <i class="fas fa-medal fa-lg text-warning me-3"></i>
+                                        <span>Account Status</span>
+                                    </div>
+                                    <span class="badge bg-success">Active</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <div>
+                                        <i class="fas fa-truck fa-lg text-info me-3"></i>
+                                        <span>Last Shipment</span>
+                                    </div>
+                                    <span class="text-muted">June 10, 2023</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <div>
+                                        <i class="fas fa-lock fa-lg text-danger me-3"></i>
+                                        <span>Password</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                        Change
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card mb-4 slide-from-right">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Edit Profile Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="profile-form">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="userName" name="name" value="<%= user.name %>" placeholder="Your Name">
+                                            <label for="userName"><i class="fas fa-user text-primary me-2"></i>Full Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="email" class="form-control" id="userEmail" name="email" value="<%= user.email %>" placeholder="Your Email">
+                                            <label for="userEmail"><i class="fas fa-envelope text-primary me-2"></i>Email Address</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="tel" class="form-control" id="userPhone" name="phone" value="<%= user.phone || '' %>" placeholder="Your Phone">
+                                            <label for="userPhone"><i class="fas fa-phone text-primary me-2"></i>Phone Number</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="userGender" name="gender">
+                                                <option value="" disabled>Select Gender</option>
+                                                <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
+                                                <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
+                                                <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
+                                                <option value="prefer-not-to-say" <%= user.gender === 'prefer-not-to-say' ? 'selected' : '' %>>Prefer not to say</option>
+                                            </select>
+                                            <label for="userGender"><i class="fas fa-venus-mars text-primary me-2"></i>Gender</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="userAddress" name="address" value="<%= user.address || '' %>" placeholder="Your Address">
+                                            <label for="userAddress"><i class="fas fa-home text-primary me-2"></i>Address</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="userCity" name="city" value="<%= user.city || '' %>" placeholder="City">
+                                            <label for="userCity"><i class="fas fa-city text-primary me-2"></i>City</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="userState" name="state" value="<%= user.state || '' %>" placeholder="State">
+                                            <label for="userState"><i class="fas fa-map text-primary me-2"></i>State</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="userZip" name="zip" value="<%= user.zip || '' %>" placeholder="Zip Code">
+                                            <label for="userZip"><i class="fas fa-map-marker-alt text-primary me-2"></i>Zip Code</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <textarea class="form-control" id="userBio" name="bio" placeholder="Tell us about yourself" style="height: 100px"><%= user.bio || '' %></textarea>
+                                            <label for="userBio"><i class="fas fa-user-edit text-primary me-2"></i>About You</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save me-2"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+    </form>
+                        </div>
+</div>
+
+                    <div class="card slide-from-right" style="--delay: 200ms">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Notification Preferences</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="notification-form">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="mb-0">Email Notifications</h6>
+                                            <small class="text-muted">Receive updates via email</small>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                
+                    <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="mb-0">SMS Notifications</h6>
+                                            <small class="text-muted">Receive updates via text message</small>
+                    </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                
+                    <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="mb-0">Push Notifications</h6>
+                                            <small class="text-muted">Receive updates on your device</small>
+                    </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="pushNotifications">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                
+                    <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 class="mb-0">Marketing Emails</h6>
+                                            <small class="text-muted">Receive promotional emails</small>
+                    </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="marketingEmails">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        Save Preferences
+                                    </button>
+                                </div>
+                </form>
+            </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact Us Section -->
+        <section id="contact-section" class="section">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card mb-4 slide-from-left">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Contact Us</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="contact-form">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="contactName" name="name" value="<%= user.name %>" placeholder="Your Name">
+                                    <label for="contactName"><i class="fas fa-user text-primary me-2"></i>Your Name</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="contactEmail" name="email" value="<%= user.email %>" placeholder="Your Email">
+                                    <label for="contactEmail"><i class="fas fa-envelope text-primary me-2"></i>Your Email</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="contactSubject" name="subject">
+                                        <option value="" selected disabled>Select Subject</option>
+                                        <option value="shipment">Shipment Inquiry</option>
+                                        <option value="billing">Billing Question</option>
+                                        <option value="feedback">Feedback</option>
+                                        <option value="complaint">Complaint</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <label for="contactSubject"><i class="fas fa-tag text-primary me-2"></i>Subject</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" id="contactMessage" name="message" placeholder="Your Message" style="height: 150px"></textarea>
+                                    <label for="contactMessage"><i class="fas fa-comment text-primary me-2"></i>Your Message</label>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-4 slide-from-right">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Our Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-4">
+                                <div class="icon-square text-bg-primary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h5>Our Office</h5>
+                                    <p class="mb-0">123 Transport Street, Shipping Avenue<br>Logistics City, LC 10001<br>India</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-4">
+                                <div class="icon-square text-bg-primary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <h5>Phone Number</h5>
+                                    <p class="mb-0">Customer Support: +1 (800) 123-4567<br>Business Inquiries: +1 (800) 987-6543</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-4">
+                                <div class="icon-square text-bg-primary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h5>Email Address</h5>
+                                    <p class="mb-0">support@transportscheduler.com<br>info@transportscheduler.com</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start">
+                                <div class="icon-square text-bg-primary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h5>Operating Hours</h5>
+                                    <p class="mb-0">Monday - Friday: 9 AM - 6 PM<br>Saturday: 10 AM - 4 PM<br>Sunday: Closed</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <h5 class="mb-3">Connect With Us</h5>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="btn btn-outline-primary btn-lg rounded-circle">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-info btn-lg rounded-circle">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-danger btn-lg rounded-circle">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-success btn-lg rounded-circle">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-dark btn-lg rounded-circle">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-4 slide-from-right" style="--delay: 200ms">
+                        <div class="card-body">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343!2d-74.00425882426698!3d40.71076447132632!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a197c06b7cb%3A0x3cdf7a0f4a21cf40!2s123%20Washington%20St%2C%20New%20York%2C%20NY%2010006!5e0!3m2!1sen!2sus!4v1689920296707!5m2!1sen!2sus" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Help Center Section -->
+        <section id="help-section" class="section">
+            <div class="card mb-4 slide-from-bottom">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Help Center</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-lg-6 offset-lg-3">
+                            <div class="input-group mb-4">
+                                <span class="input-group-text bg-primary text-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-lg" placeholder="Search for help articles...">
+                                <button class="btn btn-primary" type="button">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="icon-square text-bg-primary bg-gradient d-inline-flex align-items-center justify-content-center fs-2 mb-3">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <h5>Shipping Guide</h5>
+                                    <p class="text-muted">Learn about our shipping process, timelines, and tracking.</p>
+                                    <a href="#" class="btn btn-sm btn-outline-primary mt-2">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="icon-square text-bg-success bg-gradient d-inline-flex align-items-center justify-content-center fs-2 mb-3">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <h5>Payment Info</h5>
+                                    <p class="text-muted">Find out about our payment methods, invoices, and refunds.</p>
+                                    <a href="#" class="btn btn-sm btn-outline-success mt-2">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-4">
+                                    <div class="icon-square text-bg-danger bg-gradient d-inline-flex align-items-center justify-content-center fs-2 mb-3">
+                                        <i class="fas fa-question-circle"></i>
+                                    </div>
+                                    <h5>Common Issues</h5>
+                                    <p class="text-muted">Troubleshoot common problems and find quick solutions.</p>
+                                    <a href="#" class="btn btn-sm btn-outline-danger mt-2">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Frequently Asked Questions</h5>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
+                                    <i class="fas fa-question-circle text-primary me-2"></i> How do I track my shipment?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>You can track your shipment by clicking on "Track Shipment" in the navigation menu and entering your tracking number. The system will display real-time information about your shipment's location and estimated delivery time.</p>
+                                    <p>Alternatively, you can also check your shipment status on the dashboard under the "Recent Shipments" table.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                                    <i class="fas fa-question-circle text-primary me-2"></i> What are Super Coins and how do I earn them?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Super Coins are our loyalty rewards that you earn with each shipment. You can use these coins for discounts on future shipments, priority service, and other special offers.</p>
+                                    <p>You earn Super Coins in the following ways:</p>
+                                    <ul>
+                                        <li>10 coins for each successful shipment</li>
+                                        <li>5 coins for referring a friend</li>
+                                        <li>2 coins for each on-time delivery</li>
+                                        <li>Bonus coins during special promotions</li>
+                </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                                    <i class="fas fa-question-circle text-primary me-2"></i> How do I handle damaged or lost shipments?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>If your shipment arrives damaged or is lost during transit, please follow these steps:</p>
+                                    <ol>
+                                        <li>Take photos of the damaged items (if applicable)</li>
+                                        <li>Contact customer support within 48 hours</li>
+                                        <li>Provide your tracking number and shipment details</li>
+                                        <li>Our team will investigate and respond within 24 hours</li>
+                                    </ol>
+                                    <p>Our standard insurance covers up to $100 for lost or damaged items. For higher value shipments, we recommend purchasing additional insurance during the shipping process.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+                                    <i class="fas fa-question-circle text-primary me-2"></i> What payment methods do you accept?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>We accept the following payment methods:</p>
+                                    <ul>
+                                        <li>Credit/Debit Cards (Visa, MasterCard, American Express)</li>
+                                        <li>PayPal</li>
+                                        <li>Bank Transfer</li>
+                                        <li>Digital Wallets (Google Pay, Apple Pay)</li>
+                                        <li>Super Coins (for discounts)</li>
+                                    </ul>
+                                    <p>For business accounts, we also offer invoicing with net-30 payment terms after credit approval.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" aria-expanded="false" aria-controls="faq5">
+                                    <i class="fas fa-question-circle text-primary me-2"></i> Can I change the delivery address after shipping?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Yes, you can change the delivery address for a shipment that has not yet been dispatched. For shipments already in transit, address changes may be possible depending on the current status and location.</p>
+                                    <p>To change a delivery address:</p>
+                                    <ol>
+                                        <li>Go to your dashboard</li>
+                                        <li>Find the shipment in the "Recent Shipments" table</li>
+                                        <li>Click on "Edit" button</li>
+                                        <li>Update the delivery address</li>
+                                        <li>Submit the changes</li>
+                                    </ol>
+                                    <p>Note: Additional fees may apply for address changes on shipments already in transit.</p>
+                                </div>
+                            </div>
+            </div>
+        </div>
+
+                    <div class="text-center mt-4">
+                        <p>Can't find what you're looking for?</p>
+                        <a href="#contact-section" class="btn btn-primary">
+                            <i class="fas fa-headset me-2"></i>Contact Customer Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Logout Section -->
+        <section id="logout-section" class="section">
+            <div class="card mb-4 slide-from-bottom">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Account Logout</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 text-center">
+                            <div class="mb-4">
+                                <div class="avatar-wrapper mb-3">
+                                    <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=random" 
+                                         alt="<%= user.name %>" class="rounded-circle img-fluid" style="width: 120px;">
+                                </div>
+                                <h4 class="mb-1">Goodbye, <%= user.name %>!</h4>
+                                <p class="text-muted">Are you sure you want to log out?</p>
+                            </div>
+                            
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Remember:</strong> Logging out will end your current session and you'll need to log in again to access your account.
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <i class="fas fa-shield-alt text-primary fs-3 mb-3"></i>
+                                            <h6>Security Tip</h6>
+                                            <p class="small text-muted mb-0">Always log out when using shared devices to protect your account.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <i class="fas fa-mobile-alt text-primary fs-3 mb-3"></i>
+                                            <h6>Stay Connected</h6>
+                                            <p class="small text-muted mb-0">Download our mobile app to stay logged in securely on your personal device.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                                <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="window.location.href='/'">
+                                    <i class="fas fa-arrow-left me-2"></i>Return to Dashboard
+                                </button>
+                                <button type="button" class="btn btn-danger btn-lg px-4" id="confirm-logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Confirm Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="mt-5 bg-dark text-light py-5 slide-from-bottom" style="--delay: 300ms">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6">
+                        <h5 class="text-white mb-3">Transport Scheduler</h5>
+                        <p class="text-muted">We provide efficient and reliable transport scheduling solutions for all your shipping needs.</p>
+                        <div class="d-flex gap-3 mt-3">
+                            <a href="#" class="text-white fs-5"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-white fs-5"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-white fs-5"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-white fs-5"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-white fs-5"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h5 class="text-white mb-3">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="#dashboard-section" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Dashboard</a></li>
+                            <li class="mb-2"><a href="#initiate-shipment-section" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Ship Now</a></li>
+                            <li class="mb-2"><a href="#manage-profile-section" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>My Profile</a></li>
+                            <li class="mb-2"><a href="#contact-section" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Contact Us</a></li>
+                            <li class="mb-2"><a href="#help-section" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Help Center</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h5 class="text-white mb-3">Contact Info</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2 text-muted"><i class="fas fa-map-marker-alt me-2 text-primary"></i>123 Transport Street, Shipping Avenue, Logistics City, LC 10001, India</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-phone me-2 text-primary"></i>+1 (800) 123-4567</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-envelope me-2 text-primary"></i>info@transportscheduler.com</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-clock me-2 text-primary"></i>Mon-Fri: 9 AM - 6 PM</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h5 class="text-white mb-3">Newsletter</h5>
+                        <p class="text-muted">Subscribe to our newsletter for the latest updates and offers.</p>
+                        <form class="mt-3">
+                            <div class="input-group mb-3">
+                                <input type="email" class="form-control" placeholder="Your Email" aria-label="Your Email" aria-describedby="button-addon2">
+                                <button class="btn btn-primary" type="button" id="button-addon2"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </form>
+                        <div class="mt-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt text-primary me-2 fs-5"></i>
+                                <span class="text-muted small">Secure Payments</span>
+                            </div>
+                            <div class="mt-2">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" alt="Visa" height="30">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg" alt="MasterCard" height="30">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/paypal/paypal-original.svg" alt="PayPal" height="30">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4 bg-secondary">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-0 text-muted">© <span id="current-year">2023</span> Transport Scheduler. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item"><a href="#" class="text-decoration-none text-muted small">Privacy Policy</a></li>
+                            <li class="list-inline-item"><span class="text-muted">|</span></li>
+                            <li class="list-inline-item"><a href="#" class="text-decoration-none text-muted small">Terms of Service</a></li>
+                            <li class="list-inline-item"><span class="text-muted">|</span></li>
+                            <li class="list-inline-item"><a href="#" class="text-decoration-none text-muted small">Sitemap</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </footer>
+        
+        <!-- Password Change Modal -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div class="modal-body">
+                        <form id="password-form">
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="currentPassword" required>
+                                <label for="currentPassword"><i class="fas fa-lock text-primary me-2"></i>Current Password</label>
+                    </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="newPassword" required>
+                                <label for="newPassword"><i class="fas fa-key text-primary me-2"></i>New Password</label>
+                </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                                <label for="confirmPassword"><i class="fas fa-check-circle text-primary me-2"></i>Confirm New Password</label>
+                </div>
+            </form>
+        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Change Password</button>
     </div>
+</div>
+    </div>
+        </div>
+    </main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -586,7 +1705,7 @@
         window.addEventListener('load', function() {
             document.getElementById('page-loader').style.display = 'none';
         });
-        
+    
         // Redirect to login if no user is logged in
         if (!user) {
             alert("No user is logged in. Redirecting to login page.");
@@ -610,7 +1729,7 @@
             link.addEventListener("click", (e) => {
                 const targetSection = e.target.getAttribute("data-section");
                 if (targetSection) {
-                    showSection(targetSection);
+                showSection(targetSection);
                 }
             });
         });
@@ -641,35 +1760,35 @@
         const feedbackForm = document.getElementById("feedbackForm");
         if (feedbackForm) {
             feedbackForm.addEventListener("submit", function (e) {
-                e.preventDefault();
-        
-                const feedback = document.getElementById("feedbackInput").value.trim();
-                if (!feedback) {
-                    alert("Please enter some feedback!");
-                    return;
-                }
-        
+            e.preventDefault();
+    
+            const feedback = document.getElementById("feedbackInput").value.trim();
+            if (!feedback) {
+                alert("Please enter some feedback!");
+                return;
+            }
+    
                 // Show loader when submitting feedback
                 document.getElementById('page-loader').style.display = 'block';
                 
                 setTimeout(() => {
-                    const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
-                    feedbacks.push({
-                        feedback,
+            const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
+            feedbacks.push({
+                feedback,
                         user: user && user.email ? user.email : 'anonymous',
-                        timestamp: new Date().toISOString()
-                    });
-                    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
-            
-                    alert("Thank you for your feedback!");
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+    
+            alert("Thank you for your feedback!");
                     feedbackForm.reset();
-            
-                    // Hide feedback modal using Bootstrap Modal API
-                    const feedbackModal = document.getElementById("feedbackModal");
+    
+            // Hide feedback modal using Bootstrap Modal API
+            const feedbackModal = document.getElementById("feedbackModal");
                     if (feedbackModal) {
-                        const modalInstance = bootstrap.Modal.getInstance(feedbackModal);
+            const modalInstance = bootstrap.Modal.getInstance(feedbackModal);
                         if (modalInstance) {
-                            modalInstance.hide();
+            modalInstance.hide();
                         }
                     }
                     
@@ -687,11 +1806,11 @@
                 this.classList.add('shake');
                 
                 setTimeout(() => {
-                    localStorage.removeItem("loggedInUser");
-                    alert("You have been logged out successfully.");
-                    window.location.href = "/";
+            localStorage.removeItem("loggedInUser");
+            alert("You have been logged out successfully.");
+            window.location.href = "/";
                 }, 500);
-            });
+        });
         }
     
         // Dynamic date in footer
@@ -712,8 +1831,8 @@
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         if (tooltipTriggerList.length > 0) {
             tooltipTriggerList.forEach(tooltipTriggerEl => {
-                new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
         }
         
         // Animation on scroll
@@ -747,6 +1866,30 @@
                 this.classList.remove('animate__animated', 'animate__pulse');
             });
         });
-    </script>
+        
+        // Logout section functionality
+        const confirmLogoutBtn = document.getElementById("confirm-logout");
+        if (confirmLogoutBtn) {
+            confirmLogoutBtn.addEventListener("click", function() {
+                // Show loader
+                document.getElementById('page-loader').style.display = 'block';
+                
+                // Add animation class
+                this.classList.add('animate__animated', 'animate__pulse');
+                
+                setTimeout(() => {
+                    // Clear user data
+                    localStorage.removeItem("loggedInUser");
+                    sessionStorage.clear();
+                    
+                    // Show success message
+                    alert("You have been successfully logged out. Thank you for using Transport Scheduler!");
+                    
+                    // Redirect to home/login page
+                    window.location.href = "/";
+                }, 800);
+            });
+        }
+        </script>
 </body>
 </html>
