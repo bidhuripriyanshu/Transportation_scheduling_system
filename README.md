@@ -50,7 +50,4 @@ This application serves as a **transportation scheduling platform** where:
 
 Make sure you have Docker and Docker Compose installed.
 
-```bash
-git clone https://github.com/your-username/transport-scheduling-system.git
-cd transport-scheduling-system
-docker-compose up --build
+git clone:(https://github.com/Raghuveer222/TSS-Final/)
