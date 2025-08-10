@@ -157,7 +157,7 @@ const setupRoutes = () => {
         res.render('login.ejs')
     });
 
-    app.get("/register",(req,res)=>{
+    app.get("/signup",(req,res)=>{
         res.render('signup.ejs')
     });
 
