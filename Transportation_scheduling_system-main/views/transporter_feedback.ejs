@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporter Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #4F46E5;
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --gray-dark: #1F2937;
+            --gray-light: #F3F4F6;
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6366F1 0%, #3730A3 100%);
+            min-height: 100vh;
+        }
+        
+        .main-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+            padding: 1.5rem;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .table-container {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) var(--gray-light);
+        }
+        
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+            background: var(--gray-light);
+            border-radius: 10px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 10px;
+        }
+        
+        .table-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to right, #1F2937, #374151);
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6B7280;
+            pointer-events: none;
+        }
+        
+        .search-input {
+            padding-left: 2.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background-color: white;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+        
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge-excellent {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #065F46;
+        }
+        
+        .badge-good {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #92400E;
+        }
+        
+        .badge-poor {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #B91C1C;
+        }
+        
+        .table-row {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .table-row:hover {
+            background-color: rgba(79, 70, 229, 0.05) !important;
+            transform: translateY(-1px);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .table-cell {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #FFF;
+            border-bottom-color: var(--primary-color);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #6B7280;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #D1D5DB;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-title {
+            font-size: 0.875rem;
+            color: #6B7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-dark);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .excellent-icon {
+            color: var(--success-color);
+        }
+        
+        .good-icon {
+            color: var(--warning-color);
+        }
+        
+        .poor-icon {
+            color: var(--danger-color);
+        }
+        
+        .navbar {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-link {
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="navbar sticky top-0 z-50 py-3 px-6 mb-6 animate__animated animate__fadeInDown">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-truck-fast text-white text-2xl mr-3"></i>
+                <span class="text-white font-bold text-xl">Transport Scheduler</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/transporter-dashboard" class="navbar-link">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a href="/shipment_status" class="navbar-link">
+                    <i class="fas fa-truck mr-2"></i>Shipments
+                </a>
+                <a href="/logout" class="navbar-link bg-red-600 hover:bg-red-700">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-6 animate__animated animate__fadeIn">
+        <h1 class="text-3xl font-bold text-white mb-6 text-center">
+            <i class="fas fa-star mr-2"></i>Transporter Feedback
+        </h1>
+        
+        <!-- Stats Section -->
+        <div id="stats-container" class="stats-container animate__animated animate__fadeInUp">
+            <div class="stat-card">
+                <i class="fas fa-star stat-icon excellent-icon"></i>
+                <div class="stat-title">Excellent Ratings</div>
+                <div id="excellent-count" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-star-half-alt stat-icon good-icon"></i>
+                <div class="stat-title">Good Ratings</div>
+                <div id="good-count" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-thumbs-down stat-icon poor-icon"></i>
+                <div class="stat-title">Poor Ratings</div>
+                <div id="poor-count" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-comments stat-icon text-blue-500"></i>
+                <div class="stat-title">Total Feedback</div>
+                <div id="total-count" class="stat-value">0</div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+            <div class="card-header flex justify-between items-center">
+                <h2 class="text-xl font-semibold">Feedback History</h2>
+                
+                <!-- Search Input -->
+                <div class="search-container w-full max-w-md">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search by Shipment ID or Ride No..." 
+                        class="search-input w-full p-2 rounded-md"
+                    >
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading" class="flex justify-center items-center p-12">
+                <div class="loader"></div>
+            </div>
+
+            <!-- Feedback Table -->
+            <div id="tableContainer" class="table-container hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="table-header text-white">
+                        <tr>
+                            <th class="table-cell">Shipment ID</th>
+                            <th class="table-cell">Ride No</th>
+                            <th class="table-cell">Rating</th>
+                            <th class="table-cell">Comments</th>
+                            <th class="table-cell">Received</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackTable" class="divide-y divide-gray-200 bg-white">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="noFeedback" class="hidden empty-state">
+                <i class="fas fa-comment-slash empty-icon"></i>
+                <h3 class="text-xl font-medium mb-2">No Feedback Available</h3>
+                <p class="text-gray-500">No feedback matches your search criteria.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Show loading indicator
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('tableContainer').classList.add('hidden');
+            document.getElementById('noFeedback').classList.add('hidden');
+        }
+        
+        // Hide loading indicator
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+        
+        // Fetch feedback from backend
+        async function fetchFeedback() {
+            showLoading();
+            try {
+                // Simulate API delay for demo purposes
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const response = await fetch('/api/feedback'); // Adjust this endpoint as needed
+                if (!response.ok) throw new Error('Network response was not ok');
+                const feedback = await response.json();
+                return feedback;
+            } catch (error) {
+                console.error('Error fetching feedback:', error);
+                
+                // For demo purposes, generate sample data if API fails
+                return [
+                    { shipmentId: 'SHIP-001', Rideno: 'RIDE-1001', rating: 5, comments: 'Excellent service, very professional!', createdAt: new Date() },
+                    { shipmentId: 'SHIP-002', Rideno: 'RIDE-1002', rating: 4, comments: 'Good delivery, on time.', createdAt: new Date(Date.now() - 86400000) },
+                    { shipmentId: 'SHIP-003', Rideno: 'RIDE-1003', rating: 3, comments: 'Average service, could be better.', createdAt: new Date(Date.now() - 172800000) },
+                    { shipmentId: 'SHIP-004', Rideno: 'RIDE-1004', rating: 2, comments: 'Late delivery.', createdAt: new Date(Date.now() - 259200000) },
+                    { shipmentId: 'SHIP-005', Rideno: 'RIDE-1005', rating: 5, comments: 'Exceptional service!', createdAt: new Date(Date.now() - 345600000) },
+                ];
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display feedback in table
+        function displayFeedback(feedback) {
+            const tableBody = document.getElementById('feedbackTable');
+            const noFeedbackDiv = document.getElementById('noFeedback');
+            const tableContainer = document.getElementById('tableContainer');
+            
+            tableBody.innerHTML = '';
+
+            if (feedback.length === 0) {
+                tableContainer.classList.add('hidden');
+                noFeedbackDiv.classList.remove('hidden');
+                updateStats(feedback);
+                return;
+            }
+
+            tableContainer.classList.remove('hidden');
+            noFeedbackDiv.classList.add('hidden');
+            
+            feedback.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = `table-row ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} animate__animated animate__fadeIn`;
+                row.style.animationDelay = `${index * 0.05}s`;
+                
+                // Determine rating class
+                let ratingClass = '';
+                let ratingIcon = '';
+                
+                if (item.rating >= 4) {
+                    ratingClass = 'badge-excellent';
+                    ratingIcon = '<i class="fas fa-star mr-1"></i>';
+                } else if (item.rating >= 3) {
+                    ratingClass = 'badge-good';
+                    ratingIcon = '<i class="fas fa-star-half-alt mr-1"></i>';
+                } else {
+                    ratingClass = 'badge-poor';
+                    ratingIcon = '<i class="fas fa-thumbs-down mr-1"></i>';
+                }
+                
+                row.innerHTML = `
+                    <td class="table-cell">${item.shipmentId}</td>
+                    <td class="table-cell">${item.Rideno}</td>
+                    <td class="table-cell">
+                        <span class="rating-badge ${ratingClass}">
+                            ${ratingIcon}${item.rating}/5
+                        </span>
+                    </td>
+                    <td class="table-cell">${item.comments || 'N/A'}</td>
+                    <td class="table-cell">
+                        <span class="text-gray-500">${formatDate(item.createdAt)}</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update statistics
+            updateStats(feedback);
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return 'Today, ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays === 1) {
+                return 'Yesterday, ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays < 7) {
+                return `${diffDays} days ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+        
+        // Update statistics
+        function updateStats(feedback) {
+            const excellentCount = feedback.filter(item => item.rating >= 4).length;
+            const goodCount = feedback.filter(item => item.rating >= 3 && item.rating < 4).length;
+            const poorCount = feedback.filter(item => item.rating < 3).length;
+            const totalCount = feedback.length;
+            
+            document.getElementById('excellent-count').textContent = excellentCount;
+            document.getElementById('good-count').textContent = goodCount;
+            document.getElementById('poor-count').textContent = poorCount;
+            document.getElementById('total-count').textContent = totalCount;
+            
+            // Add animation to stats if they change
+            document.querySelectorAll('.stat-value').forEach(stat => {
+                stat.classList.add('pulse');
+                setTimeout(() => {
+                    stat.classList.remove('pulse');
+                }, 2000);
+            });
+        }
+
+        // Filter feedback
+        function filterFeedback(feedback, searchTerm) {
+            if (!searchTerm) return feedback;
+            
+            return feedback.filter(item => {
+                const searchLower = searchTerm.toLowerCase();
+                return (item.shipmentId && item.shipmentId.toLowerCase().includes(searchLower)) || 
+                       (item.Rideno && item.Rideno.toLowerCase().includes(searchLower));
+            });
+        }
+
+        // Initialize page
+        async function init() {
+            const feedback = await fetchFeedback();
+            displayFeedback(feedback);
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            let debounceTimer;
+            
+            searchInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const allFeedback = await fetchFeedback();
+                    const filteredFeedback = filterFeedback(allFeedback, searchInput.value);
+                    displayFeedback(filteredFeedback);
+                }, 300);
+            });
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Finder - Google Maps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .location-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .location-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .travel-mode {
+            margin-bottom: 25px;
+        }
+
+        .travel-mode select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .route-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            display: none;
+        }
+
+        .route-info.show {
+            display: block;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .map-container {
+            position: relative;
+            min-height: 500px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #666;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid #fcc;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .map-container {
+                min-height: 400px;
+            }
+            
+            #map {
+                border-radius: 0 0 15px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Route Finder</h1>
+            <p>Find the best route between any two locations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="controls">
+                <div class="input-group">
+                    <label for="start">From:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="start" class="location-input" placeholder="Enter starting location">
+                        <div id="start-suggestions" class="suggestions"></div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="end">To:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="end" class="location-input" placeholder="Enter destination">
+                        <div id="end-suggestions" class="suggestions"></div>
+                    </div>
+                </div>
+
+                <div class="travel-mode">
+                    <label for="mode">Travel Mode:</label>
+                    <select id="mode">
+                        <option value="DRIVING">🚗 Driving</option>
+                        <option value="WALKING">🚶 Walking</option>
+                        <option value="BICYCLING">🚴 Bicycling</option>
+                        <option value="TRANSIT">🚌 Transit</option>
+                    </select>
+                </div>
+
+                <button id="find-route" class="btn">Find Route</button>
+
+                <div id="error" class="error"></div>
+
+                <div id="route-info" class="route-info">
+                    <h3>Route Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Distance:</span>
+                        <span class="info-value" id="distance">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Duration:</span>
+                        <span class="info-value" id="duration">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Travel Mode:</span>
+                        <span class="info-value" id="travel-mode">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading map...</p>
+                </div>
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Replace with your Google Maps API key
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyDEPxp7HxULqpwJmogunXWlQbJ7oKk9ffg';
+        
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let autocompleteService;
+        let placesService;
+        let startAutocomplete;
+        let endAutocomplete;
+
+        // Initialize the map
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2,
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                draggable: true,
+                suppressMarkers: false
+            });
+            directionsRenderer.setMap(map);
+
+            autocompleteService = new google.maps.places.AutocompleteService();
+            placesService = new google.maps.places.PlacesService(map);
+
+            // Initialize autocomplete
+            initAutocomplete();
+
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+
+            // Set default locations
+            document.getElementById('start').value = 'New York, NY';
+            document.getElementById('end').value = 'Los Angeles, CA';
+        }
+
+        // Initialize autocomplete for both inputs
+        function initAutocomplete() {
+            const startInput = document.getElementById('start');
+            const endInput = document.getElementById('end');
+            const startSuggestions = document.getElementById('start-suggestions');
+            const endSuggestions = document.getElementById('end-suggestions');
+
+            // Start location autocomplete
+            startInput.addEventListener('input', (e) => {
+                const query = e.target.value;
+                if (query.length > 2) {
+                    getSuggestions(query, startSuggestions, startInput);
+                } else {
+                    startSuggestions.classList.remove('show');
+                }
+            });
+
+            // End location autocomplete
+            endInput.addEventListener('input', (e) => {
+                const query = e.target.value;
+                if (query.length > 2) {
+                    getSuggestions(query, endSuggestions, endInput);
+                } else {
+                    endSuggestions.classList.remove('show');
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.input-wrapper')) {
+                    startSuggestions.classList.remove('show');
+                    endSuggestions.classList.remove('show');
+                }
+            });
+        }
+
+        // Get place suggestions
+        function getSuggestions(query, container, input) {
+            autocompleteService.getPlacePredictions({
+                input: query,
+                types: ['geocode']
+            }, (predictions, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                    container.innerHTML = '';
+                    predictions.slice(0, 5).forEach(prediction => {
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        item.textContent = prediction.description;
+                        item.addEventListener('click', () => {
+                            input.value = prediction.description;
+                            container.classList.remove('show');
+                        });
+                        container.appendChild(item);
+                    });
+                    container.classList.add('show');
+                } else {
+                    container.classList.remove('show');
+                }
+            });
+        }
+
+        // Find route between locations
+        function findRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+            const mode = document.getElementById('mode').value;
+
+            if (!start || !end) {
+                showError('Please enter both start and end locations');
+                return;
+            }
+
+            const request = {
+                origin: start,
+                destination: end,
+                travelMode: mode
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                    
+                    // Update route info
+                    const route = result.routes[0];
+                    const leg = route.legs[0];
+                    
+                    document.getElementById('distance').textContent = leg.distance.text;
+                    document.getElementById('duration').textContent = leg.duration.text;
+                    document.getElementById('travel-mode').textContent = mode;
+                    document.getElementById('route-info').classList.add('show');
+                    
+                    hideError();
+                } else {
+                    showError('Could not find route. Please check your locations and try again.');
+                }
+            });
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        // Hide error message
+        function hideError() {
+            document.getElementById('error').classList.remove('show');
+        }
+
+        // Event listeners
+        document.getElementById('find-route').addEventListener('click', findRoute);
+
+        // Allow Enter key to find route
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                findRoute();
+            }
+        });
+    </script>
+
+    <!-- Load Google Maps API -->
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEPxp7HxULqpwJmogunXWlQbJ7oKk9ffg&libraries=places&callback=initMap">
+    </script>
+</body>
+</html>
+
