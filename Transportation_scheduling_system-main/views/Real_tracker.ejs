@@ -23,47 +23,31 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #EBF4F5 0%, #B5C6E0 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
         
         #map { 
-            height: 500px; 
+            height: 600px; 
             width: 100%; 
-            margin-top: 10px; 
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 15px; 
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             border: none;
             transition: all 0.3s ease;
         }
         
         #map:hover {
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             transform: translateY(-5px);
         }
         
         .hero {
-            background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80');
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)), url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80');
             background-size: cover;
             background-position: center;
             position: relative;
-            padding: 4rem 0;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1;
-        }
-        
-        .hero > div {
-            position: relative;
-            z-index: 2;
+            padding: 5rem 0;
         }
         
         .input-container {
@@ -77,17 +61,21 @@
             top: 50%;
             transform: translateY(-50%);
             color: #4F46E5;
+            z-index: 10;
         }
         
         .custom-input {
-            padding-left: 2.5rem !important;
+            padding-left: 3rem !important;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
         
         .custom-input:focus {
             border-color: #4F46E5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+            background: white;
         }
         
         .custom-btn {
@@ -95,38 +83,25 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
-        }
-        
-        .custom-btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: all 0.4s ease;
-            z-index: -1;
-        }
-        
-        .custom-btn:hover::after {
-            left: 0;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
         }
         
         .custom-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
         }
         
         .result-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             margin-top: 1.5rem;
             opacity: 0;
             transform: translateY(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .result-card.active {
@@ -136,16 +111,17 @@
         
         .nav-link {
             position: relative;
+            transition: all 0.3s ease;
         }
         
         .nav-link::after {
             content: '';
             position: absolute;
             width: 0;
-            height: 2px;
-            bottom: 0;
+            height: 3px;
+            bottom: -5px;
             left: 0;
-            background-color: #4F46E5;
+            background: linear-gradient(90deg, #4F46E5, #7C3AED);
             transition: width 0.3s ease;
         }
         
@@ -155,72 +131,90 @@
         
         .loader {
             display: none;
-            width: 48px;
-            height: 48px;
-            border: 5px solid #FFF;
-            border-bottom-color: #4F46E5;
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #4F46E5;
             border-radius: 50%;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
+            animation: spin 1s linear infinite;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10;
+            z-index: 100;
         }
         
-        @keyframes rotation {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
         
-        .pulse {
+        .search-suggestion {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .search-suggestion:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+        
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .pulse-animation {
             animation: pulse 2s infinite;
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
-        
-        #shipmentMessage {
-            animation: fadeInUp 1s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+
+        .price-breakdown {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100">
+<body>
     <div id="loader" class="loader"></div>
 
     <!-- Navigation Bar -->
-    <nav class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-lg sticky top-0 z-10 animate__animated animate__fadeIn">
+    <nav class="bg-gradient-to-r from-purple-600 via-blue-600 to-blue-700 text-white shadow-2xl sticky top-0 z-50 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
                 <div class="flex space-x-7">
                     <div>
                         <a href="#" class="flex items-center py-4 px-2">
-                            <i class="fas fa-route text-2xl mr-2"></i>
-                            <span class="font-semibold text-white text-lg">Route Calculator</span>
+                            <i class="fas fa-route text-3xl mr-3 text-yellow-300"></i>
+                            <span class="font-bold text-white text-xl">Smart Route Calculator</span>
                         </a>
                     </div>
                 </div>
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="/user-dashboard" class="py-4 px-2 text-white nav-link font-semibold hover:text-blue-200 transition duration-300">
-                        <i class="fas fa-home mr-1"></i> Back To Home
+                    <a href="/user-dashboard" class="py-4 px-4 text-white nav-link font-semibold hover:text-yellow-200 transition duration-300">
+                        <i class="fas fa-home mr-2"></i> Dashboard
                     </a>
-                    <a href="#" class="py-4 px-2 text-white nav-link font-semibold hover:text-blue-200 transition duration-300">
-                        <i class="fas fa-cog mr-1"></i> Services
+                    <a href="#pricing" class="py-4 px-4 text-white nav-link font-semibold hover:text-yellow-200 transition duration-300">
+                        <i class="fas fa-calculator mr-2"></i> Pricing
                     </a>
                 </div>
             </div>
@@ -228,71 +222,72 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="hero flex items-center justify-center py-20 animate__animated animate__fadeIn">
-        <div class="bg-white rounded-xl p-8 w-full max-w-md shadow-2xl backdrop-blur-md bg-opacity-90">
-            <h2 class="text-2xl font-bold text-center mb-6 text-indigo-700">
-                <i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i>Track Your Shipment
+    <div class="hero flex items-center justify-center py-20">
+        <div class="bg-white/90 backdrop-blur-lg rounded-2xl p-8 w-full max-w-lg shadow-2xl border border-white/20">
+            <h2 class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <i class="fas fa-map-marker-alt mr-3 text-purple-500"></i>Plan Your Journey
             </h2>
             
             <div class="input-container">
-                <i class="fas fa-location-arrow"></i>
-                <input id="pickup" type="text" placeholder="Enter pickup location or click on map" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" readonly>
+                <i class="fas fa-location-arrow text-green-500"></i>
+                <input id="pickup" type="text" placeholder="Enter pickup location or click on map" class="custom-input w-full px-4 py-4 border rounded-xl focus:outline-none text-gray-800 font-medium">
+                <div id="pickup-suggestions" class="suggestions-container"></div>
             </div>
 
             <div class="input-container">
-                <i class="fas fa-map-pin"></i>
-                <input id="drop" type="text" placeholder="Enter drop location or click on map" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" readonly>
+                <i class="fas fa-map-pin text-red-500"></i>
+                <input id="drop" type="text" placeholder="Enter destination or click on map" class="custom-input w-full px-4 py-4 border rounded-xl focus:outline-none text-gray-800 font-medium">
+                <div id="drop-suggestions" class="suggestions-container"></div>
             </div>
 
-            <button onclick="calculateRoute()" class="custom-btn w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center">
-                <i class="fas fa-calculator mr-2"></i> Calculate Route & Price
+            <button onclick="calculateRoute()" class="custom-btn w-full text-white py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all duration-300 mb-3">
+                <i class="fas fa-route mr-2"></i> Calculate Route & Price
             </button>
             
-            <button onclick="clearRoute()" class="custom-btn w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition mt-2 flex items-center justify-center">
-                <i class="fas fa-trash mr-2"></i> Clear Route
-            </button>
-            
-            <button onclick="processShipment()" class="custom-btn w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-2 flex items-center justify-center">
-                <i class="fas fa-truck mr-2"></i> Process Shipment
-            </button>
+            <div class="flex space-x-2">
+                <button onclick="clearRoute()" class="custom-btn w-1/2 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700">
+                    <i class="fas fa-trash mr-2"></i> Clear
+                </button>
+                
+                <button onclick="processShipment()" class="custom-btn w-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700">
+                    <i class="fas fa-truck mr-2"></i> Book Now
+                </button>
+            </div>
             
             <div id="results" class="result-card">
-                <h3 id="distance" class="text-xl font-semibold text-indigo-700 mb-2 text-center"></h3>
-                <h3 id="duration" class="text-lg font-semibold text-gray-700 text-center"></h3>
-                <h3 id="price" class="text-lg font-semibold text-gray-700 text-center"></h3>
-                <h3 id="shipmentMessage" class="text-lg font-semibold text-green-700 text-center mt-4"></h3>
+                <!-- Results will be displayed here -->
             </div>
         </div>
     </div>
 
     <!-- Map Section -->
-    <div class="container mx-auto px-4 pb-12 animate__animated animate__fadeInUp" style="animation-delay: 0.5s">
-        <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
-            <i class="fas fa-map-marked-alt mr-2"></i> Interactive Map - Click to Set Points
-        </h2>
-        <div id="map" class="rounded-xl"></div>
+    <div class="container mx-auto px-4 pb-12">
+        <div class="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-map-marked-alt mr-3 text-blue-600"></i> Interactive Route Map
+            </h2>
+            <p class="text-gray-600 mb-4 text-lg">🖱️ Click on the map to set points or type locations above</p>
+            <div id="map" class="pulse-animation"></div>
+        </div>
     </div>
 
     <!-- Footer Section -->
-    <footer class="bg-gradient-to-r from-indigo-800 to-blue-700 text-white py-6 mt-4 animate__animated animate__fadeIn" style="animation-delay: 0.8s">
+    <footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-8">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
-                    <p class="text-lg"><i class="fas fa-route mr-2"></i> Route Calculator</p>
-                    <p class="text-sm text-indigo-200">&copy; 2025 All rights reserved.</p>
+                    <p class="text-2xl font-bold"><i class="fas fa-route mr-2 text-yellow-400"></i> Smart Route Calculator</p>
+                    <p class="text-gray-300 mt-2">&copy; 2025 Transportation System. All rights reserved.</p>
                 </div>
-                <div class="flex space-x-4">
-                    <a href="#" class="text-white hover:text-indigo-200 transition">
-                        <i class="fab fa-facebook-f text-xl"></i>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-300 hover:text-yellow-400 transition text-2xl">
+                        <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="#" class="text-white hover:text-indigo-200 transition">
-                        <i class="fab fa-twitter text-xl"></i>
+                    <a href="#" class="text-gray-300 hover:text-yellow-400 transition text-2xl">
+                        <i class="fab fa-twitter"></i>
                     </a>
-                    <a href="#" class="text-white hover:text-indigo-200 transition">
-                        <i class="fab fa-instagram text-xl"></i>
-                    </a>
-                    <a href="#" class="text-white hover:text-indigo-200 transition">
-                        <i class="fab fa-linkedin-in text-xl"></i>
+                    <a href="#" class="text-gray-300 hover:text-yellow-400 transition text-2xl">
+                        <i class="fab fa-instagram"></i>
                     </a>
                 </div>
             </div>
@@ -303,10 +298,8 @@
         // Hide results card initially
         document.getElementById('results').style.display = 'none';
         
-        // Initialize map
-        let map = L.map('map').setView([20.5937, 78.9629], 5); // Center of India
-
-        // Add OpenStreetMap tiles
+        // Initialize map with better styling
+        let map = L.map('map').setView([20.5937, 78.9629], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
@@ -315,10 +308,100 @@
         let pickupMarker, dropMarker, routeLine;
         let pickupCoords = null, dropCoords = null;
 
-        // Click handler for setting pickup/drop points
+        // Enhanced geocoding function
+        async function searchLocation(query) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
+                return await response.json();
+            } catch (error) {
+                console.error('Geocoding error:', error);
+                return [];
+            }
+        }
+
+        // Add location search functionality
+        function setupLocationSearch(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            let searchTimeout;
+
+            input.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length < 3) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+
+                searchTimeout = setTimeout(async () => {
+                    const results = await searchLocation(query);
+                    displaySuggestions(results, suggestions, inputId);
+                }, 300);
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => suggestions.style.display = 'none', 200);
+            });
+        }
+
+        function displaySuggestions(results, container, inputId) {
+            container.innerHTML = '';
+            
+            if (results.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = 'search-suggestion';
+                div.innerHTML = `
+                    <div class="font-medium">${result.display_name}</div>
+                `;
+                
+                div.addEventListener('click', () => {
+                    document.getElementById(inputId).value = result.display_name;
+                    container.style.display = 'none';
+                    
+                    // Set coordinates based on selection
+                    const lat = parseFloat(result.lat);
+                    const lon = parseFloat(result.lon);
+                    
+                    if (inputId === 'pickup') {
+                        setPickupPoint(lat, lon, result.display_name);
+                    } else {
+                        setDropPoint(lat, lon, result.display_name);
+                    }
+                });
+                
+                container.appendChild(div);
+            });
+            
+            container.style.display = 'block';
+        }
+
+        function setPickupPoint(lat, lon, name) {
+            pickupCoords = {lat: lat, lng: lon};
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            pickupMarker = L.marker([lat, lon]).addTo(map).bindPopup(`📍 Pickup: ${name}`).openPopup();
+            map.setView([lat, lon], 13);
+        }
+
+        function setDropPoint(lat, lon, name) {
+            dropCoords = {lat: lat, lng: lon};
+            if (dropMarker) map.removeLayer(dropMarker);
+            dropMarker = L.marker([lat, lon]).addTo(map).bindPopup(`🏁 Drop: ${name}`).openPopup();
+            map.setView([lat, lon], 13);
+        }
+
+        // Initialize search functionality
+        setupLocationSearch('pickup', 'pickup-suggestions');
+        setupLocationSearch('drop', 'drop-suggestions');
+
+        // Map click handler
         map.on('click', function(e) {
             if (!pickupCoords) {
-                // Set pickup point
                 pickupCoords = e.latlng;
                 pickupMarker = L.marker([e.latlng.lat, e.latlng.lng])
                     .addTo(map)
@@ -328,7 +411,6 @@
                 document.getElementById('pickup').value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
                 
             } else if (!dropCoords) {
-                // Set drop point
                 dropCoords = e.latlng;
                 dropMarker = L.marker([e.latlng.lat, e.latlng.lng])
                     .addTo(map)
@@ -336,32 +418,26 @@
                     .openPopup();
                 
                 document.getElementById('drop').value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-                
-                // Auto-calculate route when both points are set
                 calculateRoute();
             }
         });
 
-        // Function to calculate route using OpenRouteService API
+        // Enhanced route calculation with better pricing
         async function calculateRoute() {
             if (!pickupCoords || !dropCoords) {
-                alert('Please select both pickup and drop points by clicking on the map');
+                alert('Please select both pickup and drop locations');
                 return;
             }
 
             try {
-                // Show loading
                 document.getElementById('loader').style.display = 'block';
                 const resultsCard = document.getElementById('results');
                 resultsCard.style.display = 'block';
-                resultsCard.innerHTML = '<p class="text-center text-indigo-600">🔄 Calculating route...</p>';
+                resultsCard.innerHTML = '<p class="text-center text-blue-600 text-lg">🔄 Calculating optimal route...</p>';
 
-                // Send request to backend
                 const response = await fetch('/calculate-route', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         pickupLat: pickupCoords.lat,
                         pickupLng: pickupCoords.lng,
@@ -373,128 +449,120 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    // Remove existing route line if any
-                    if (routeLine) {
-                        map.removeLayer(routeLine);
-                    }
+                    if (routeLine) map.removeLayer(routeLine);
 
-                    // Draw route on map using the road coordinates
                     routeLine = L.polyline(data.route, {
-                        color: '#3388ff',
-                        weight: 5,
-                        opacity: 0.7,
+                        color: '#4F46E5',
+                        weight: 6,
+                        opacity: 0.8,
                         smoothFactor: 1
                     }).addTo(map);
 
-                    // Fit map to show entire route
-                    map.fitBounds(routeLine.getBounds(), { padding: [20, 20] });
+                    map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
 
-                    // Display results
+                    // Enhanced pricing calculation
+                    const distance = parseFloat(data.distance);
+                    const baseFare = 50; // Base fare in ₹
+                    const perKmRate = 15; // Rate per km in ₹
+                    const fuelSurcharge = distance * 2; // Fuel surcharge
+                    const totalPrice = baseFare + (distance * perKmRate) + fuelSurcharge;
+
                     resultsCard.innerHTML = `
-                        <h3 class="text-xl font-semibold text-green-600 mb-2 text-center">✅ Route Calculated Successfully!</h3>
-                        <p class="text-center"><strong>📏 Distance:</strong> <span class="text-indigo-600 font-bold">${data.distance} km</span></p>
-                        <p class="text-center"><strong>⏱️ Duration:</strong> <span class="text-gray-700 font-bold">${data.duration || 'N/A'} minutes</span></p>
-                        <p class="text-center"><strong>💰 Estimated Price:</strong> <span class="text-green-600 font-bold">₹${data.price}</span></p>
-                        <p class="text-center mt-2"><strong>🛣️ Route:</strong> <span class="text-gray-600">Road path displayed on map</span></p>
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold text-green-600 mb-4">✅ Route Calculated!</h3>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-600">Distance</p>
+                                    <p class="text-xl font-bold text-blue-600">${data.distance} km</p>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-600">Duration</p>
+                                    <p class="text-xl font-bold text-purple-600">${data.duration || 'N/A'} min</p>
+                                </div>
+                            </div>
+
+                            <div class="price-breakdown">
+                                <h4 class="font-bold text-gray-800 mb-2">💰 Pricing Breakdown</h4>
+                                <div class="text-left space-y-1 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Base Fare:</span>
+                                        <span>₹${baseFare}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Distance (${distance} km × ₹${perKmRate}):</span>
+                                        <span>₹${(distance * perKmRate).toFixed(2)}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Fuel Surcharge:</span>
+                                        <span>₹${fuelSurcharge.toFixed(2)}</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="flex justify-between font-bold text-lg">
+                                        <span>Total:</span>
+                                        <span class="text-green-600">₹${totalPrice.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-gray-600 mt-3 text-sm">🛣️ Route optimized for fastest travel time</p>
+                        </div>
                     `;
                     
                     resultsCard.classList.add('active');
-
                 } else {
                     throw new Error(data.message);
                 }
 
             } catch (error) {
-                console.error('Error calculating route:', error);
-                const resultsCard = document.getElementById('results');
-                resultsCard.innerHTML = `
+                console.error('Route calculation error:', error);
+                document.getElementById('results').innerHTML = `
                     <p class="text-center text-red-600">❌ Error: ${error.message}</p>
                 `;
             } finally {
-                // Hide loader
                 document.getElementById('loader').style.display = 'none';
             }
         }
 
-        // Function to clear route and markers
         function clearRoute() {
-            // Remove markers
             if (pickupMarker) map.removeLayer(pickupMarker);
             if (dropMarker) map.removeLayer(dropMarker);
             if (routeLine) map.removeLayer(routeLine);
 
-            // Reset variables
             pickupMarker = dropMarker = routeLine = null;
             pickupCoords = dropCoords = null;
 
-            // Clear inputs
             document.getElementById('pickup').value = '';
             document.getElementById('drop').value = '';
             document.getElementById('results').style.display = 'none';
 
-            // Reset map view
             map.setView([20.5937, 78.9629], 5);
         }
 
-        // Function to process shipment
         function processShipment() {
             const pickup = document.getElementById("pickup").value;
             const drop = document.getElementById("drop").value;
 
             if (!pickup || !drop) {
-                alert("Please select both pickup and drop locations by clicking on the map first.");
+                alert("Please set both pickup and drop locations first.");
                 return;
             }
 
-            // Show loader
             document.getElementById('loader').style.display = 'block';
             
-            // Simulate processing delay
             setTimeout(() => {
-                // Hide loader
                 document.getElementById('loader').style.display = 'none';
-                
-                // Show success message
-                const resultsCard = document.getElementById('results');
-                const currentContent = resultsCard.innerHTML;
-                resultsCard.innerHTML = currentContent + '<p class="text-center text-green-600 font-bold mt-4"><i class="fas fa-check-circle mr-2"></i>Shipment processed successfully! Redirecting...</p>';
-                
-                // Redirect after a short delay for better UX
-                setTimeout(() => {
-                    window.location.href = "/shipment";
-                }, 1500);
-            }, 1000);
+                alert('🎉 Shipment booking confirmed! Redirecting to shipment form...');
+                window.location.href = "/shipment";
+            }, 1500);
         }
-        
-        // Add pulse animation to map when loaded
-        map.on('load', function() {
-            document.getElementById('map').classList.add('pulse');
+
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
-                document.getElementById('map').classList.remove('pulse');
-            }, 2000);
+                document.getElementById('map').classList.remove('pulse-animation');
+            }, 3000);
         });
-
-        // Optional: Add current location button functionality
-        function getCurrentLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    map.setView([lat, lng], 13);
-                    
-                    // Set as pickup point
-                    pickupCoords = {lat: lat, lng: lng};
-                    if (pickupMarker) map.removeLayer(pickupMarker);
-                    pickupMarker = L.marker([lat, lng])
-                        .addTo(map)
-                        .bindPopup('📍 Your Current Location')
-                        .openPopup();
-                    
-                    document.getElementById('pickup').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                });
-            }
-        }
     </script>
-
 </body>
 </html>

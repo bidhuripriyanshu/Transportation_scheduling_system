@@ -378,56 +378,75 @@ const setupRoutes = () => {
         }
     });
 
-    app.get('/shipment',(req, res) => {
+    app.get('/shipment', ensureAuthenticated, (req, res) => {
         res.render('shipment.ejs');
     });
+
 
     //shipment
     app.post('/shipment', ensureAuthenticated, upload.single('photo'), async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ success: false, message: "Photo is required" });
         }
+
         try {
             console.log('Route hit: /shipment');
             console.log('Request body:', req.body);
             
-            const { location, dateTime, goodsDescription, vehicleType } = req.body;
+            const { 
+            location, 
+            dateTime, 
+            goodsDescription, 
+            vehicleType,
+            pickup,
+            destination,
+            routeDistance,
+            routeCost,
+            pickupCoords,
+            destinationCoords
+            } = req.body;
 
             // Parse dateTime into a Date object
             const parsedDate = new Date(dateTime);
             if (isNaN(parsedDate.getTime())) {
-                return res.status(400).json({ success: false, message: "Invalid date format" });
-            }
-
-            // Ensure a file was uploaded
-            if (!req.file) {
-                return res.status(400).json({ success: false, message: "Photo is required" });
+            return res.status(400).json({ success: false, message: "Invalid date format" });
             }
 
             console.log('Uploaded file path:', req.file.path);
-
+            
             // Upload image to Cloudinary
             let result;
             try {
-                result = await cloudinary.uploader.upload(req.file.path);
-                console.log('Cloudinary upload result:', result);
+            result = await cloudinary.uploader.upload(req.file.path);
+            console.log('Cloudinary upload result:', result);
             } catch (error) {
-                console.error('Cloudinary upload error:', error);
-                return res.status(500).json({ success: false, message: "Error uploading photo to Cloudinary" });
+            console.error('Cloudinary upload error:', error);
+            return res.status(500).json({ success: false, message: "Error uploading photo to Cloudinary" });
             }
 
-            // Create a Shipment instance
+            // Create enhanced Shipment instance with route data
             const shipment = new Shipment({
-                location,
-                dateTime: parsedDate,
-                goodsDescription,
-                vehicleType,
-                photo: result.secure_url,
+            location,
+            dateTime: parsedDate,
+            goodsDescription,
+            vehicleType,
+            photo: result.secure_url,
+            // Add new route-related fields
+            pickup: pickup || location,
+            destination: destination,
+            routeDistance: routeDistance,
+            routeCost: routeCost,
+            pickupCoords: pickupCoords,
+            destinationCoords: destinationCoords,
+            userId: req.session.user.id // Add user association
             });
 
             await shipment.save();
             console.log('Shipment created successfully:', shipment);
-            res.redirect('/Real_tracker');
+            
+            // Redirect to Real_tracker with shipment ID
+            res.redirect(`/Real_tracker?shipmentId=${shipment._id}`);
+            
         } catch (err) {
             console.error('Error creating shipment:', err.message, err.stack);
             res.status(500).json({ success: false, message: "Error creating shipment" });
@@ -554,66 +573,98 @@ const setupRoutes = () => {
         }
     });
 
-    app.get("/Real_tracker", (req, res) => {
-        res.render("Real_tracker.ejs");
-    });
-
+    app.get("/Real_tracker", ensureAuthenticated, async (req, res) => {
+    try {
+        const shipmentId = req.query.shipmentId;
+        let shipmentData = null;
+        
+        if (shipmentId) {
+        shipmentData = await Shipment.findById(shipmentId);
+        }
+        
+        res.render("Real_tracker.ejs", { shipment: shipmentData });
+    } catch (error) {
+        console.error('Error fetching shipment data:', error);
+        res.render("Real_tracker.ejs", { shipment: null });
+    }
+});
     app.post("/calculate-route", async (req, res) => {
         const { pickupLat, pickupLng, dropLat, dropLng } = req.body;
 
-        // Validate input
-        if (!pickupLat || !pickupLng || !dropLat || !dropLng) {
-            return res.status(400).json({ success: false, message: "Missing required coordinates" });
+          if (!pickupLat || !pickupLng || !dropLat || !dropLng) {
+              return res.status(400).json({ success: false, message: "Missing required coordinates" });
         }
 
-        try {
-            // Call OpenRouteService API with more detailed parameters
-            const response = await axios.get(`https://api.openrouteservice.org/v2/directions/driving-car`, {
-            params: {
-                api_key: process.env.ORS_API_KEY,
-                start: `${pickupLng},${pickupLat}`,
-                end: `${dropLng},${dropLat}`,
-                format: 'geojson', // Ensure we get GeoJSON format
-                geometry_format: 'geojson', // Specify geometry format
-                instructions: 'true', // Get turn-by-turn instructions
-                elevation: 'false' // Disable elevation for faster response
-            }
-            });
-
-        // Extract route data
-        const routeData = response.data.features[0];
-        if (!routeData) {
-            return res.status(404).json({ success: false, message: "No route found" });
-        }
-
-        const distanceInKm = routeData.properties.summary.distance / 1000;
-        const durationInMinutes = Math.round(routeData.properties.summary.duration / 60);
-        
-        // Convert coordinates for Leaflet (swap lng,lat to lat,lng)
-        const routeCoords = routeData.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-        
-        // Calculate price (₹10 per km)
-        const totalPrice = distanceInKm * 10;
-
-        // Send response with complete route data
-        res.json({
-        success: true,
-            distance: distanceInKm.toFixed(2),
-            duration: durationInMinutes,
-            price: totalPrice.toFixed(2),
-            route: routeCoords, // Array of [lat, lng] coordinates for the road
-            instructions: routeData.properties.segments[0]?.steps || [] // Turn-by-turn directions
-        });
-
-    } catch (error) {
-        console.error("Error fetching route:", error.message);
-        res.status(500).json({ 
-        success: false, 
-        message: "Error fetching route", 
-        error: error.response?.data || error.message 
-        });
-    }
+          try {
+             const response = await axios.get(`https://api.openrouteservice.org/v2/directions/driving-car`, {
+                params: {
+                    api_key: process.env.ORS_API_KEY,
+                    start: `${pickupLng},${pickupLat}`,
+                    end: `${dropLng},${dropLat}`,
+                    format: 'geojson',
+                    instructions: 'true'
+                }
     });
+
+             const routeData = response.data.features[0];
+             if (!routeData) {
+                return res.status(404).json({ success: false, message: "No route found" });
+            }
+
+             const distanceInKm = routeData.properties.summary.distance / 1000;
+             const durationInMinutes = Math.round(routeData.properties.summary.duration / 60);
+             const routeCoords = routeData.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+
+            // Enhanced pricing algorithm based on distance tiers
+             let baseFare = 50;
+             let perKmRate = 15;
+            
+            // Dynamic pricing based on distance
+             if (distanceInKm > 100) {
+                perKmRate = 12; // Discount for long distances
+             } else if (distanceInKm > 50) {
+                perKmRate = 14; // Slight discount for medium distances
+            }
+            
+            // Additional charges
+             const fuelSurcharge = distanceInKm * 2;
+             const serviceFee = 20;
+    
+            // Time-based surge pricing (optional)
+             const currentHour = new Date().getHours();
+             let surgeMultiplier = 1;
+             if (currentHour >= 7 && currentHour <= 9 || currentHour >= 17 && currentHour <= 19) {
+                surgeMultiplier = 1.2; // 20% surge during peak hours
+            }
+    
+             const totalPrice = (baseFare + (distanceInKm * perKmRate) + fuelSurcharge + serviceFee) * surgeMultiplier;
+
+             res.json({
+             success: true,
+             distance: distanceInKm.toFixed(2),
+             duration: durationInMinutes,
+             price: totalPrice.toFixed(2),
+             route: routeCoords,
+             priceBreakdown: {
+                baseFare,
+                perKmRate,
+                fuelSurcharge: fuelSurcharge.toFixed(2),
+                serviceFee,
+                surgeMultiplier,
+                totalDistance: distanceInKm.toFixed(2)
+      }
+    });
+
+  } catch (error) {
+    console.error("Error fetching route:", error.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error fetching route", 
+      error: error.response?.data || error.message 
+    });
+  }
+});
+
 
 
     app.get('/process/:id', ensureAuthenticated, async (req, res) => {
