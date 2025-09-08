@@ -171,7 +171,9 @@ const setupRoutes = () => {
             
             const loggedInUser = req.session.user;
             console.log('User dashboard accessed by:', loggedInUser.email);
-            
+            // ✅ GET SUCCESS MESSAGE FROM SESSION AND CLEAR IT
+            const successMessage = req.session.successMessage;
+            req.session.successMessage = null; // Clear after reading
             // Ensure loggedInUser has all required properties
             if (!loggedInUser.name) {
                 // If name is missing, try to fetch it from the database
@@ -190,20 +192,21 @@ const setupRoutes = () => {
                 }
             }
             
-            // Render the page with the user data
+            // Render the page with the user data AND SUCCESS MESSAGE
             res.render('user-page.ejs', { 
-                loggedInUser: {
-                    name: loggedInUser.name || 'User',
-                    email: loggedInUser.email || 'user@example.com',
-                    role: loggedInUser.role || 'user',
-                    id: loggedInUser.id
-                } 
+            user: {  // ✅ CHANGED FROM 'loggedInUser' TO 'user' TO MATCH YOUR EJS
+                name: loggedInUser.name || 'User',
+                email: loggedInUser.email || 'user@example.com',
+                role: loggedInUser.role || 'user',
+                id: loggedInUser.id
+            },
+            successMessage: successMessage  // ✅ PASS SUCCESS MESSAGE TO TEMPLATE
             });
         } catch (err) {
             console.error('Error in user dashboard route:', err);
             res.status(500).send('Error accessing dashboard. Please try logging in again.');
         }
-    });
+        });
 
     app.get('/transporter-dashboard', ensureAuthenticated, async (req, res) => {
         try {
@@ -443,9 +446,18 @@ const setupRoutes = () => {
 
             await shipment.save();
             console.log('Shipment created successfully:', shipment);
+            // ✅ GENERATE SHIPMENT ID AND SUCCESS MESSAGE
+            const shipmentId = `SH-${Date.now()}-${shipment._id.toString().slice(-6).toUpperCase()}`;
             
-            // Redirect to Real_tracker with shipment ID
-            res.redirect(`/Real_tracker?shipmentId=${shipment._id}`);
+            // Store success info in session
+            req.session.successMessage = {
+            message: 'Shipment booked successfully!',
+            shipmentId: shipmentId,
+            timestamp: new Date()
+            };
+            
+            // Redirect to dashboard/home page
+            res.redirect('/user-dashboard');
             
         } catch (err) {
             console.error('Error creating shipment:', err.message, err.stack);

@@ -22,7 +22,44 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add this in the <head> of your user-page.ejs -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+    .success-message {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        border-radius: 15px;
+        color: rgb(0, 0, 0);
+    }
+
+    .success-message .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    .shipment-id {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
     
+    :root {
+        /* Modern Color Palette */
+        --primary: #2563eb;
+        --primary-dark: #1e40af;
+        --primary-light: #3b82f6;
+        --secondary: #64748b;
+        --accent: #f59e0b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #06b6d4;
+    }
+    }
+    </style>
+
     <style>
         :root {
             /* Modern Color Palette */
@@ -1853,6 +1890,25 @@
     </nav>
         </div>
     </header>
+    
+    <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+    <div class="container mt-3">
+        <div class="alert alert-success alert-dismissible fade show animate__animated animate__fadeInDown" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle text-success me-3 fs-4"></i>
+                <div>
+                    <h5 class="mb-1">🎉 <%= successMessage.message %></h5>
+                    <p class="mb-0">
+                        <strong>Shipment ID:</strong> <%= successMessage.shipmentId %>
+                        <br>
+                        <small class="text-muted">Booked on <%= successMessage.timestamp.toLocaleString() %></small>
+                    </p>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <% } %>
 
     <!-- Main Container -->
     <main class="py-4">
