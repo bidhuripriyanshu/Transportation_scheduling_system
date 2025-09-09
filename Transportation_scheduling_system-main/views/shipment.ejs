@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Shipment</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        #map { 
+            height: 400px; 
+            width: 100%; 
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4F46E5;
+            z-index: 10;
+        }
+        
+        .custom-input {
+            padding-left: 3rem !important;
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .custom-input:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            background: white;
+        }
+        
+        .custom-btn {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            transition: all 0.3s ease;
+        }
+        
+        .custom-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+        
+        .route-info {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .search-suggestion {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .search-suggestion:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-purple-600 via-blue-600 to-blue-700 text-white shadow-2xl">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center py-4">
+                    <i class="fas fa-shipping-fast text-3xl mr-3 text-yellow-300"></i>
+                    <span class="font-bold text-xl">Create New Shipment</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/user-dashboard" class="hover:text-yellow-200 transition">
+                        <i class="fas fa-home mr-2"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="form-container">
+                <h2 class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    📦 Plan Your Shipment Route
+                </h2>
+
+                <form id="shipmentForm" action="/shipment" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    
+                    <!-- Route Planning Section -->
+                    <div class="bg-blue-50 p-6 rounded-xl mb-6">
+                        <h3 class="text-xl font-semibold text-blue-800 mb-4">
+                            <i class="fas fa-route mr-2"></i> Route Planning
+                        </h3>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="input-container">
+                                <i class="fas fa-location-arrow text-green-500"></i>
+                                <input type="text" id="pickup" name="pickup" placeholder="Enter pickup location" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" required>
+                                <div id="pickup-suggestions" class="suggestions-container"></div>
+                            </div>
+                            
+                            <div class="input-container">
+                                <i class="fas fa-map-pin text-red-500"></i>
+                                <input type="text" id="destination" name="destination" placeholder="Enter destination" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" required>
+                                <div id="destination-suggestions" class="suggestions-container"></div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" onclick="calculateShipmentRoute()" class="custom-btn text-white px-6 py-3 rounded-lg font-semibold mt-4 hover:scale-105 transition-all">
+                            <i class="fas fa-calculator mr-2"></i> Calculate Route & Cost
+                        </button>
+                        
+                        <div id="route-info" class="route-info">
+                            <!-- Route information will be displayed here -->
+                        </div>
+                        
+                        <!-- Interactive Map -->
+                        <div id="map"></div>
+                    </div>
+
+                    <!-- Shipment Details Section -->
+                    <div class="bg-green-50 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold text-green-800 mb-4">
+                            <i class="fas fa-box mr-2"></i> Shipment Details
+                        </h3>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="input-container">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" id="location" name="location" placeholder="Pickup address details" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" required>
+                            </div>
+                            
+                            <div class="input-container">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="datetime-local" id="dateTime" name="dateTime" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" required>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="input-container">
+                                <i class="fas fa-truck"></i>
+                                <select id="vehicleType" name="vehicleType" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" required>
+                                    <option value="">Select Vehicle Type</option>
+                                    <option value="bike">🏍️ Bike (Small packages)</option>
+                                    <option value="car">🚗 Car (Medium packages)</option>
+                                    <option value="van">🚐 Van (Large packages)</option>
+                                    <option value="truck">🚛 Truck (Heavy cargo)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-container">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" id="photo" name="photo" accept="image/*" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none" required>
+                            </div>
+                        </div>
+                        
+                        <div class="input-container">
+                            <i class="fas fa-clipboard-list"></i>
+                            <textarea id="goodsDescription" name="goodsDescription" rows="4" placeholder="Describe your goods (size, weight, special handling requirements...)" class="custom-input w-full px-4 py-3 border rounded-lg focus:outline-none resize-none" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields for route data -->
+                    <input type="hidden" id="routeDistance" name="routeDistance">
+                    <input type="hidden" id="routeCost" name="routeCost">
+                    <input type="hidden" id="pickupCoords" name="pickupCoords">
+                    <input type="hidden" id="destinationCoords" name="destinationCoords">
+
+                    <!-- Submit Button -->
+                    <div class="text-center pt-6">
+                        <button type="submit" class="custom-btn text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all">
+                            <i class="fas fa-paper-plane mr-2"></i> Create Shipment & Proceed to Tracking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        let map = L.map('map').setView([20.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let pickupMarker, destinationMarker, routeLine;
+        let pickupCoords = null, destinationCoords = null;
+
+        // Location search functionality
+        async function searchLocation(query) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
+                return await response.json();
+            } catch (error) {
+                console.error('Geocoding error:', error);
+                return [];
+            }
+        }
+
+        function setupLocationSearch(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            let searchTimeout;
+
+            input.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length < 3) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+
+                searchTimeout = setTimeout(async () => {
+                    const results = await searchLocation(query);
+                    displaySuggestions(results, suggestions, inputId);
+                }, 300);
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => suggestions.style.display = 'none', 200);
+            });
+        }
+
+        function displaySuggestions(results, container, inputId) {
+            container.innerHTML = '';
+            
+            if (results.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = 'search-suggestion';
+                div.innerHTML = `<div class="font-medium">${result.display_name}</div>`;
+                
+                div.addEventListener('click', () => {
+                    document.getElementById(inputId).value = result.display_name;
+                    container.style.display = 'none';
+                    
+                    const lat = parseFloat(result.lat);
+                    const lon = parseFloat(result.lon);
+                    
+                    if (inputId === 'pickup') {
+                        setPickupPoint(lat, lon, result.display_name);
+                        // Auto-fill location field
+                        document.getElementById('location').value = result.display_name;
+                    } else {
+                        setDestinationPoint(lat, lon, result.display_name);
+                    }
+                });
+                
+                container.appendChild(div);
+            });
+            
+            container.style.display = 'block';
+        }
+
+        function setPickupPoint(lat, lon, name) {
+            pickupCoords = {lat: lat, lng: lon};
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            pickupMarker = L.marker([lat, lon]).addTo(map).bindPopup(`📍 Pickup: ${name}`);
+            map.setView([lat, lon], 13);
+            document.getElementById('pickupCoords').value = `${lat},${lon}`;
+        }
+
+        function setDestinationPoint(lat, lon, name) {
+            destinationCoords = {lat: lat, lng: lon};
+            if (destinationMarker) map.removeLayer(destinationMarker);
+            destinationMarker = L.marker([lat, lon]).addTo(map).bindPopup(`🏁 Destination: ${name}`);
+            map.setView([lat, lon], 13);
+            document.getElementById('destinationCoords').value = `${lat},${lon}`;
+        }
+
+        // Initialize search functionality
+        setupLocationSearch('pickup', 'pickup-suggestions');
+        setupLocationSearch('destination', 'destination-suggestions');
+
+        // Calculate route for shipment
+        async function calculateShipmentRoute() {
+            if (!pickupCoords || !destinationCoords) {
+                alert('Please select both pickup and destination locations');
+                return;
+            }
+
+            try {
+                const response = await fetch('/calculate-route', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pickupLat: pickupCoords.lat,
+                        pickupLng: pickupCoords.lng,
+                        dropLat: destinationCoords.lat,
+                        dropLng: destinationCoords.lng
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (routeLine) map.removeLayer(routeLine);
+
+                    routeLine = L.polyline(data.route, {
+                        color: '#4F46E5',
+                        weight: 5,
+                        opacity: 0.8
+                    }).addTo(map);
+
+                    map.fitBounds(routeLine.getBounds(), { padding: [20, 20] });
+
+                    // Display route information
+                    const routeInfo = document.getElementById('route-info');
+                    routeInfo.style.display = 'block';
+                    routeInfo.innerHTML = `
+                        <h4 class="font-bold text-blue-800 mb-3">📍 Route Summary</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Distance</p>
+                                <p class="text-xl font-bold text-blue-600">${data.distance} km</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Estimated Cost</p>
+                                <p class="text-xl font-bold text-green-600">₹${data.price}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i> 
+                            Estimated delivery time: ${data.duration || 'N/A'} minutes
+                        </p>
+                    `;
+
+                    // Store route data in hidden fields
+                    document.getElementById('routeDistance').value = data.distance;
+                    document.getElementById('routeCost').value = data.price;
+
+                } else {
+                    alert('Error calculating route: ' + data.message);
+                }
+
+            } catch (error) {
+                console.error('Route calculation error:', error);
+                alert('Failed to calculate route. Please try again.');
+            }
+        }
+
+        // Form submission
+        document.getElementById('shipmentForm').addEventListener('submit', function(e) {
+            if (!pickupCoords || !destinationCoords) {
+                e.preventDefault();
+                alert('Please calculate the route before submitting the shipment.');
+                return;
+            }
+        });
+
+        // Set minimum date to current date
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const dateString = now.toISOString().slice(0, 16);
+            document.getElementById('dateTime').min = dateString;
+        });
+    </script>
+</body>
+</html>
