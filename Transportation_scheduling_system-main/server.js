@@ -446,15 +446,15 @@ const setupRoutes = () => {
 
             await shipment.save();
             console.log('Shipment created successfully:', shipment);
-            // ✅ GENERATE SHIPMENT ID AND SUCCESS MESSAGE
-            const shipmentId = `SH-${Date.now()}-${shipment._id.toString().slice(-6).toUpperCase()}`;
-            
+
             // Store success info in session
             req.session.successMessage = {
-            message: 'Shipment booked successfully!',
-            shipmentId: shipmentId,
-            timestamp: new Date()
+                message: 'Shipment booked successfully!',
+                shipmentId: shipment._id.toString(), // ✅ Show the MongoDB ObjectId
+                trackingUrl: `/Real_tracker?shipmentId=${shipment._id}`,
+                timestamp: new Date()
             };
+
             
             // Redirect to dashboard/home page
             res.redirect('/user-dashboard');
@@ -478,6 +478,24 @@ const setupRoutes = () => {
             res.status(500).send('Error updating profile');
         }
     });
+    // Add this route inside setupRoutes() function
+    app.get('/my-shipments', ensureAuthenticated, async (req, res) => {
+        try {
+            const userId = req.session.user.id;
+            
+            // Fetch all shipments for this user
+            const shipments = await Shipment.find({ userId: userId }).sort({ createdAt: -1 });
+            
+            res.render('my-shipments.ejs', { 
+            shipments: shipments,
+            user: req.session.user 
+            });
+        } catch (error) {
+            console.error('Error fetching shipments:', error);
+            res.status(500).send('Error fetching your shipments');
+        }
+        });
+
 
     app.post('/update-profile_2', ensureAuthenticated, async (req, res) => {
         try {
@@ -676,6 +694,73 @@ const setupRoutes = () => {
     });
   }
 });
+
+    app.get('/track-shipment/:shipmentId', ensureAuthenticated, async (req, res) => {
+        try {
+            const shipmentId = req.params.shipmentId;
+            console.log('Searching for shipment:', shipmentId);
+            
+            let shipment = null;
+            
+            // ✅ Search by custom shipment ID first, then by MongoDB _id
+            if (mongoose.Types.ObjectId.isValid(shipmentId)) {
+            // If it's a valid ObjectId, search by _id
+            shipment = await Shipment.findById(shipmentId);
+            }
+            
+            if (!shipment) {
+            // Search by customShipmentId (our SH-xxx-xxx format)
+            shipment = await Shipment.findOne({ customShipmentId: shipmentId });
+            }
+            
+            if (!shipment) {
+            // Flexible search for partial matches
+            shipment = await Shipment.findOne({
+                $or: [
+                { customShipmentId: new RegExp(shipmentId, 'i') },
+                { _id: mongoose.Types.ObjectId.isValid(shipmentId) ? shipmentId : null }
+                ]
+            });
+            }
+
+            if (!shipment) {
+            return res.json({
+                success: false,
+                message: `Shipment not found. Please check your Shipment ID: ${shipmentId}`
+            });
+            }
+
+            console.log('Found shipment:', shipment.customShipmentId);
+
+            res.json({
+            success: true,
+            shipment: {
+                _id: shipment._id,
+                customShipmentId: shipment.customShipmentId, // ✅ Include custom ID
+                location: shipment.location,
+                pickup: shipment.pickup,
+                destination: shipment.destination,
+                dateTime: shipment.dateTime,
+                goodsDescription: shipment.goodsDescription,
+                vehicleType: shipment.vehicleType,
+                photo: shipment.photo,
+                status: shipment.status || 'pending',
+                routeDistance: shipment.routeDistance,
+                routeCost: shipment.routeCost,
+                pickupCoords: shipment.pickupCoords,
+                destinationCoords: shipment.destinationCoords,
+                createdAt: shipment.createdAt
+            }
+            });
+
+        } catch (error) {
+            console.error('Error tracking shipment:', error);
+            res.status(500).json({
+            success: false,
+            message: 'Error tracking shipment. Please try again.'
+            });
+        }
+        });
 
 
 
