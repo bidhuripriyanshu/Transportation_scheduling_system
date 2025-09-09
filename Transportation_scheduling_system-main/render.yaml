@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: tss-final
+    env: node
+    buildCommand: npm install
+    startCommand: node -r dotenv/config server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGO_URI
+        sync: false # This means you'll set it manually in Render dashboard
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false 

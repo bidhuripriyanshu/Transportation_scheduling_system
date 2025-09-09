@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Coins</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        :root {
+            --gold: #FFD700;
+            --orange: #FF9500;
+            --dark-orange: #FF7800;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #3a0ca3, #4361ee, #4895ef, #4cc9f0);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        .coin-container {
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            isolation: isolate;
+        }
+        
+        .coin-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+        
+        .coin-display {
+            background: white;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1),
+                        inset 0 0 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 8px solid rgba(255, 255, 255, 0.7);
+        }
+        
+        .coin-display::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, transparent 40%, rgba(255, 215, 0, 0.4) 50%, transparent 60%);
+            animation: shine 3s infinite;
+            z-index: 1;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(0deg); }
+            100% { transform: translateX(100%) rotate(360deg); }
+        }
+        
+        .coin-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--dark-orange);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to bottom, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .coin-icon {
+            font-size: 2rem;
+            color: var(--gold);
+            margin-right: 0.5rem;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--orange);
+            font-size: 1.2rem;
+        }
+        
+        .coin-input {
+            padding: 0.75rem 0.75rem 0.75rem 3rem;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            width: 100%;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .coin-input:focus {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+            outline: none;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(to right, #3f37c9, #4361ee);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.15);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .coins-earned {
+            position: absolute;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            animation: float 1.5s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+        
+        .navbar {
+            background: rgba(31, 41, 55, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        .history-table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .history-table th {
+            background: linear-gradient(to right, #1F2937, #374151);
+            color: white;
+            padding: 1rem;
+        }
+        
+        .history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .history-table tr:nth-child(even) {
+            background-color: rgba(243, 244, 246, 0.7);
+        }
+        
+        .coin-benefits {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .benefit-item:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .benefit-icon {
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <header class="navbar sticky top-0 z-50 text-white p-4 w-full animate__animated animate__fadeInDown">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="fas fa-coins text-yellow-400 mr-2"></i>
+                Super Coins Dashboard
+            </h1>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="/" class="hover:text-yellow-300 transition-colors"><i class="fas fa-home mr-1"></i> Home</a></li>
+                    <li><a href="/profile" class="hover:text-yellow-300 transition-colors"><i class="fas fa-user mr-1"></i> Profile</a></li>
+                    <li><a href="/logout" class="hover:text-yellow-300 transition-colors"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-6 px-4 py-8 flex-grow">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Coin Display Section -->
+                <div class="animate__animated animate__fadeInLeft">
+                    <div class="coin-container text-center">
+                        <h2 class="text-3xl font-bold text-white mb-6 flex justify-center items-center">
+                            <i class="fas fa-crown mr-2"></i>
+                            Your Super Coins
+                        </h2>
+                        
+                        <div class="coin-display pulse-animation mb-6">
+                            <span id="coinValue" class="coin-value">0</span>
+                        </div>
+                        
+                        <p class="text-white text-lg mt-4 mb-6 font-medium">
+                            <i class="fas fa-truck-fast mr-2"></i>
+                            Earn more coins by completing rides!
+                        </p>
+
+                        <!-- Add Coins Form -->
+                        <form id="addCoinsForm" class="mt-6">
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <div class="input-group flex-grow">
+                                    <i class="fas fa-plus-circle input-icon"></i>
+                                    <input 
+                                        type="number" 
+                                        name="coins" 
+                                        min="1" 
+                                        placeholder="Enter coins to add" 
+                                        class="coin-input"
+                                        required
+                                    >
+                                </div>
+                                <button 
+                                    type="submit" 
+                                    class="submit-btn"
+                                >
+                                    <i class="fas fa-coins mr-2"></i>
+                                    Add Coins
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Benefits Section -->
+                <div class="animate__animated animate__fadeInRight">
+                    <div class="coin-benefits">
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800">
+                            <i class="fas fa-gift text-yellow-500 mr-2"></i>
+                            Super Coin Benefits
+                        </h3>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Discount on Rides</h4>
+                                <p class="text-sm text-gray-600">Get up to 20% off on your next shipment</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Priority Scheduling</h4>
+                                <p class="text-sm text-gray-600">Jump the queue and get your items shipped first</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Premium Features</h4>
+                                <p class="text-sm text-gray-600">Unlock exclusive tracking and insurance options</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Cash Conversion</h4>
+                                <p class="text-sm text-gray-600">Convert your coins to real cash benefits</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <a href="#" class="inline-block px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <i class="fas fa-shopping-cart mr-2"></i> Redeem Your Coins
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transaction History -->
+            <div class="mt-12 animate__animated animate__fadeInUp">
+                <h3 class="text-2xl font-bold mb-4 text-white">
+                    <i class="fas fa-history mr-2"></i> Recent Transactions
+                </h3>
+                
+                <div class="history-table w-full">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Date</th>
+                                <th class="text-left">Transaction</th>
+                                <th class="text-left">Coins</th>
+                                <th class="text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionHistory">
+                            <!-- This will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Sample transaction data (in a real app, this would come from the backend)
+        const sampleTransactions = [
+            { date: new Date(Date.now() - 86400000), description: "Ride Completion Bonus", coins: 50, status: "Credited" },
+            { date: new Date(Date.now() - 172800000), description: "Referral Reward", coins: 100, status: "Credited" },
+            { date: new Date(Date.now() - 259200000), description: "Redeemed for Discount", coins: -30, status: "Debited" },
+            { date: new Date(Date.now() - 345600000), description: "On-time Delivery Bonus", coins: 25, status: "Credited" }
+        ];
+        
+        // Fetch current coin value from backend
+        async function fetchCoins() {
+            try {
+                const response = await fetch('/api/super-coins');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                return data.coins || 0;
+            } catch (error) {
+                console.error('Error fetching coins:', error);
+                // For demo purposes, return a sample value if the API fails
+                return 375;
+            }
+        }
+
+        // Update coin display with animation
+        function updateCoinDisplay(coins) {
+            const coinDisplay = document.getElementById('coinValue');
+            const currentValue = parseInt(coinDisplay.textContent);
+            animateValue(coinDisplay, currentValue, coins, 1000);
+        }
+        
+        // Animate counting up or down
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Display floating animation when coins are added
+        function showCoinAddedAnimation(amount) {
+            const coinDisplay = document.querySelector('.coin-display');
+            const floatingText = document.createElement('div');
+            floatingText.classList.add('coins-earned');
+            floatingText.textContent = `+${amount}`;
+            floatingText.style.left = `${Math.random() * 80 + 10}%`;
+            coinDisplay.appendChild(floatingText);
+            
+            // Extra pulse animation on the coin
+            coinDisplay.classList.add('animate__animated', 'animate__heartBeat');
+            setTimeout(() => {
+                coinDisplay.classList.remove('animate__animated', 'animate__heartBeat');
+            }, 1000);
+            
+            // Remove the element after animation completes
+            setTimeout(() => {
+                floatingText.remove();
+            }, 1500);
+        }
+
+        // Handle adding coins
+        document.getElementById('addCoinsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const coinsToAdd = parseInt(formData.get('coins'));
+            
+            // Show loading state
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/super-coins', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ coins: coinsToAdd })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+
+                const updatedData = await response.json();
+                updateCoinDisplay(updatedData.coins);
+                e.target.reset();
+                
+                // Show success animation
+                showCoinAddedAnimation(coinsToAdd);
+                
+                // Add to transaction history
+                addTransaction({
+                    date: new Date(),
+                    description: "Manual Addition",
+                    coins: coinsToAdd,
+                    status: "Credited"
+                });
+                
+                // Use toast notification instead of alert
+                showNotification('Coins added successfully!', 'success');
+            } catch (error) {
+                showNotification('Error adding coins: ' + error.message, 'error');
+            } finally {
+                // Restore button state
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
+            }
+        });
+        
+        // Show notification toast
+        function showNotification(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-16 right-4 p-4 rounded-lg shadow-lg animate__animated animate__fadeInRight ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                'bg-blue-500'
+            } text-white max-w-xs z-50`;
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 
+                        'fa-info-circle'
+                    } mr-2"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('animate__fadeInRight');
+                toast.classList.add('animate__fadeOutRight');
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+            }, 3000);
+        }
+        
+        // Format date nicely
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(date).toLocaleDateString(undefined, options);
+        }
+        
+        // Add transaction to history table
+        function addTransaction(transaction) {
+            const historyTable = document.getElementById('transactionHistory');
+            const row = document.createElement('tr');
+            row.className = 'animate__animated animate__fadeIn';
+            
+            row.innerHTML = `
+                <td>${formatDate(transaction.date)}</td>
+                <td>${transaction.description}</td>
+                <td class="${transaction.coins >= 0 ? 'text-green-600' : 'text-red-600'} font-medium">
+                    ${transaction.coins >= 0 ? '+' : ''}${transaction.coins}
+                </td>
+                <td>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${
+                        transaction.status === 'Credited' ? 'bg-green-100 text-green-800' : 
+                        'bg-red-100 text-red-800'
+                    }">
+                        ${transaction.status}
+                    </span>
+                </td>
+            `;
+            
+            // Add to beginning of table
+            if (historyTable.firstChild) {
+                historyTable.insertBefore(row, historyTable.firstChild);
+            } else {
+                historyTable.appendChild(row);
+            }
+        }
+        
+        // Populate transaction history
+        function populateTransactionHistory(transactions) {
+            const historyTable = document.getElementById('transactionHistory');
+            historyTable.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="4" class="text-center py-4 text-gray-500">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        No transactions found
+                    </td>
+                `;
+                historyTable.appendChild(emptyRow);
+                return;
+            }
+            
+            transactions.forEach((transaction, index) => {
+                const row = document.createElement('tr');
+                row.className = 'animate__animated animate__fadeIn';
+                row.style.animationDelay = `${index * 0.1}s`;
+                
+                row.innerHTML = `
+                    <td>${formatDate(transaction.date)}</td>
+                    <td>${transaction.description}</td>
+                    <td class="${transaction.coins >= 0 ? 'text-green-600' : 'text-red-600'} font-medium">
+                        ${transaction.coins >= 0 ? '+' : ''}${transaction.coins}
+                    </td>
+                    <td>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${
+                            transaction.status === 'Credited' ? 'bg-green-100 text-green-800' : 
+                            'bg-red-100 text-red-800'
+                        }">
+                            ${transaction.status}
+                        </span>
+                    </td>
+                `;
+                
+                historyTable.appendChild(row);
+            });
+        }
+
+        // Initialize page
+        async function init() {
+            const coins = await fetchCoins();
+            updateCoinDisplay(coins);
+            populateTransactionHistory(sampleTransactions);
+            
+            // Add some visual effects when scrolling
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate__animated', 'animate__fadeIn');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.benefit-item').forEach(item => {
+                observer.observe(item);
+            });
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

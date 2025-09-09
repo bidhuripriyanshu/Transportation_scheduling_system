@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Shipment</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .tracking-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4F46E5;
+            z-index: 10;
+        }
+        
+        .custom-input {
+            padding-left: 3rem !important;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .custom-input:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+            background: white;
+        }
+        
+        .custom-btn {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            transition: all 0.3s ease;
+        }
+        
+        .custom-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+        }
+        
+        .shipment-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+        
+        .shipment-card.active {
+            display: block;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-confirmed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-transit {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .status-delivered {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-purple-600 via-blue-600 to-blue-700 text-white shadow-2xl sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex space-x-7">
+                    <div>
+                        <a href="#" class="flex items-center py-4 px-2">
+                            <i class="fas fa-search-location text-3xl mr-3 text-yellow-300"></i>
+                            <span class="font-bold text-white text-xl">Track Your Shipment</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="/user-dashboard" class="py-4 px-4 text-white font-semibold hover:text-yellow-200 transition duration-300">
+                        <i class="fas fa-home mr-2"></i> Dashboard
+                    </a>
+                    <a href="/shipment" class="py-4 px-4 text-white font-semibold hover:text-yellow-200 transition duration-300">
+                        <i class="fas fa-plus mr-2"></i> New Shipment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-2xl mx-auto">
+            <!-- Tracking Input Section -->
+            <div class="tracking-container animate__animated animate__fadeInDown">
+                <h2 class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    <i class="fas fa-search mr-3 text-purple-500"></i>Track Your Shipment
+                </h2>
+                
+                <form id="trackingForm" class="space-y-6">
+                    <div class="input-container">
+                        <i class="fas fa-barcode text-purple-500"></i>
+                        <input 
+                            type="text" 
+                            id="shipmentId" 
+                            placeholder="Enter your Shipment ID (e.g., SH-1725789123-A1B2C3)" 
+                            class="custom-input w-full px-4 py-4 border rounded-xl focus:outline-none text-gray-800 font-medium"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="custom-btn w-full text-white py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-search mr-2"></i> Track Shipment
+                    </button>
+                </form>
+            </div>
+
+            <!-- Shipment Details Card -->
+            <div id="shipmentDetails" class="shipment-card">
+                <!-- Shipment information will be displayed here -->
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span id="errorText">Shipment not found. Please check your Shipment ID and try again.</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('trackingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const shipmentId = document.getElementById('shipmentId').value.trim();
+            const detailsCard = document.getElementById('shipmentDetails');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Hide previous results
+            detailsCard.classList.remove('active');
+            errorMessage.classList.add('hidden');
+            
+            if (!shipmentId) {
+                showError('Please enter a Shipment ID.');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Searching...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`/track-shipment/${encodeURIComponent(shipmentId)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayShipmentDetails(data.shipment);
+                } else {
+                    showError(data.message || 'Shipment not found.');
+                }
+            } catch (error) {
+                console.error('Error tracking shipment:', error);
+                showError('Error tracking shipment. Please try again.');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        function displayShipmentDetails(shipment) {
+            const detailsCard = document.getElementById('shipmentDetails');
+            
+            const statusClass = getStatusClass(shipment.status);
+            const statusText = getStatusText(shipment.status);
+            
+            detailsCard.innerHTML = `
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                        <i class="fas fa-package text-blue-500 mr-2"></i>
+                        Shipment Found!
+                    </h3>
+                    <div class="status-badge ${statusClass}">
+                        ${statusText}
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-info-circle text-blue-500 mr-2"></i>Shipment Information
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div><strong>Shipment ID:</strong> ${shipment.customShipmentId || shipment._id}</div>
+                                <div><strong>Vehicle Type:</strong> ${shipment.vehicleType || 'N/A'}</div>
+                                <div><strong>Created:</strong> ${new Date(shipment.createdAt).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt text-green-500 mr-2"></i>Route Details
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div><strong>From:</strong> ${shipment.pickup || shipment.location}</div>
+                                <div><strong>To:</strong> ${shipment.destination || 'N/A'}</div>
+                                ${shipment.routeDistance ? `<div><strong>Distance:</strong> ${shipment.routeDistance} km</div>` : ''}
+                                ${shipment.routeCost ? `<div><strong>Cost:</strong> ₹${shipment.routeCost}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-box text-orange-500 mr-2"></i>Package Details
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <div><strong>Description:</strong> ${shipment.goodsDescription || 'N/A'}</div>
+                                ${shipment.dateTime ? `<div><strong>Scheduled:</strong> ${new Date(shipment.dateTime).toLocaleString()}</div>` : ''}
+                            </div>
+                        </div>
+
+                        ${shipment.photo ? `
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-camera text-purple-500 mr-2"></i>Package Photo
+                            </h4>
+                            <img src="${shipment.photo}" alt="Package" class="w-full h-32 object-cover rounded-lg">
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button onclick="window.print()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition mr-3">
+                        <i class="fas fa-print mr-2"></i>Print Details
+                    </button>
+                    <button onclick="location.reload()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-search mr-2"></i>Track Another
+                    </button>
+                </div>
+            `;
+            
+            detailsCard.classList.add('active');
+        }
+
+        function getStatusClass(status) {
+            switch(status?.toLowerCase()) {
+                case 'pending': return 'status-pending';
+                case 'confirmed': return 'status-confirmed';
+                case 'in_transit': return 'status-transit';
+                case 'delivered': return 'status-delivered';
+                default: return 'status-pending';
+            }
+        }
+
+        function getStatusText(status) {
+            switch(status?.toLowerCase()) {
+                case 'pending': return 'Pending Pickup';
+                case 'confirmed': return 'Confirmed';
+                case 'in_transit': return 'In Transit';
+                case 'delivered': return 'Delivered';
+                default: return 'Processing';
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Checkout Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 50%, #3a0ca3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .wrapper {
+            width: 100%;
+            max-width: 450px;
+            perspective: 1000px;
+        }
+        
+        .payment {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px 30px;
+            padding-top: 90px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+        
+        .payment:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .payment h2 {
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            color: var(--primary-dark);
+            font-weight: 700;
+            position: relative;
+        }
+        
+        .payment h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--success));
+            border-radius: 2px;
+        }
+        
+        .credit-card {
+            position: relative;
+            margin-bottom: 30px;
+            perspective: 1000px;
+        }
+        
+        .card-front {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #3a0ca3, #4361ee, #4895ef, #4cc9f0);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+            transform: rotateY(0deg);
+            backface-visibility: hidden;
+        }
+        
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffcf33, #ffd700);
+            border-radius: 8px;
+            display: inline-block;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .card-chip::before, .card-chip::after {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 5px;
+            background: rgba(0, 0, 0, 0.2);
+            left: 10%;
+            border-radius: 2px;
+        }
+        
+        .card-chip::before {
+            top: 10px;
+        }
+        
+        .card-chip::after {
+            bottom: 10px;
+        }
+        
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .card-number {
+            font-size: 24px;
+            letter-spacing: 3px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .form {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form .label {
+            display: block;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            letter-spacing: 1px;
+            font-size: 16px;
+            color: var(--dark);
+            background-color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 5px 10px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+        
+        .card-grp {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .card-item {
+            width: 48%;
+        }
+        
+        .icon-container {
+            position: absolute;
+            top: 14px;
+            left: 15px;
+            font-size: 20px;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .input:focus + .icon-container {
+            color: var(--primary);
+        }
+        
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .btn-back {
+            background: linear-gradient(45deg, var(--dark), #495057);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 8px rgba(67, 97, 238, 0.3);
+        }
+        
+        .payment-logo {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            overflow: hidden;
+        }
+        
+        .payment-logo::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary), var(--success));
+            border-radius: 50%;
+            animation: spin 5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+                filter: hue-rotate(360deg);
+            }
+        }
+        
+        .payment-logo p {
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 70px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-type {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+        }
+        
+        /* Card animation */
+        .animate-card {
+            animation: cardPulse 1.5s infinite alternate;
+        }
+        
+        @keyframes cardPulse {
+            0% {
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+            100% {
+                box-shadow: 0 12px 24px rgba(76, 201, 240, 0.4);
+            }
+        }
+        
+        /* Response styles */
+        @media screen and (max-width: 480px) {
+            .payment {
+                padding: 30px 20px;
+                padding-top: 80px;
+            }
+            
+            .card-front {
+                height: 180px;
+            }
+            
+            .card-number {
+                font-size: 20px;
+            }
+            
+            .card-grp {
+                flex-direction: column;
+            }
+            
+            .card-item {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .btn {
+                padding: 12px;
+            }
+            
+            .payment-logo {
+                width: 100px;
+                height: 100px;
+                top: -50px;
+            }
+            
+            .payment-logo p {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper animate__animated animate__fadeIn">
+        <div class="payment">
+            <div class="payment-logo">
+                <p>p</p>
+            </div>
+            
+            <h2 class="animate__animated animate__fadeInDown">Payment Gateway</h2>
+            
+            <div class="credit-card animate__animated animate__fadeInUp">
+                <div class="card-front animate-card">
+                    <div class="card-type">
+                        <i class="fab fa-cc-visa"></i>
+                    </div>
+                    <div class="card-chip"></div>
+                    <div class="card-number" id="cardNumberDisplay">**** **** **** ****</div>
+                    <div class="card-details">
+                        <div class="card-holder" id="cardHolderDisplay">CARD HOLDER</div>
+                        <div class="card-expiry" id="cardExpiryDisplay">MM/YY</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form">
+                <div class="input-group">
+                    <label class="label">Card holder:</label>
+                    <input type="text" class="input" id="cardHolder" placeholder="Enter your name" maxlength="24">
+                    <div class="icon-container">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="label">Card number:</label>
+                    <input type="text" class="input" id="cardNumber" data-mask="0000 0000 0000 0000" placeholder="0000 0000 0000 0000" maxlength="19">
+                    <div class="icon-container">
+                        <i class="far fa-credit-card"></i>
+                    </div>
+                </div>
+                
+                <div class="card-grp">
+                    <div class="card-item">
+                        <div class="input-group">
+                            <label class="label">Expiry date:</label>
+                            <input type="text" name="expiry-data" id="expiryDate" class="input" data-mask="00 / 00" placeholder="MM / YY" maxlength="7">
+                            <div class="icon-container">
+                                <i class="far fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-item">
+                        <div class="input-group">
+                            <label class="label">CVC:</label>
+                            <input type="password" class="input" id="cvc" data-mask="000" placeholder="CVC" maxlength="3">
+                            <div class="icon-container">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <div class="btn btn-pay" id="payButton">
+                        <i class="fas fa-check-circle me-2"></i> Pay Now
+                    </div>
+                    <div class="btn btn-back" onclick="history.back()">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Live update card display
+            $('#cardHolder').on('input', function() {
+                let value = $(this).val().toUpperCase();
+                $('#cardHolderDisplay').text(value || 'CARD HOLDER');
+            });
+            
+            $('#cardNumber').on('input', function() {
+                let value = $(this).val();
+                $('#cardNumberDisplay').text(value || '**** **** **** ****');
+                
+                // Detect card type based on first digit
+                let firstDigit = value.charAt(0);
+                let cardType = $('.card-type i');
+                
+                if (firstDigit === '4') {
+                    cardType.attr('class', 'fab fa-cc-visa');
+                } else if (firstDigit === '5') {
+                    cardType.attr('class', 'fab fa-cc-mastercard');
+                } else if (firstDigit === '3') {
+                    cardType.attr('class', 'fab fa-cc-amex');
+                } else if (firstDigit === '6') {
+                    cardType.attr('class', 'fab fa-cc-discover');
+                } else {
+                    cardType.attr('class', 'far fa-credit-card');
+                }
+            });
+            
+            $('#expiryDate').on('input', function() {
+                let value = $(this).val();
+                $('#cardExpiryDisplay').text(value || 'MM/YY');
+            });
+            
+            // Form validation animation
+            $('.input').on('focus', function() {
+                $(this).parent().find('.label').addClass('text-primary');
+            });
+            
+            $('.input').on('blur', function() {
+                $(this).parent().find('.label').removeClass('text-primary');
+            });
+            
+            // Payment button animation
+            $('#payButton').on('click', function() {
+                $(this).addClass('animate__animated animate__pulse');
+                setTimeout(() => {
+                    $(this).removeClass('animate__animated animate__pulse');
+                    // Here you would normally submit the form
+                    alert('Payment processing... This would connect to your payment gateway in a real application.');
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>
